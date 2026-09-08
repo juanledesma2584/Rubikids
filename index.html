@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RU-Bi KiDS - POS & Gestión v22</title>
+  <title>RU-Bi KiDS - POS & Auditoría v23</title>
 
   <link rel="icon" type="image/jpeg" href="logo.jpg">
   <link rel="apple-touch-icon" href="logo.jpg">
@@ -24,7 +24,6 @@
 
     .container { padding: 0 15px; }
 
-    /* MENU DE 5 BOTONES PRINCIPALES */
     .menu-cinco-botones {
       display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px;
     }
@@ -105,7 +104,6 @@
     .slot-tag.manana { background: #e0f7fa; color: #006064; border-left: 2px solid #00bcd4; }
     .slot-tag.tarde { background: #fff3e0; color: #e65100; border-left: 2px solid #ff9800; }
 
-    /* TARJETAS RECEPCIÓN Y AUDITORÍA */
     .box-cobro-evento {
       background: #f1f8e9; border: 1px solid #c5e1a5; border-radius: 10px; padding: 12px; margin-top: 10px;
     }
@@ -324,39 +322,65 @@
       </div>
     </div>
 
-    <!-- MÓDULO 4: AUDITORÍA DE INVENTARIO -->
+    <!-- MÓDULO 4: AUDITORÍA DE INVENTARIO (EDITABLE COMPLETO + NUEVAS MERCADERÍAS) -->
     <div id="sec-auditoria" class="seccion">
+      
+      <!-- 1. EDITAR STOCK Y MÍNIMOS EXISTENTES -->
       <div class="card">
-        <h2>🔍 Módulo de Auditoría de Depósito</h2>
-        <span class="badge">Verificación física, reposición de mínimos y pedidos de compra</span>
+        <h2>🔍 Control y Auditoría de Insumos</h2>
+        <span class="badge">Ajustá Stock, Mínimo y Costo directamente</span>
 
-        <h3>1. Conteo Físico vs. Stock del Sistema</h3>
         <table>
           <thead>
             <tr>
               <th>Insumo</th>
-              <th>Stock Sistema</th>
-              <th>Stock Físico Real</th>
-              <th>Acción</th>
+              <th>Stock Físico</th>
+              <th>Stock Mín.</th>
+              <th>Costo (Gs.)</th>
+              <th>Guardar</th>
             </tr>
           </thead>
           <tbody id="tabla-auditoria-inventario"></tbody>
         </table>
+      </div>
 
-        <hr style="margin-top:20px;">
-        <h3>2. Sugerencia de Pedido de Compra (Stock Mínimo)</h3>
-        <div id="box-sugerencia-compras"></div>
+      <!-- 2. AGREGAR NUEVAS MERCADERÍAS (Ej: Cervezas de otras marcas/sabores) -->
+      <div class="card">
+        <h2>➕ Agregar Nueva Mercadería / Bebida al Inventario</h2>
+        
+        <label>Nombre del Producto / Insumo Nuevo:</label>
+        <input type="text" id="aud-nuevo-nombre" placeholder="Ej: Cerveza Pilsen 600ml / Stella Artois">
 
-        <hr style="margin-top:20px;">
-        <h3>3. Recepción / Entradas de Compras al Depósito</h3>
-        <label>Insumo a Recibir:</label>
+        <label>Costo de Compra Unitario (Gs.):</label>
+        <input type="text" id="aud-nuevo-costo" value="10.000" oninput="formatInputMiles(this)">
+
+        <label>Stock Inicial Contado:</label>
+        <input type="number" id="aud-nuevo-stock" value="20">
+
+        <label>Stock Mínimo Recomendado:</label>
+        <input type="number" id="aud-nuevo-minimo" value="50">
+
+        <button class="action-btn purple" onclick="agregarNuevaMercaderiaAuditoria()">💾 Cargar Mercadería al Sistema</button>
+      </div>
+
+      <!-- 3. RECEPCIÓN DE PEDIDOS Y COMPRAS -->
+      <div class="card">
+        <h2>📥 Recepción y Entradas de Mercadería</h2>
+        <label>Insumo / Producto a Recibir:</label>
         <select id="auditor-select-insumo"></select>
 
         <label>Cantidad que Ingresa:</label>
         <input type="number" id="auditor-cant-ingreso" value="10" min="1">
 
-        <button class="action-btn success" onclick="recibirMercaderiaAuditoria()">📥 Confirmar Recepción de Mercadería</button>
+        <button class="action-btn success" onclick="recibirMercaderiaAuditoria()">📥 Confirmar Ingreso de Stock</button>
       </div>
+
+      <!-- 4. SUGERENCIA AUTOMÁTICA DE PEDIDOS -->
+      <div class="card">
+        <h2>🛒 Sugerencia de Pedido de Compras</h2>
+        <div id="box-sugerencia-compras"></div>
+      </div>
+
     </div>
 
     <!-- MÓDULO 5: ADMINISTRACIÓN (DUEÑO) -->
@@ -389,7 +413,7 @@
       </div>
 
       <div class="card">
-        <h2> Configuración de Recetarios de Productos</h2>
+        <h2>📖 Configuración de Recetarios de Productos</h2>
         <label>Seleccionar Plato del Menú:</label>
         <select id="receta-select-plato" onchange="renderDetalleReceta()"></select>
 
@@ -443,20 +467,20 @@
         { id: 7, nombre: 'Cerveza Heineken', precio: 22000 }
       ],
       insumos: [
-        { id: 101, nombre: 'Pan de Lomito', costo: 2500, stock: 50, stockMinimo: 15 },
-        { id: 102, nombre: 'Carne / Lomito', costo: 10000, stock: 40, stockMinimo: 10 },
-        { id: 103, nombre: 'Huevo', costo: 1000, stock: 100, stockMinimo: 20 },
-        { id: 104, nombre: 'Lechuga (Porción)', costo: 500, stock: 60, stockMinimo: 15 },
-        { id: 105, nombre: 'Tomate (Porción)', costo: 500, stock: 60, stockMinimo: 15 },
-        { id: 106, nombre: 'Mayonesa (Porción)', costo: 500, stock: 100, stockMinimo: 25 },
-        { id: 107, nombre: 'Pan de Hamburguesa', costo: 2000, stock: 50, stockMinimo: 15 },
-        { id: 108, nombre: 'Carne Hamburguesa', costo: 6000, stock: 50, stockMinimo: 15 },
-        { id: 109, nombre: 'Pre-pizza (Unidad)', costo: 3500, stock: 30, stockMinimo: 10 },
-        { id: 110, nombre: 'Queso Mozzarella', costo: 4000, stock: 40, stockMinimo: 10 },
-        { id: 111, nombre: 'Jamón Cocido', costo: 3000, stock: 40, stockMinimo: 10 },
-        { id: 112, nombre: 'Papas Crudas (Porción)', costo: 3000, stock: 50, stockMinimo: 15 },
-        { id: 113, nombre: 'Gaseosas 600ml (Botella)', costo: 4500, stock: 60, stockMinimo: 20 },
-        { id: 114, nombre: 'Cerveza Heineken (Botella)', costo: 12000, stock: 40, stockMinimo: 12 }
+        { id: 101, nombre: 'Pan de Lomito', costo: 2500, stock: 50, stockMinimo: 50 },
+        { id: 102, nombre: 'Carne / Lomito', costo: 10000, stock: 40, stockMinimo: 20 },
+        { id: 103, nombre: 'Huevo', costo: 1000, stock: 100, stockMinimo: 30 },
+        { id: 104, nombre: 'Lechuga (Porción)', costo: 500, stock: 60, stockMinimo: 20 },
+        { id: 105, nombre: 'Tomate (Porción)', costo: 500, stock: 60, stockMinimo: 20 },
+        { id: 106, nombre: 'Mayonesa (Porción)', costo: 500, stock: 100, stockMinimo: 30 },
+        { id: 107, nombre: 'Pan de Hamburguesa', costo: 2000, stock: 50, stockMinimo: 30 },
+        { id: 108, nombre: 'Carne Hamburguesa', costo: 6000, stock: 50, stockMinimo: 20 },
+        { id: 109, nombre: 'Pre-pizza (Unidad)', costo: 3500, stock: 30, stockMinimo: 15 },
+        { id: 110, nombre: 'Queso Mozzarella', costo: 4000, stock: 40, stockMinimo: 15 },
+        { id: 111, nombre: 'Jamón Cocido', costo: 3000, stock: 40, stockMinimo: 15 },
+        { id: 112, nombre: 'Papas Crudas (Porción)', costo: 3000, stock: 50, stockMinimo: 20 },
+        { id: 113, nombre: 'Gaseosas 600ml (Botella)', costo: 4500, stock: 60, stockMinimo: 24 },
+        { id: 114, nombre: 'Cerveza Heineken (Botella)', costo: 12000, stock: 40, stockMinimo: 24 }
       ],
       recetasMap: {
         'Lomito Completo': [
@@ -506,10 +530,10 @@
       costoVentasTotal: 0
     };
 
-    let db = JSON.parse(localStorage.getItem('rubikids_pos_v22_db')) || datosIniciales;
+    let db = JSON.parse(localStorage.getItem('rubikids_pos_v23_db')) || datosIniciales;
 
     function guardarDB() {
-      localStorage.setItem('rubikids_pos_v22_db', JSON.stringify(db));
+      localStorage.setItem('rubikids_pos_v23_db', JSON.stringify(db));
       render();
     }
 
@@ -731,7 +755,7 @@
       guardarDB();
     }
 
-    /* AUDITORÍA Y PEDIDO DE COMPRA */
+    /* AUDITORÍA Y EDICIÓN COMPLETA DE INVENTARIO */
     function renderAuditoria() {
       const tablaAud = document.getElementById('tabla-auditoria-inventario');
       tablaAud.innerHTML = '';
@@ -740,35 +764,36 @@
         tablaAud.innerHTML += `
           <tr>
             <td><strong>${i.nombre}</strong></td>
-            <td>${i.stock} un.</td>
-            <td><input type="number" id="aud-fisico-${i.id}" value="${i.stock}" style="width:70px; padding:4px;"></td>
-            <td><button class="success" style="padding:4px 8px; width:auto;" onclick="ajustarStockAuditoria(${i.id})">Ajustar</button></td>
+            <td><input type="number" id="aud-stock-${i.id}" value="${i.stock}" style="width:65px; padding:4px;"></td>
+            <td><input type="number" id="aud-minimo-${i.id}" value="${i.stockMinimo || 50}" style="width:65px; padding:4px;"></td>
+            <td><input type="text" id="aud-costo-${i.id}" value="${Number(i.costo).toLocaleString('es-PY')}" oninput="formatInputMiles(this)" style="width:85px; padding:4px;"></td>
+            <td><button class="success" style="padding:4px 8px; width:auto;" onclick="guardarAjustesAuditoria(${i.id})">💾</button></td>
           </tr>`;
       });
 
-      // Sugerencia de Compras (Insumos cerca del stock mínimo)
+      // Sugerencia de Compras
       const boxSugerencia = document.getElementById('box-sugerencia-compras');
       let htmlSugerencia = `<ul>`;
       let hayFaltantes = false;
 
       db.insumos.forEach(i => {
-        const min = i.stockMinimo || 10;
+        const min = i.stockMinimo || 50;
         if (i.stock <= min) {
           hayFaltantes = true;
-          let aComprar = (min * 3) - i.stock;
-          htmlSugerencia += `<li><strong>${i.nombre}:</strong> Quedan solo <b>${i.stock} un.</b> (Mínimo: ${min}). Sugerido pedir: <span style="color:#c62828; font-weight:bold;">${aComprar} un.</span></li>`;
+          let aComprar = (min * 2) - i.stock;
+          htmlSugerencia += `<li><strong>${i.nombre}:</strong> Quedan <b>${i.stock} un.</b> (Mínimo establecido: ${min}). Sugerido pedir: <span style="color:#c62828; font-weight:bold;">${aComprar} un.</span></li>`;
         }
       });
 
       htmlSugerencia += `</ul>`;
 
       if (!hayFaltantes) {
-        boxSugerencia.innerHTML = `<p style="color:#2e7d32;"> En stock saludable. Todos los insumos superan el mínimo recomendado.</p>`;
+        boxSugerencia.innerHTML = `<p style="color:#2e7d32;"> Stock saludable. Todos los insumos están por encima del mínimo requerido.</p>`;
       } else {
         boxSugerencia.innerHTML = htmlSugerencia;
       }
 
-      // Select de Insumos para Recepción
+      // Select para Recepción
       const selAud = document.getElementById('auditor-select-insumo');
       selAud.innerHTML = '';
       db.insumos.forEach(i => {
@@ -776,14 +801,43 @@
       });
     }
 
-    function ajustarStockAuditoria(id) {
+    function guardarAjustesAuditoria(id) {
       const ins = db.insumos.find(i => i.id === id);
-      const nuevoVal = parseInt(document.getElementById(`aud-fisico-${id}`).value);
-      if (ins && !isNaN(nuevoVal)) {
-        ins.stock = nuevoVal;
-        alert(`Stock de ${ins.nombre} actualizado a ${nuevoVal} un.`);
+      if (ins) {
+        ins.stock = parseInt(document.getElementById(`aud-stock-${id}`).value) || 0;
+        ins.stockMinimo = parseInt(document.getElementById(`aud-minimo-${id}`).value) || 0;
+        ins.costo = parseMilesVal(document.getElementById(`aud-costo-${id}`).value);
+
+        alert(`Insumo actualizado:\n${ins.nombre}\nStock: ${ins.stock} un. | Mínimo: ${ins.stockMinimo} un. | Costo: ${formatearGs(ins.costo)}`);
         guardarDB();
       }
+    }
+
+    function agregarNuevaMercaderiaAuditoria() {
+      const nombre = document.getElementById('aud-nuevo-nombre').value;
+      const costo = parseMilesVal(document.getElementById('aud-nuevo-costo').value);
+      const stock = parseInt(document.getElementById('aud-nuevo-stock').value) || 0;
+      const stockMinimo = parseInt(document.getElementById('aud-nuevo-minimo').value) || 50;
+
+      if (!nombre) return alert('Ingresá el nombre del nuevo producto o bebida.');
+
+      const nuevoId = Date.now();
+      db.insumos.push({
+        id: nuevoId,
+        nombre,
+        costo,
+        stock,
+        stockMinimo
+      });
+
+      alert(`Nueva mercadería agregada con éxito:\n${nombre}\nStock Inicial: ${stock} un. | Mínimo: ${stockMinimo} un.`);
+      
+      document.getElementById('aud-nuevo-nombre').value = '';
+      document.getElementById('aud-nuevo-costo').value = '10.000';
+      document.getElementById('aud-nuevo-stock').value = '20';
+      document.getElementById('aud-nuevo-minimo').value = '50';
+
+      guardarDB();
     }
 
     function recibirMercaderiaAuditoria() {
@@ -793,7 +847,7 @@
       const ins = db.insumos.find(i => i.id === insumoId);
       if (ins && cant > 0) {
         ins.stock += cant;
-        alert(`Entrada confirmada: Se sumaron ${cant} un. a ${ins.nombre}. Nuevo stock: ${ins.stock} un.`);
+        alert(`Entrada registrada:\nSe sumaron +${cant} un. a ${ins.nombre}.\nNuevo stock en depósito: ${ins.stock} un.`);
         guardarDB();
       }
     }
@@ -814,7 +868,7 @@
         const ins = db.insumos.find(i => i.id === item.insumoId);
         if (ins) {
           box.innerHTML += `
-            <div style="display:flex; justify-space-between; align-items:center; font-size:0.85rem; border-bottom:1px dashed #ccc; padding:4px 0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; border-bottom:1px dashed #ccc; padding:4px 0;">
               <span>• ${ins.nombre} (x${item.cantidad})</span>
               <button class="danger" style="padding:2px 6px; width:auto;" onclick="quitarInsumoDeReceta('${platoNombre}', ${index})">❌</button>
             </div>`;
