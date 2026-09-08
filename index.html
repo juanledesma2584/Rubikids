@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RU-Bi KiDS - Agenda y POS</title>
+  <title>RU-Bi KiDS - Agenda, Inventario y POS</title>
 
   <link rel="icon" type="image/jpeg" href="logo.jpg">
   <link rel="apple-touch-icon" href="logo.jpg">
@@ -32,7 +32,7 @@
 
     .container { padding: 0 12px; }
 
-    /* ROL SELECTOR & NAVEGACIÓN RÁPIDA */
+    /* ROL SELECTOR */
     .role-selector { background: #e3f2fd; padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #90caf9; }
     .role-selector select { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #64b5f6; font-weight: bold; background: white; }
 
@@ -48,10 +48,6 @@
       cursor: pointer;
       margin-bottom: 12px;
       box-shadow: 0 3px 6px rgba(123, 31, 162, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
     }
 
     /* TARJETAS */
@@ -64,8 +60,9 @@
     button { background: #1e88e5; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
     button.success { background: #43a047; }
     button.warning { background: #fb8c00; }
+    button.purple { background: #8e24aa; }
     
-    /* VISTA DE CALENDARIO COMPLETO (4 MESES) */
+    /* VISTA DE CALENDARIO */
     .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .calendar-controls button { width: auto; padding: 6px 12px; margin: 0; font-size: 0.8rem; }
     .month-title { font-weight: bold; font-size: 1.1rem; color: #4a148c; }
@@ -105,7 +102,6 @@
     .slot-tag.tarde { background: #fff3e0; color: #e65100; border-left: 3px solid #ff9800; }
     .contract-badge { font-size: 0.6rem; color: #2e7d32; font-weight: bold; }
 
-    /* CHECKBOX Y FIRMA DE CONTRATO */
     .checkbox-container { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 0.85rem; font-weight: bold; color: #2e7d32; }
     .checkbox-container input { width: auto; margin: 0; }
 
@@ -114,8 +110,13 @@
     th, td { border: 1px solid #e0e0e0; padding: 6px; text-align: left; }
     th { background: #f5f5f5; color: #333; }
 
-    .admin-only { display: none; background: #fff8e1; border: 1px solid #ffe082; }
-    .admin-only h2 { color: #d84315; }
+    /* VISIBILIDAD POR ROLES */
+    .dueno-sec { display: none; background: #fff8e1; border: 1px solid #ffe082; }
+    .dueno-sec h2 { color: #d84315; }
+    
+    .auditor-sec { display: none; background: #f3e5f5; border: 1px solid #ce93d8; }
+    .auditor-sec h2 { color: #6a1b9a; }
+
     .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; background: #e1f5fe; color: #0288d1; font-weight: bold; }
   </style>
 </head>
@@ -129,22 +130,22 @@
 
     <!-- SELECTOR DE ROL -->
     <div class="role-selector">
-      <label>Vista de Usuario:</label>
+      <label>Rol de Usuario Activo:</label>
       <select id="rol-select" onchange="cambiarRol()">
-        <option value="personal">Personal / Recepción (Ingreso y Ventas)</option>
-        <option value="dueno">Dueño / Administrador (Gestión, Agenda y Contratos)</option>
+        <option value="personal">Personal / Recepción (Agenda, Ingreso y Ventas)</option>
+        <option value="auditor">Auditor / Control de Inventario (Recepcionar Pedidos)</option>
+        <option value="dueno">Dueño / Administrador (Acceso Total y Balance)</option>
       </select>
     </div>
 
-    <!-- BOTÓN DE ACCESO DIRECTO AL CALENDARIO -->
     <button class="nav-btn" onclick="irAlCalendario()">
       📅 Ver Agenda / Calendario (4 Meses)
     </button>
 
-    <!-- MÓDULO CALENDARIO EXTENDIDO DE 4 MESES (AMBOS ROLES) -->
+    <!-- CALENDARIO DE EVENTOS (TODOS LOS ROLES) -->
     <div class="card" id="seccion-calendario">
       <h2>1. Agenda de Eventos (Almanaque Mensual)</h2>
-      <span class="badge">Navegación hasta 4 Meses</span>
+      <span class="badge">Navegación de Eventos</span>
       
       <div class="calendar-controls" style="margin-top: 10px;">
         <button onclick="cambiarMes(-1)">◀ Mes Anterior</button>
@@ -152,7 +153,7 @@
         <button onclick="cambiarMes(1)">Mes Siguiente ▶</button>
       </div>
 
-      <div class="month-grid" id="grid-dias-semana">
+      <div class="month-grid">
         <div class="month-header">Dom</div>
         <div class="month-header">Lun</div>
         <div class="month-header">Mar</div>
@@ -165,68 +166,10 @@
       <div class="month-grid" id="grid-calendario"></div>
     </div>
 
-    <!-- MÓDULO RECEPCIÓN E INGRESO -->
-    <div class="card">
-      <h2>2. Control de Ingreso (Recepción)</h2>
-      <span class="badge">Personal / Recepción</span>
-
-      <label>Seleccionar Evento Activo:</label>
-      <select id="select-reserva" onchange="renderAsistencia()"></select>
-
-      <label>Adulto Responsable / Invitado:</label>
-      <input type="text" id="nombre-invitado" placeholder="Ej: María Giménez">
-
-      <label>Cantidad de Niños:</label>
-      <input type="number" id="cant-ninos" value="1" min="0">
-
-      <label>Detalle / Nombres de los Niños:</label>
-      <input type="text" id="detalle-ninos" placeholder="Ej: Lucas y Sofía">
-
-      <button class="success" onclick="registrarIngreso()">Registrar Ingreso</button>
-
-      <h3>Invitados en el Evento</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Adulto</th>
-            <th>Niños</th>
-            <th>Detalle</th>
-          </tr>
-        </thead>
-        <tbody id="tabla-asistencia"></tbody>
-      </table>
-    </div>
-
-    <!-- MÓDULO POS VENTAS -->
-    <div class="card">
-      <h2>3. Venta de Productos</h2>
-      <span class="badge">Personal / Recepción</span>
-
-      <label>Producto:</label>
-      <select id="select-producto"></select>
-
-      <label>Cantidad:</label>
-      <input type="number" id="cant-producto" value="1" min="1">
-
-      <button class="warning" onclick="registrarVenta()">Registrar Venta</button>
-
-      <h3>Stock Disponible</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Producto</th>
-            <th>Precio</th>
-            <th>Stock</th>
-          </tr>
-        </thead>
-        <tbody id="tabla-stock"></tbody>
-      </table>
-    </div>
-
-    <!-- MÓDULO DUEÑO: AGENDAR Y FIRMA DE CONTRATOS -->
-    <div class="card admin-only" id="modulo-dueno">
-      <h2>4. Agendar Evento y Registro de Contrato (Privado)</h2>
-      <span class="badge" style="background: #ffe0b2; color: #e65100;">Exclusivo Propietario</span>
+    <!-- AGENDAR EVENTOS (DISPONIBLE PARA PERSONAL Y DUEÑO) -->
+    <div class="card operacion-sec">
+      <h2>2. Agendar Nuevo Evento / Reserva</h2>
+      <span class="badge">Habilitado para Personal y Dueño</span>
 
       <label>Fecha del Evento:</label>
       <input type="date" id="reserva-fecha">
@@ -249,55 +192,164 @@
       </div>
 
       <button onclick="crearReserva()">Agendar Evento</button>
+    </div>
+
+    <!-- RECEPCIÓN DE INVITADOS (PERSONAL Y DUEÑO) -->
+    <div class="card operacion-sec">
+      <h2>3. Control de Ingreso (Recepción)</h2>
+      <span class="badge">Personal / Recepción</span>
+
+      <label>Seleccionar Evento Activo:</label>
+      <select id="select-reserva" onchange="renderAsistencia()"></select>
+
+      <label>Adulto Responsable / Invitado:</label>
+      <input type="text" id="nombre-invitado" placeholder="Ej: María Giménez">
+
+      <label>Cantidad de Niños:</label>
+      <input type="number" id="cant-ninos" value="1" min="0">
+
+      <label>Detalle / Nombres de los Niños:</label>
+      <input type="text" id="detalle-ninos" placeholder="Ej: Lucas y Sofía">
+
+      <button class="success" onclick="registrarIngreso()">Registrar Ingreso</button>
+
+      <h3>Invitados Registrados en el Evento</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Adulto</th>
+            <th>Niños</th>
+            <th>Detalle</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-asistencia"></tbody>
+      </table>
+    </div>
+
+    <!-- PUNTO DE VENTA (PERSONAL Y DUEÑO) -->
+    <div class="card operacion-sec">
+      <h2>4. Venta de Productos (Cafetería / Bar)</h2>
+      <span class="badge">Personal / Recepción</span>
+
+      <label>Producto:</label>
+      <select id="select-producto"></select>
+
+      <label>Cantidad:</label>
+      <input type="number" id="cant-producto" value="1" min="1">
+
+      <button class="warning" onclick="registrarVenta()">Registrar Venta / Cobro</button>
+
+      <h3>Stock Disponible</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Precio Venta</th>
+            <th>Stock</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-stock"></tbody>
+      </table>
+    </div>
+
+    <!-- MÓDULO EXCLUSIVO AUDITOR DE INVENTARIO -->
+    <div class="card auditor-sec" id="seccion-auditor">
+      <h2>5. Recepción y Auditoría de Inventario</h2>
+      <span class="badge" style="background: #e1bee7; color: #4a148c;">Exclusivo Auditor</span>
+
+      <h3>Registrar Ingreso de Mercadería (Pedido Recibido)</h3>
+      <label>Seleccionar Producto Existente:</label>
+      <select id="audit-select-prod"></select>
+
+      <label>Cantidad Recepcionada (Unidades que entran):</label>
+      <input type="number" id="audit-cant-ingreso" placeholder="Ej: 24">
+
+      <button class="purple" onclick="recepcionarPedido()">Registrar Carga de Stock</button>
 
       <hr>
-      <h3>Resumen Financiero y Aforo</h3>
-      <p><strong>Recaudación por Ventas:</strong> $<span id="balance-ventas">0</span></p>
-      <p><strong>Total Niños Ingresados:</strong> <span id="balance-ninos">0</span></p>
-
-      <hr>
-      <h3>Inventario de Productos</h3>
-      <label>Nombre Producto:</label>
-      <input type="text" id="prod-nombre" placeholder="Ej: Jugo en cajita">
+      <h3>Alta de Nuevo Producto en Catálogo</h3>
+      <label>Nombre del Producto:</label>
+      <input type="text" id="prod-nombre" placeholder="Ej: Jugo en cajita 200ml">
       
-      <label>Precio Venta ($):</label>
-      <input type="number" id="prod-precio" placeholder="10">
-
-      <label>Costo ($):</label>
-      <input type="number" id="prod-costo" placeholder="5">
+      <label>Precio de Venta (Gs.):</label>
+      <input type="number" id="prod-precio" placeholder="Gs. 5000">
 
       <label>Stock Inicial:</label>
       <input type="number" id="prod-stock" placeholder="24">
 
-      <button onclick="agregarProducto()">Guardar Producto</button>
+      <button class="purple" onclick="agregarProducto()">Guardar Producto Nuevo</button>
+
+      <h3>Inventario Físico Actual</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Stock Actual</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-stock-auditor"></tbody>
+      </table>
+    </div>
+
+    <!-- MÓDULO EXCLUSIVO DUEÑO (FINANZAS Y BALANCES) -->
+    <div class="card dueno-sec" id="modulo-dueno">
+      <h2>6. Balance General y Finanzas (Privado)</h2>
+      <span class="badge" style="background: #ffe0b2; color: #e65100;">Exclusivo Propietario</span>
+
+      <p><strong>Recaudación Total en Ventas:</strong> <span id="balance-ventas">Gs. 0</span></p>
+      <p><strong>Total Niños Ingresados:</strong> <span id="balance-ninos">0</span></p>
+      <p><strong>Total Adultos Ingresados:</strong> <span id="balance-adultos">0</span></p>
     </div>
 
   </div>
 
   <script>
-    let mesActualOffset = 0; // 0 = Mes actual, 1, 2, 3 meses en adelante
+    let mesActualOffset = 0;
+
+    // Formateador de moneda en Guaraníes
+    function formatearGs(monto) {
+      return 'Gs. ' + Number(monto).toLocaleString('es-PY');
+    }
 
     const datosIniciales = {
       reservas: [
         { id: 1, fecha: '2026-09-12', turno: 'Tarde', titular: 'Juan Lezcano', motivo: 'Cumpleaños Santi', contratoFirmado: true, asistencia: [] }
       ],
       productos: [
-        { id: 101, nombre: 'Gaseosa 500ml', precio: 12, costo: 6, stock: 48 },
-        { id: 102, nombre: 'Papas Fritas', precio: 10, costo: 4, stock: 30 }
+        { id: 101, nombre: 'Gaseosa 500ml', precio: 10000, stock: 48 },
+        { id: 102, nombre: 'Papas Fritas', precio: 8000, stock: 30 }
       ],
       ventasTotal: 0
     };
 
-    let db = JSON.parse(localStorage.getItem('rubikids_pos_v4_db')) || datosIniciales;
+    let db = JSON.parse(localStorage.getItem('rubikids_pos_v5_db')) || datosIniciales;
 
     function guardarDB() {
-      localStorage.setItem('rubikids_pos_v4_db', JSON.stringify(db));
+      localStorage.setItem('rubikids_pos_v5_db', JSON.stringify(db));
       render();
     }
 
     function cambiarRol() {
       const rol = document.getElementById('rol-select').value;
-      document.getElementById('modulo-dueno').style.display = (rol === 'dueno') ? 'block' : 'none';
+      
+      const operacionSecs = document.querySelectorAll('.operacion-sec');
+      const duenoSec = document.getElementById('modulo-dueno');
+      const auditorSec = document.getElementById('seccion-auditor');
+
+      if (rol === 'auditor') {
+        operacionSecs.forEach(s => s.style.display = 'none');
+        duenoSec.style.display = 'none';
+        auditorSec.style.display = 'block';
+      } else if (rol === 'dueno') {
+        operacionSecs.forEach(s => s.style.display = 'block');
+        duenoSec.style.display = 'block';
+        auditorSec.style.display = 'block'; // El dueño también puede auditar
+      } else {
+        // Personal
+        operacionSecs.forEach(s => s.style.display = 'block');
+        duenoSec.style.display = 'none';
+        auditorSec.style.display = 'none';
+      }
     }
 
     function irAlCalendario() {
@@ -310,7 +362,7 @@
         mesActualOffset = nuevoOffset;
         renderCalendario();
       } else {
-        alert('El calendario permite visualizar desde el mes actual hasta 4 meses a futuro.');
+        alert('El calendario permite visualizar hasta 4 meses a futuro.');
       }
     }
 
@@ -328,12 +380,10 @@
       const grid = document.getElementById('grid-calendario');
       grid.innerHTML = '';
 
-      // Celdas vacías previas
       for (let i = 0; i < primerDiaSemana; i++) {
         grid.innerHTML += `<div class="day-cell" style="background:#f5f5f5;"></div>`;
       }
 
-      // Días del mes
       for (let dia = 1; dia <= ultimoDiaMes; dia++) {
         const fechaStr = `${ano}-${String(fechaVista.getMonth() + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
         const esHoy = (dia === hoy.getDate() && fechaVista.getMonth() === hoy.getMonth() && ano === hoy.getFullYear());
@@ -372,29 +422,47 @@
 
       renderAsistencia();
 
-      // Productos
+      // Productos e Inventario
       const selectProd = document.getElementById('select-producto');
+      const auditSelectProd = document.getElementById('audit-select-prod');
       const tablaStock = document.getElementById('tabla-stock');
+      const tablaStockAuditor = document.getElementById('tabla-stock-auditor');
+
       selectProd.innerHTML = '';
+      auditSelectProd.innerHTML = '';
       tablaStock.innerHTML = '';
+      tablaStockAuditor.innerHTML = '';
 
       db.productos.forEach(p => {
-        selectProd.innerHTML += `<option value="${p.id}">${p.nombre} - $${p.precio}</option>`;
+        selectProd.innerHTML += `<option value="${p.id}">${p.nombre} - ${formatearGs(p.precio)}</option>`;
+        auditSelectProd.innerHTML += `<option value="${p.id}">${p.nombre} (Stock actual: ${p.stock})</option>`;
+
         tablaStock.innerHTML += `
           <tr>
             <td>${p.nombre}</td>
-            <td>$${p.precio}</td>
+            <td>${formatearGs(p.precio)}</td>
             <td>${p.stock}</td>
+          </tr>`;
+
+        tablaStockAuditor.innerHTML += `
+          <tr>
+            <td>${p.nombre}</td>
+            <td><strong>${p.stock}</strong> un.</td>
           </tr>`;
       });
 
       // Balances
-      document.getElementById('balance-ventas').innerText = db.ventasTotal;
+      document.getElementById('balance-ventas').innerText = formatearGs(db.ventasTotal);
       let totalNinos = 0;
+      let totalAdultos = 0;
       db.reservas.forEach(r => {
-        r.asistencia.forEach(a => { totalNinos += parseInt(a.ninos || 0); });
+        r.asistencia.forEach(a => { 
+          totalAdultos += 1;
+          totalNinos += parseInt(a.ninos || 0); 
+        });
       });
       document.getElementById('balance-ninos').innerText = totalNinos;
+      document.getElementById('balance-adultos').innerText = totalAdultos;
     }
 
     function renderAsistencia() {
@@ -461,31 +529,43 @@
       if (ocupado) return alert(`La fecha ${fecha} en el turno de la ${turno} ya está reservada.`);
 
       db.reservas.push({ id: Date.now(), fecha, turno, titular, motivo, contratoFirmado, asistencia: [] });
-      alert('Evento reservado y cargado en el calendario');
+      alert('Evento agendado con éxito');
       
       document.getElementById('reserva-titular').value = '';
       document.getElementById('reserva-motivo').value = '';
       guardarDB();
     }
 
+    function recepcionarPedido() {
+      const idProd = parseInt(document.getElementById('audit-select-prod').value);
+      const cant = parseInt(document.getElementById('audit-cant-ingreso').value);
+
+      if (!idProd || isNaN(cant) || cant <= 0) return alert('Ingresá una cantidad válida mayor a cero');
+
+      const prod = db.productos.find(p => p.id === idProd);
+      if (prod) {
+        prod.stock += cant;
+        alert(`Stock actualizado: Se sumaron ${cant} unidades a ${prod.nombre}`);
+        document.getElementById('audit-cant-ingreso').value = '';
+        guardarDB();
+      }
+    }
+
     function agregarProducto() {
       const nombre = document.getElementById('prod-nombre').value;
       const precio = parseFloat(document.getElementById('prod-precio').value);
-      const costo = parseFloat(document.getElementById('prod-costo').value);
       const stock = parseInt(document.getElementById('prod-stock').value);
 
       if (!nombre || isNaN(precio) || isNaN(stock)) return alert('Completá los datos del producto');
 
-      db.productos.push({ id: Date.now(), nombre, precio, costo: costo || 0, stock });
-      alert('Producto guardado');
+      db.productos.push({ id: Date.now(), nombre, precio, stock });
+      alert('Nuevo producto agregado al catálogo');
       document.getElementById('prod-nombre').value = '';
       document.getElementById('prod-precio').value = '';
-      document.getElementById('prod-costo').value = '';
       document.getElementById('prod-stock').value = '';
       guardarDB();
     }
 
-    // Inicialización de la fecha de hoy por defecto en la carga del dueño
     document.getElementById('reserva-fecha').valueAsDate = new Date();
 
     cambiarRol();
