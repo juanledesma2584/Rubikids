@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RU-Bi KiDS - Sistema Integrado POS & Gestión</title>
+  <title>RU-Bi KiDS - Sistema POS & Gestión de Eventos</title>
 
   <link rel="icon" type="image/jpeg" href="logo.jpg">
   <link rel="apple-touch-icon" href="logo.jpg">
@@ -103,11 +103,11 @@
       </button>
     </div>
 
-    <!-- CALENDARIO EXTENDIDO A 12 MESES -->
+    <!-- CALENDARIO ANUAL -->
     <div id="seccion-calendario" class="seccion">
       <div class="card">
-        <h2>Agenda de Eventos (Anual)</h2>
-        <span class="badge">Programación hasta 12 Meses</span>
+        <h2>Agenda de Eventos (Anual RU-Bi KiDS)</h2>
+        <span class="badge">Programación a 12 Meses</span>
         
         <div class="calendar-controls" style="margin-top: 10px;">
           <button onclick="cambiarMes(-1)">◀ Anterior</button>
@@ -135,52 +135,75 @@
       <div class="role-selector">
         <label>Perfil de Usuario:</label>
         <select id="rol-select" onchange="cambiarRol()">
-          <option value="personal">Personal / Recepción (Ingresos y Salida de Stock)</option>
-          <option value="auditor">Auditor / Inventario (Cargar Compras y Cotejo)</option>
-          <option value="dueno">Dueño / Administrador (Acceso Total y Balance)</option>
+          <option value="personal">Personal / Recepción (Ingresos y Salidas)</option>
+          <option value="auditor">Auditor / Inventario (Cargas y Compras)</option>
+          <option value="dueno">Dueño / Administrador (Acceso Total y Liquidaciones)</option>
         </select>
       </div>
 
-      <!-- AGENDAR EVENTO -->
+      <!-- CONTRATO Y AGENDAMIENTO -->
       <div class="card op-block">
-        <h2>Agendar Evento, Alquiler y Decoración</h2>
+        <h2>Crear Contrato de Evento RU-Bi KiDS</h2>
+        
+        <label>Nombre del Cumpleañero/a y Edad:</label>
+        <input type="text" id="reserva-motivo" placeholder="Ej: Santi (5 años)">
+
+        <label>Responsable del Evento (Cliente):</label>
+        <input type="text" id="reserva-titular" placeholder="Ej: Juan Lezcano">
+
+        <label>Teléfono / Celular:</label>
+        <input type="text" id="reserva-telefono" placeholder="Ej: 0981 123456">
+
         <label>Fecha del Evento:</label>
         <input type="date" id="reserva-fecha">
 
         <label>Turno:</label>
         <select id="reserva-turno">
-          <option value="Manana">Mañana</option>
-          <option value="Tarde">Tarde</option>
+          <option value="Medio Dia">Turno Medio Día</option>
+          <option value="Tarde">Turno Tarde</option>
         </select>
 
-        <label>Titular Responsable:</label>
-        <input type="text" id="reserva-titular" placeholder="Ej: Juan Lezcano">
+        <label>Seleccionar Paquete Oficial:</label>
+        <select id="reserva-paquete">
+          <option value="Paquete Mini (10 niños)|1800000">Paquete Mini (10 Niños) - Gs. 1.800.000</option>
+          <option value="Paquete Standard (20 niños)|2100000">Paquete Standard (20 Niños) - Gs. 2.100.000</option>
+          <option value="Paquete Full (30 niños)|2400000">Paquete Full (30 Niños) - Gs. 2.400.000</option>
+        </select>
 
-        <label>Motivo del Evento:</label>
-        <input type="text" id="reserva-motivo" placeholder="Ej: Cumpleaños Santi (5 años)">
-
-        <label>Precio Alquiler del Local (Gs.):</label>
-        <input type="number" id="reserva-alquiler" placeholder="Ej: 800000">
-
-        <label>Tipo de Decoración:</label>
+        <label>Opción de Decoración:</label>
         <select id="reserva-decoracion">
-          <option value="Sin Decoración|0">Sin Decoración (Gs. 0)</option>
-          <option value="Estándar|300000">Decoración Estándar (Gs. 300.000)</option>
-          <option value="Big Premium|600000">Decoración Big Premium (Gs. 600.000)</option>
+          <option value="Sin Decoración|0">Sin Decoración Incluida (Gs. 0)</option>
+          <option value="Deco RU-Bi KiDS|600000">Deco RU-Bi KiDS (Gs. 600.000)</option>
+          <option value="Deco Básica|1200000">Deco Básica (Gs. 1.200.000)</option>
+          <option value="Deco Full|1900000">Deco Full (Gs. 1.900.000)</option>
+          <option value="Deco VIP Premium|2800000">Deco VIP Premium (Gs. 2.800.000)</option>
+          <option value="Derecho a Decoración Externa|500000">Derecho a Decoración Externa (Gs. 500.000)</option>
         </select>
+
+        <label>Derechos / Adicionales Fijos:</label>
+        <select id="reserva-adicionales-fijos">
+          <option value="Sin Adicional Fijo|0">Ninguno</option>
+          <option value="APA y SGP Ley 1328/98|198000">APA y SGP Música (Gs. 198.000)</option>
+          <option value="Plus Fin de Semana / Feriado|300000">Plus Fin de Semana / Feriado (Gs. 300.000)</option>
+          <option value="Derecho a Show|300000">Derecho a Show Externo (Gs. 300.000)</option>
+          <option value="Derecho a Fotografía|200000">Derecho a Fotografía (Gs. 200.000)</option>
+        </select>
+
+        <label>Seña Abonada (Reserva de Local Gs. 1.000.000 por defecto):</label>
+        <input type="number" id="reserva-sena" value="1000000">
 
         <div class="checkbox-container">
           <input type="checkbox" id="reserva-contrato" checked>
-          <label for="reserva-contrato" style="margin: 0;">¿Contrato firmado?</label>
+          <label for="reserva-contrato" style="margin: 0;">¿Términos y Contrato Aceptados?</label>
         </div>
 
-        <button class="action-btn" onclick="crearReserva()">Agendar Reserva</button>
+        <button class="action-btn" onclick="crearReserva()">Generar Contrato y Guardar Evento</button>
       </div>
 
-      <!-- INGRESO INVITADOS -->
+      <!-- CONTROL DE RECEPCIÓN DE INVITADOS -->
       <div class="card op-block">
-        <h2>Control de Ingreso de Invitados</h2>
-        <label>Evento Activo:</label>
+        <h2>Control de Ingreso (Recepción)</h2>
+        <label>Seleccionar Evento del Día:</label>
         <select id="select-reserva" onchange="renderAsistencia()"></select>
 
         <label>Adulto Responsable / Invitado:</label>
@@ -194,7 +217,7 @@
 
         <button class="action-btn success" onclick="registrarIngreso()">Registrar Ingreso</button>
 
-        <h3>Invitados Registrados</h3>
+        <h3>Invitados Presentes en Local</h3>
         <table>
           <thead>
             <tr>
@@ -207,16 +230,16 @@
         </table>
       </div>
 
-      <!-- SALIDA DE PRODUCTOS (VISTA DE PERSONAL - SIN MOSTRAR PRECIOS) -->
+      <!-- SALIDA DE PRODUCTOS (PERSONAL) -->
       <div class="card op-block">
-        <h2>Salida de Stock (Pan, Bebidas, Globos, Insumos)</h2>
-        <label>Seleccionar Producto / Insumo:</label>
+        <h2>Venta y Consumo de Cantina / Menú</h2>
+        <label>Seleccionar Menú / Producto:</label>
         <select id="select-producto"></select>
 
-        <label>Cantidad a entregar / dar salida:</label>
+        <label>Cantidad:</label>
         <input type="number" id="cant-producto" value="1" min="1">
 
-        <button class="action-btn warning" onclick="registrarVenta()">Dar Salida de Inventario</button>
+        <button class="action-btn warning" onclick="registrarVenta()">Procesar Salida / Venta</button>
 
         <h3>Stock Disponible en Local</h3>
         <table>
@@ -230,46 +253,30 @@
         </table>
       </div>
 
-      <!-- AUDITORÍA Y REGISTRO DE COTEJO DE ENTRADAS Y SALIDAS -->
+      <!-- AUDITORÍA DE STOCK -->
       <div class="card auditor-only" id="seccion-auditor">
-        <h2>Auditoría: Carga de Compras e Ingreso de Productos</h2>
+        <h2>Auditoría: Carga de Compras e Insumos</h2>
         
-        <h3>Recepcionar Mercadería (Pan, Carne, Bebidas, Insumos)</h3>
-        <label>Producto en Catálogo:</label>
+        <h3>Recepcionar Mercadería</h3>
+        <label>Insumo o Producto:</label>
         <select id="audit-select-prod"></select>
 
-        <label>Cantidad Ingresada (Unidades/Paquetes):</label>
+        <label>Cantidad Recibida:</label>
         <input type="number" id="audit-cant-ingreso" placeholder="Ej: 50">
 
         <label>Costo de Compra Unitario (Gs.):</label>
         <input type="number" id="audit-costo-unitario" placeholder="Ej: 3500">
 
-        <button class="action-btn purple" onclick="recepcionarPedido()">Cargar Entrada de Stock</button>
+        <button class="action-btn purple" onclick="recepcionarPedido()">Cargar Entrada a Stock</button>
 
         <hr>
-        <h3>Agregar Nuevo Producto o Insumo al Catálogo</h3>
-        <label>Nombre del Ítem (Ej: Pan de Hamburguesa, Carne, Globos):</label>
-        <input type="text" id="prod-nombre" placeholder="Ej: Pan de Hamburguesa x12">
-        
-        <label>Precio Venta al Público (Gs. - Si aplica):</label>
-        <input type="number" id="prod-precio" placeholder="Gs. 0 si es solo insumo">
-
-        <label>Costo de Compra Unitario (Gs.):</label>
-        <input type="number" id="prod-costo-inicial" placeholder="Gs. 5000">
-
-        <label>Stock Inicial:</label>
-        <input type="number" id="prod-stock" placeholder="24">
-
-        <button class="action-btn purple" onclick="agregarProducto()">Guardar Ítem Nuevo</button>
-
-        <hr>
-        <h3>Historial de Cotejo (Entradas y Salidas de Stock)</h3>
+        <h3>Cotejo de Entradas y Salidas</h3>
         <table>
           <thead>
             <tr>
-              <th>Fecha/Hora</th>
+              <th>Hora</th>
               <th>Tipo</th>
-              <th>Producto</th>
+              <th>Ítem</th>
               <th>Cant.</th>
             </tr>
           </thead>
@@ -277,23 +284,31 @@
         </table>
       </div>
 
-      <!-- BALANCE FINANCIERO DUEÑO -->
+      <!-- BALANCE GENERAL Y ESTADO DE CUENTAS (DUEÑO) -->
       <div class="card dueno-only" id="modulo-dueno">
-        <h2>Balance Financiero y Rendimiento Neta</h2>
+        <h2>Liquidación Financiera y Estado de Contratos</h2>
 
         <div class="kpi-box">
-          <p><strong>+ Ingresos por Alquileres de Local:</strong> <span id="bal-alquileres">Gs. 0</span></p>
-          <p><strong>+ Ingresos por Decoraciones:</strong> <span id="bal-decoraciones">Gs. 0</span></p>
-          <p><strong>+ Venta de Productos / Cantina:</strong> <span id="bal-ventas">Gs. 0</span></p>
+          <p><strong>+ Total Contratado (Paquetes + Decos):</strong> <span id="bal-contratos">Gs. 0</span></p>
+          <p><strong>+ Ventas de Cantina / Menú Extra:</strong> <span id="bal-ventas">Gs. 0</span></p>
           <hr>
-          <p><strong>- Costo de Mercadería / Insumos Consumidos:</strong> <span id="bal-costos" style="color: #c62828;">Gs. 0</span></p>
+          <p><strong>- Costo Real de Insumos Usados:</strong> <span id="bal-costos" style="color: #c62828;">Gs. 0</span></p>
           <hr>
-          <h3 style="margin: 0; color: #2e7d32;">GANANCIA NETA TOTAL: <span id="bal-ganancia-neta">Gs. 0</span></h3>
+          <h3 style="margin: 0; color: #2e7d32;">GANANCIA NETA ESTIMADA: <span id="bal-ganancia-neta">Gs. 0</span></h3>
         </div>
 
-        <h3 style="margin-top: 15px;">Estadísticas de Asistencia</h3>
-        <p><strong>Total Niños Ingresados:</strong> <span id="balance-ninos">0</span></p>
-        <p><strong>Total Adultos Ingresados:</strong> <span id="balance-adultos">0</span></p>
+        <h3 style="margin-top: 15px;">Seguimiento de Saldo por Evento</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Evento / Cliente</th>
+              <th>Total Contrato</th>
+              <th>Seña / Pagos</th>
+              <th>Saldo a Cobrar</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-saldos-eventos"></tbody>
+        </table>
       </div>
 
     </div>
@@ -307,28 +322,76 @@
       return 'Gs. ' + Number(monto || 0).toLocaleString('es-PY');
     }
 
+    // RECETAS DEL MENÚ OFICIAL RU-BI KIDS
+    const recetas = {
+      'Lomito Completo': [
+        { ingrediente: 'Pan de Lomito', cantidad: 1 },
+        { ingrediente: 'Carne / Lomito', cantidad: 1 },
+        { ingrediente: 'Huevo', cantidad: 1 }
+      ],
+      'Lomito Simple': [
+        { ingrediente: 'Pan de Lomito', cantidad: 1 },
+        { ingrediente: 'Carne / Lomito', cantidad: 1 }
+      ],
+      'Hamburguesa': [
+        { ingrediente: 'Pan de Hamburguesa', cantidad: 1 },
+        { ingrediente: 'Carne Hamburguesa', cantidad: 1 }
+      ],
+      'Milanesa al Plato': [
+        { ingrediente: 'Milanesa (Unidad)', cantidad: 1 }
+      ],
+      'Papas Fritas': [
+        { ingrediente: 'Papas Crudas (Porción)', cantidad: 1 }
+      ],
+      'Pizzetas': [
+        { ingrediente: 'Masa Pizzeta', cantidad: 1 },
+        { ingrediente: 'Queso Mozzarella (Porción)', cantidad: 1 }
+      ]
+    };
+
     const datosIniciales = {
       reservas: [
         { 
-          id: 1, fecha: '2026-09-12', turno: 'Tarde', titular: 'Juan Lezcano', motivo: 'Cumpleaños Santi', 
-          alquiler: 800000, decoracionNombre: 'Decoración Big Premium', decoracionPrecio: 600000, 
-          contratoFirmado: true, asistencia: [] 
+          id: 1, fecha: '2026-09-12', turno: 'Tarde', titular: 'Juan Lezcano', motivo: 'Santi (5 años)', 
+          paqueteNombre: 'Paquete Standard (20 niños)', paquetePrecio: 2100000,
+          decoracionNombre: 'Deco RU-Bi KiDS', decoracionPrecio: 600000, 
+          adicionalNombre: 'APA y SGP', adicionalPrecio: 198000,
+          senaAbonada: 1000000, contratoFirmado: true, asistencia: [] 
         }
       ],
       productos: [
-        { id: 101, nombre: 'Gaseosa 500ml', precio: 10000, costo: 5000, stock: 48 },
-        { id: 102, nombre: 'Pan de Hamburguesa (Paquete)', precio: 0, costo: 8000, stock: 30 },
-        { id: 103, nombre: 'Paquete Globos Multicolor', precio: 0, costo: 15000, stock: 20 }
+        // MENÚ CARTA OFICIAL CON PRECIOS
+        { id: 1, nombre: 'Lomito Completo', precio: 35000, costo: 0, stock: 999 },
+        { id: 2, nombre: 'Lomito Simple', precio: 30000, costo: 0, stock: 999 },
+        { id: 3, nombre: 'Lomito al Plato', precio: 35000, costo: 0, stock: 999 },
+        { id: 4, nombre: 'Hamburguesa', precio: 28000, costo: 0, stock: 999 },
+        { id: 5, nombre: 'Milanesa al Plato', precio: 35000, costo: 0, stock: 999 },
+        { id: 6, nombre: 'Papas Fritas', precio: 10000, costo: 0, stock: 999 },
+        { id: 7, nombre: 'Pizzetas', precio: 25000, costo: 0, stock: 999 },
+        { id: 8, nombre: 'Gaseosas 600ml', precio: 9000, costo: 4500, stock: 60 },
+        { id: 9, nombre: 'Cerveza Heineken', precio: 22000, costo: 12000, stock: 40 },
+        { id: 10, nombre: 'Agua mineral', precio: 8000, costo: 3000, stock: 50 },
+
+        // INSUMOS EN COCINA
+        { id: 101, nombre: 'Pan de Lomito', precio: 0, costo: 2500, stock: 60 },
+        { id: 102, nombre: 'Pan de Hamburguesa', precio: 0, costo: 2000, stock: 60 },
+        { id: 103, nombre: 'Carne / Lomito', precio: 0, costo: 10000, stock: 50 },
+        { id: 104, nombre: 'Carne Hamburguesa', precio: 0, costo: 6000, stock: 50 },
+        { id: 105, nombre: 'Huevo', precio: 0, costo: 1000, stock: 100 },
+        { id: 106, nombre: 'Milanesa (Unidad)', precio: 0, costo: 9000, stock: 30 },
+        { id: 107, nombre: 'Papas Crudas (Porción)', precio: 0, costo: 3000, stock: 50 },
+        { id: 108, nombre: 'Masa Pizzeta', precio: 0, costo: 4000, stock: 30 },
+        { id: 109, nombre: 'Queso Mozzarella (Porción)', precio: 0, costo: 3500, stock: 50 }
       ],
       movimientos: [],
       ventasTotal: 0,
       costoVentasTotal: 0
     };
 
-    let db = JSON.parse(localStorage.getItem('rubikids_pos_v8_db')) || datosIniciales;
+    let db = JSON.parse(localStorage.getItem('rubikids_pos_v10_db')) || datosIniciales;
 
     function guardarDB() {
-      localStorage.setItem('rubikids_pos_v8_db', JSON.stringify(db));
+      localStorage.setItem('rubikids_pos_v10_db', JSON.stringify(db));
       render();
     }
 
@@ -368,7 +431,7 @@
         mesActualOffset = nuevoOffset;
         renderCalendario();
       } else {
-        alert('El calendario permite visualizar hasta 12 meses (1 año) a futuro.');
+        alert('El calendario abarca hasta 12 meses a futuro.');
       }
     }
 
@@ -398,12 +461,12 @@
         
         let htmlSlot = '';
         reservasDia.forEach(r => {
-          const claseTurno = r.turno === 'Manana' ? 'manana' : 'tarde';
-          const textoTurno = r.turno === 'Manana' ? 'M' : 'T';
+          const claseTurno = r.turno === 'Medio Dia' ? 'manana' : 'tarde';
+          const textoTurno = r.turno === 'Medio Dia' ? 'M.Día' : 'Tarde';
           htmlSlot += `
             <div class="slot-tag ${claseTurno}">
               <strong>[${textoTurno}] ${r.titular}</strong>
-              <div>${r.decoracionNombre}</div>
+              <div>${r.motivo}</div>
             </div>`;
         });
 
@@ -421,7 +484,7 @@
       const selectRes = document.getElementById('select-reserva');
       selectRes.innerHTML = '';
       db.reservas.forEach(r => {
-        selectRes.innerHTML += `<option value="${r.id}">${r.fecha} (${r.turno === 'Manana' ? 'Mañana' : 'Tarde'}) - ${r.titular}</option>`;
+        selectRes.innerHTML += `<option value="${r.id}">${r.fecha} (${r.turno}) - ${r.titular} [${r.motivo}]</option>`;
       });
 
       renderAsistencia();
@@ -435,8 +498,11 @@
       tablaStockPersonal.innerHTML = '';
 
       db.productos.forEach(p => {
-        selectProd.innerHTML += `<option value="${p.id}">${p.nombre} (Stock: ${p.stock})</option>`;
-        auditSelectProd.innerHTML += `<option value="${p.id}">${p.nombre} (Costo actual: ${formatearGs(p.costo)})</option>`;
+        if (p.precio > 0) {
+          selectProd.innerHTML += `<option value="${p.id}">${p.nombre}</option>`;
+        }
+        
+        auditSelectProd.innerHTML += `<option value="${p.id}">${p.nombre} (Stock: ${p.stock})</option>`;
 
         tablaStockPersonal.innerHTML += `
           <tr>
@@ -445,7 +511,7 @@
           </tr>`;
       });
 
-      // Historial de Movimientos Auditoría
+      // Historial Movimientos
       const tablaHistorial = document.getElementById('tabla-historial-movimientos');
       tablaHistorial.innerHTML = '';
       db.movimientos.slice(-10).reverse().forEach(m => {
@@ -458,15 +524,33 @@
           </tr>`;
       });
 
+      // Saldos de Eventos (Dueño)
+      const tablaSaldos = document.getElementById('tabla-saldos-eventos');
+      tablaSaldos.innerHTML = '';
+      let totalContratadoGeneral = 0;
+
+      db.reservas.forEach(r => {
+        let costoContrato = Number(r.paquetePrecio || 0) + Number(r.decoracionPrecio || 0) + Number(r.adicionalPrecio || 0);
+        let saldoPendiente = costoContrato - Number(r.senaAbonada || 0);
+        totalContratadoGeneral += costoContrato;
+
+        tablaSaldos.innerHTML += `
+          <tr>
+            <td><strong>${r.titular}</strong><br><small>${r.motivo}</small></td>
+            <td>${formatearGs(costoContrato)}</td>
+            <td>${formatearGs(r.senaAbonada)}</td>
+            <td style="color: ${saldoPendiente > 0 ? '#c62828' : '#2e7d32'}; font-weight:bold;">
+              ${formatearGs(saldoPendiente)}
+            </td>
+          </tr>`;
+      });
+
       // Balances Financieros
-      let totalAlquileres = db.reservas.reduce((sum, r) => sum + Number(r.alquiler || 0), 0);
-      let totalDecoraciones = db.reservas.reduce((sum, r) => sum + Number(r.decoracionPrecio || 0), 0);
       let totalVentas = db.ventasTotal || 0;
       let totalCostos = db.costoVentasTotal || 0;
-      let gananciaNeta = (totalAlquileres + totalDecoraciones + totalVentas) - totalCostos;
+      let gananciaNeta = (totalContratadoGeneral + totalVentas) - totalCostos;
 
-      document.getElementById('bal-alquileres').innerText = formatearGs(totalAlquileres);
-      document.getElementById('bal-decoraciones').innerText = formatearGs(totalDecoraciones);
+      document.getElementById('bal-contratos').innerText = formatearGs(totalContratadoGeneral);
       document.getElementById('bal-ventas').innerText = formatearGs(totalVentas);
       document.getElementById('bal-costos').innerText = formatearGs(totalCostos);
       document.getElementById('bal-ganancia-neta').innerText = formatearGs(gananciaNeta);
@@ -526,23 +610,47 @@
       const prod = db.productos.find(p => p.id === idProd);
 
       if (!prod) return alert('Seleccioná un producto');
-      if (prod.stock < cant) return alert('Stock insuficiente');
 
-      prod.stock -= cant;
-      db.costoVentasTotal = (db.costoVentasTotal || 0) + (prod.costo * cant);
-      if (prod.precio > 0) {
-        db.ventasTotal += (prod.precio * cant);
+      if (recetas[prod.nombre]) {
+        const ingredientes = recetas[prod.nombre];
+
+        for (let item of ingredientes) {
+          const insumo = db.productos.find(p => p.nombre === item.ingrediente);
+          const necesario = item.cantidad * cant;
+          if (!insumo || insumo.stock < necesario) {
+            return alert(`Insumo insuficiente para ${prod.nombre}: Falta ${item.ingrediente}`);
+          }
+        }
+
+        ingredientes.forEach(item => {
+          const insumo = db.productos.find(p => p.nombre === item.ingrediente);
+          const descuento = item.cantidad * cant;
+          insumo.stock -= descuento;
+          db.costoVentasTotal = (db.costoVentasTotal || 0) + (insumo.costo * descuento);
+
+          db.movimientos.push({
+            fecha: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            tipo: 'RECETA',
+            producto: `${insumo.nombre} (por ${prod.nombre})`,
+            cantidad: `-${descuento}`
+          });
+        });
+
+      } else {
+        if (prod.stock < cant) return alert('Stock insuficiente');
+        prod.stock -= cant;
+        db.costoVentasTotal = (db.costoVentasTotal || 0) + (prod.costo * cant);
+
+        db.movimientos.push({
+          fecha: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          tipo: 'SALIDA',
+          producto: prod.nombre,
+          cantidad: `-${cant}`
+        });
       }
 
-      // Registro en auditoría
-      db.movimientos.push({
-        fecha: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        tipo: 'SALIDA',
-        producto: prod.nombre,
-        cantidad: `-${cant}`
-      });
-
-      alert(`Salida registrada: -${cant} un. de ${prod.nombre}`);
+      db.ventasTotal += (prod.precio * cant);
+      alert(`Salida registrada para: ${prod.nombre}`);
       guardarDB();
     }
 
@@ -551,28 +659,36 @@
       const turno = document.getElementById('reserva-turno').value;
       const titular = document.getElementById('reserva-titular').value;
       const motivo = document.getElementById('reserva-motivo').value;
-      const alquiler = parseFloat(document.getElementById('reserva-alquiler').value) || 0;
-      
+
+      const paqRaw = document.getElementById('reserva-paquete').value.split('|');
+      const paqueteNombre = paqRaw[0];
+      const paquetePrecio = parseFloat(paqRaw[1]) || 0;
+
       const decoRaw = document.getElementById('reserva-decoracion').value.split('|');
       const decoracionNombre = decoRaw[0];
       const decoracionPrecio = parseFloat(decoRaw[1]) || 0;
 
+      const adicRaw = document.getElementById('reserva-adicionales-fijos').value.split('|');
+      const adicionalNombre = adicRaw[0];
+      const adicionalPrecio = parseFloat(adicRaw[1]) || 0;
+
+      const senaAbonada = parseFloat(document.getElementById('reserva-sena').value) || 0;
       const contratoFirmado = document.getElementById('reserva-contrato').checked;
 
-      if (!fecha || !titular || !motivo) return alert('Completá fecha, titular y motivo');
+      if (!fecha || !titular || !motivo) return alert('Completá la fecha, cliente y cumpleañero/a');
 
       const ocupado = db.reservas.some(r => r.fecha === fecha && r.turno === turno);
-      if (ocupado) return alert(`La fecha ${fecha} (${turno}) ya está reservada.`);
+      if (ocupado) return alert(`La fecha ${fecha} (${turno}) ya cuenta con una reserva agendada.`);
 
       db.reservas.push({ 
-        id: Date.now(), fecha, turno, titular, motivo, alquiler, 
-        decoracionNombre, decoracionPrecio, contratoFirmado, asistencia: [] 
+        id: Date.now(), fecha, turno, titular, motivo, 
+        paqueteNombre, paquetePrecio, decoracionNombre, decoracionPrecio,
+        adicionalNombre, adicionalPrecio, senaAbonada, contratoFirmado, asistencia: [] 
       });
 
-      alert('Reserva agendada exitosamente');
+      alert('Contrato generado y evento agendado exitosamente');
       document.getElementById('reserva-titular').value = '';
       document.getElementById('reserva-motivo').value = '';
-      document.getElementById('reserva-alquiler').value = '';
       guardarDB();
     }
 
@@ -600,31 +716,6 @@
         document.getElementById('audit-costo-unitario').value = '';
         guardarDB();
       }
-    }
-
-    function agregarProducto() {
-      const nombre = document.getElementById('prod-nombre').value;
-      const precio = parseFloat(document.getElementById('prod-precio').value) || 0;
-      const costo = parseFloat(document.getElementById('prod-costo-inicial').value) || 0;
-      const stock = parseInt(document.getElementById('prod-stock').value) || 0;
-
-      if (!nombre) return alert('Ingresá el nombre del producto o insumo');
-
-      db.productos.push({ id: Date.now(), nombre, precio, costo, stock });
-
-      db.movimientos.push({
-        fecha: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        tipo: 'ALTA',
-        producto: nombre,
-        cantidad: `+${stock}`
-      });
-
-      alert('Ítem guardado en el catálogo');
-      document.getElementById('prod-nombre').value = '';
-      document.getElementById('prod-precio').value = '';
-      document.getElementById('prod-costo-inicial').value = '';
-      document.getElementById('prod-stock').value = '';
-      guardarDB();
     }
 
     document.getElementById('reserva-fecha').valueAsDate = new Date();
