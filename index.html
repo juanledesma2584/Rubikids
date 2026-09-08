@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RU-Bi KiDS - Sistema Integrado</title>
+  <title>RU-Bi KiDS - Sistema POS</title>
 
   <link rel="icon" type="image/jpeg" href="logo.jpg">
   <link rel="apple-touch-icon" href="logo.jpg">
@@ -24,7 +24,7 @@
 
     .container { padding: 0 15px; }
 
-    /* MENÚ PRINCIPAL */
+    /* MENÚ PRINCIPAL 4 BOTONES */
     .menu-cuatro-botones {
       display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px;
     }
@@ -56,34 +56,27 @@
     button.danger { background: #c62828; color: white; border: none; }
     button.purple { background: #7b1fa2; }
     
-    .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .calendar-controls button { width: auto; padding: 6px 12px; margin: 0; font-size: 0.8rem; }
-    .month-title { font-weight: bold; font-size: 1.1rem; color: #4a148c; }
-
-    .month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 8px; text-align: center; }
-    .month-header { font-weight: bold; font-size: 0.75rem; background: #f3e5f5; color: #4a148c; padding: 5px 0; border-radius: 4px; }
-    
-    .day-cell { background: #fafafa; border: 1px solid #e0e0e0; border-radius: 6px; min-height: 70px; padding: 3px; font-size: 0.7rem; text-align: left; }
-    .day-number { font-weight: bold; color: #666; margin-bottom: 2px; }
-    .day-cell.today { border: 2px solid #7b1fa2; background: #f3e5f5; }
-
-    .slot-tag { 
-      font-size: 0.65rem; padding: 3px 4px; border-radius: 4px; margin-top: 2px; 
-      display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;
+    /* MODAL DE PIN Y TECLADO NUMÉRICO */
+    .pin-overlay {
+      display: none; position: fixed; top:0; left:0; width:100%; height:100%;
+      background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center;
     }
-    .slot-tag.manana { background: #e0f7fa; color: #006064; border-left: 3px solid #00bcd4; }
-    .slot-tag.tarde { background: #fff3e0; color: #e65100; border-left: 3px solid #ff9800; }
-
-    .modal-detalle {
-      display: none; background: #f3e5f5; border: 2px solid #7b1fa2;
-      border-radius: 10px; padding: 12px; margin-top: 12px; font-size: 0.85rem;
+    .pin-modal {
+      background: #fff; width: 90%; max-width: 320px; border-radius: 16px; padding: 20px;
+      text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
-    .modal-detalle h3 { margin-top: 0; color: #4a148c; border-bottom: 1px solid #ce93d8; padding-bottom: 4px; }
+    .pin-display {
+      font-size: 1.8rem; letter-spacing: 10px; padding: 10px; background: #f0f4f8;
+      border-radius: 8px; margin: 15px 0; border: 1px solid #bcccdc; min-height: 52px;
+    }
+    .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .num-btn {
+      padding: 15px; font-size: 1.2rem; font-weight: bold; background: #f8fafc;
+      border: 1px solid #cbd5e1; border-radius: 10px; cursor: pointer; color: #1e293b;
+    }
+    .num-btn:active { background: #e2e8f0; }
 
-    .checkbox-container { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 0.85rem; font-weight: bold; color: #2e7d32; }
-    .checkbox-container input { width: auto; margin: 0; }
-
-    /* TARJETAS LIMPIAS STOCK */
+    /* ESTILO TARJETAS STOCK */
     .stock-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
     .stock-item {
       display: flex; justify-content: space-between; align-items: center;
@@ -95,7 +88,7 @@
       padding: 3px 8px; font-size: 0.8rem; font-weight: bold; color: #1976d2;
     }
 
-    /* EDICIÓN RÁPIDA PRODUCTOS */
+    /* EDICIÓN DE PRODUCTOS */
     .edit-grid {
       display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 6px; align-items: center;
       background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px; margin-top: 6px;
@@ -119,7 +112,7 @@
 
   <div class="container">
 
-    <!-- PANTALLA PRINCIPAL CON 4 BOTONES -->
+    <!-- BOTONES PRINCIPALES -->
     <div class="menu-cuatro-botones">
       <button class="btn-modulo btn-cal" onclick="abrirModulo('sec-calendario')">
         📅 1. Calendario de Eventos
@@ -130,9 +123,32 @@
       <button class="btn-modulo btn-eje" onclick="abrirModulo('sec-ejecutar')">
         🎉 3. Ejecutar Cumpleaños (Personal)
       </button>
-      <button class="btn-modulo btn-adm" onclick="solicitarAccesoAdmin()">
+      <button class="btn-modulo btn-adm" onclick="mostrarModalPin()">
         🔒 4. Panel de Control (Dueño / Auditor)
       </button>
+    </div>
+
+    <!-- MODAL PIN TÁCTIL -->
+    <div class="pin-overlay" id="pin-overlay">
+      <div class="pin-modal">
+        <h3 style="margin-top:0; color:#1e293b;">Ingrese PIN de Acceso</h3>
+        <div class="pin-display" id="pin-display"></div>
+        <div class="numpad">
+          <button class="num-btn" onclick="pressNum('1')">1</button>
+          <button class="num-btn" onclick="pressNum('2')">2</button>
+          <button class="num-btn" onclick="pressNum('3')">3</button>
+          <button class="num-btn" onclick="pressNum('4')">4</button>
+          <button class="num-btn" onclick="pressNum('5')">5</button>
+          <button class="num-btn" onclick="pressNum('6')">6</button>
+          <button class="num-btn" onclick="pressNum('7')">7</button>
+          <button class="num-btn" onclick="pressNum('8')">8</button>
+          <button class="num-btn" onclick="pressNum('9')">9</button>
+          <button class="num-btn" style="color:#c62828;" onclick="clearPin()">C</button>
+          <button class="num-btn" onclick="pressNum('0')">0</button>
+          <button class="num-btn" style="color:#2e7d32;" onclick="checkPin()">OK</button>
+        </div>
+        <button class="action-btn danger" style="margin-top:15px;" onclick="cerrarModalPin()">Cancelar</button>
+      </div>
     </div>
 
     <!-- MÓDULO 1: CALENDARIO ANUAL -->
@@ -282,18 +298,18 @@
       </div>
     </div>
 
-    <!-- MÓDULO 4: PANEL DE CONTROL Y ADMINISTRACIÓN (BLOQUEADO POR PIN) -->
+    <!-- MÓDULO 4: PANEL DE CONTROL DE INVENTARIO Y BALANCES (PROTEGIDO) -->
     <div id="sec-admin" class="seccion">
 
-      <!-- GESTIÓN TOTAL DE INVENTARIO (CREAR, EDITAR, ELIMINAR Y STOCK REAL) -->
+      <!-- GESTIÓN TOTAL DE INVENTARIO -->
       <div class="card">
-        <h2>Gestión de Stock, Productos e Insumos (Auditor/Dueño)</h2>
+        <h2>Gestión de Stock, Productos e Insumos</h2>
         
         <h3>1. Crear Nuevo Producto / Insumo</h3>
         <label>Nombre del Producto o Insumo:</label>
         <input type="text" id="nuevo-prod-nombre" placeholder="Ej: Sprite 600ml">
 
-        <label>Precio Venta Cliente (Gs. - Colocar 0 si es solo Insumo de Cocina):</label>
+        <label>Precio Venta Cliente (Gs. - Colocar 0 si es Insumo de Cocina):</label>
         <input type="number" id="nuevo-prod-precio" value="0">
 
         <label>Costo de Compra Unitario (Gs.):</label>
@@ -311,8 +327,8 @@
         <div id="lista-edicion-productos" style="margin-top: 10px;"></div>
       </div>
 
-      <!-- FINANZAS Y BALANCES (DUEÑO) -->
-      <div class="card">
+      <!-- FINANZAS Y BALANCES (SOLO DUEÑO) -->
+      <div class="card" id="card-finanzas-dueno">
         <h2>Liquidación Financiera General</h2>
 
         <div class="kpi-box">
@@ -343,7 +359,9 @@
 
   <script>
     let mesActualOffset = 0;
-    const PIN_ADMIN = "1234"; // PIN de acceso para el Dueño/Auditor
+    const PIN_DUENO = "1234";
+    const PIN_AUDITOR = "5678";
+    let pinInput = "";
 
     function formatearGs(monto) {
       return 'Gs. ' + Number(monto || 0).toLocaleString('es-PY');
@@ -375,7 +393,6 @@
       ]
     };
 
-    // DATOS DE STOCK REAL INICIAL
     const datosIniciales = {
       reservas: [
         { 
@@ -395,7 +412,6 @@
         { id: 6, nombre: 'Gaseosas 600ml', precio: 9000, costo: 4500, stock: 60 },
         { id: 7, nombre: 'Cerveza Heineken', precio: 22000, costo: 12000, stock: 40 },
         { id: 8, nombre: 'Agua mineral', precio: 8000, costo: 3000, stock: 50 },
-
         { id: 101, nombre: 'Pan de Lomito', precio: 0, costo: 2500, stock: 60 },
         { id: 102, nombre: 'Pan de Hamburguesa', precio: 0, costo: 2000, stock: 60 },
         { id: 103, nombre: 'Carne / Lomito', precio: 0, costo: 10000, stock: 50 },
@@ -407,10 +423,10 @@
       costoVentasTotal: 0
     };
 
-    let db = JSON.parse(localStorage.getItem('rubikids_pos_v15_db')) || datosIniciales;
+    let db = JSON.parse(localStorage.getItem('rubikids_pos_v16_db')) || datosIniciales;
 
     function guardarDB() {
-      localStorage.setItem('rubikids_pos_v15_db', JSON.stringify(db));
+      localStorage.setItem('rubikids_pos_v16_db', JSON.stringify(db));
       render();
     }
 
@@ -423,12 +439,41 @@
       }
     }
 
-    function solicitarAccesoAdmin() {
-      const pinIngresado = prompt("Ingrese PIN de seguridad (Dueño / Auditor):");
-      if (pinIngresado === PIN_ADMIN) {
+    /* FUNCIONES PIN TÁCTIL */
+    function mostrarModalPin() {
+      pinInput = "";
+      document.getElementById('pin-display').innerText = "";
+      document.getElementById('pin-overlay').style.display = 'flex';
+    }
+
+    function cerrarModalPin() {
+      document.getElementById('pin-overlay').style.display = 'none';
+    }
+
+    function pressNum(num) {
+      if (pinInput.length < 6) {
+        pinInput += num;
+        document.getElementById('pin-display').innerText = "•".repeat(pinInput.length);
+      }
+    }
+
+    function clearPin() {
+      pinInput = "";
+      document.getElementById('pin-display').innerText = "";
+    }
+
+    function checkPin() {
+      if (pinInput === PIN_DUENO) {
+        cerrarModalPin();
+        document.getElementById('card-finanzas-dueno').style.display = 'block';
         abrirModulo('sec-admin');
-      } else if (pinIngresado !== null) {
-        alert("PIN incorrecto. Acceso denegado.");
+      } else if (pinInput === PIN_AUDITOR) {
+        cerrarModalPin();
+        document.getElementById('card-finanzas-dueno').style.display = 'none'; // Oculta finanzas
+        abrirModulo('sec-admin');
+      } else {
+        alert("PIN Incorrecto");
+        clearPin();
       }
     }
 
@@ -574,14 +619,12 @@
           selectProd.innerHTML += `<option value="${p.id}">${p.nombre}</option>`;
         }
         
-        // Vista de Stock Personal
         listaStockPersonal.innerHTML += `
           <div class="stock-item">
             <span class="item-name">${p.nombre}</span>
             <span class="item-badge">${p.stock} un.</span>
           </div>`;
 
-        // Vista de Edición Rápida Auditor/Dueño
         listaEdicion.innerHTML += `
           <div class="edit-grid">
             <strong>${p.nombre}</strong>
