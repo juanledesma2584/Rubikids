@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RU-Bi KiDS - Sistema Integrado</title>
+  <title>RU-Bi KiDS - Sistema Integrado POS & Gestión</title>
 
   <link rel="icon" type="image/jpeg" href="logo.jpg">
   <link rel="apple-touch-icon" href="logo.jpg">
@@ -14,67 +14,32 @@
     * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
     body { background: #f4f6f9; margin: 0; padding: 0 0 30px 0; color: #333; }
 
-    /* MEMBRETE PRINCIPAL CLEAN */
     .header-banner {
-      width: 100%;
-      height: 110px;
-      background-color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 15px;
-      border-bottom-left-radius: 20px;
-      border-bottom-right-radius: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-      padding: 12px;
+      width: 100%; height: 100px; background-color: #ffffff;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 15px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06); padding: 10px;
     }
     .header-banner img { max-height: 100%; max-width: 85%; object-fit: contain; }
 
     .container { padding: 0 15px; }
 
-    /* BOTONES DE NAVEGACIÓN PRINCIPAL */
-    .menu-principal {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
+    .menu-principal { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px; }
 
     .btn-main {
-      padding: 16px;
-      border: none;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: bold;
-      color: white;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      transition: transform 0.1s;
+      padding: 14px; border: none; border-radius: 12px; font-size: 0.95rem; font-weight: bold;
+      color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
     }
-    .btn-main:active { transform: scale(0.98); }
     .btn-calendar { background: linear-gradient(135deg, #7b1fa2, #9c27b0); }
     .btn-operaciones { background: linear-gradient(135deg, #1976d2, #2196f3); }
 
-    /* ROL SELECTOR MODAL / PANEL */
-    .role-selector { 
-      background: #ffffff; 
-      padding: 12px; 
-      border-radius: 10px; 
-      margin-bottom: 15px; 
-      border: 1px solid #e0e0e0;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-    }
+    .role-selector { background: #ffffff; padding: 12px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #e0e0e0; }
     .role-selector select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #1976d2; font-weight: bold; background: #f4f8fb; }
 
-    /* SECCIONES OCULTABLES */
     .seccion { display: none; }
     .seccion.activa { display: block; }
 
-    /* TARJETAS */
     .card { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
     .card h2 { font-size: 1.05rem; margin-top: 0; border-bottom: 2px solid #f0f0f0; padding-bottom: 6px; color: #1976d2; }
     
@@ -86,49 +51,24 @@
     button.warning { background: #f57c00; }
     button.purple { background: #7b1fa2; }
     
-    /* CALENDARIO */
     .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .calendar-controls button { width: auto; padding: 6px 12px; margin: 0; font-size: 0.8rem; }
     .month-title { font-weight: bold; font-size: 1.1rem; color: #4a148c; }
 
-    .month-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-      margin-top: 8px;
-      text-align: center;
-    }
+    .month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 8px; text-align: center; }
     .month-header { font-weight: bold; font-size: 0.75rem; background: #f3e5f5; color: #4a148c; padding: 5px 0; border-radius: 4px; }
     
-    .day-cell {
-      background: #fafafa;
-      border: 1px solid #e0e0e0;
-      border-radius: 6px;
-      min-height: 70px;
-      padding: 3px;
-      font-size: 0.7rem;
-      text-align: left;
-    }
+    .day-cell { background: #fafafa; border: 1px solid #e0e0e0; border-radius: 6px; min-height: 70px; padding: 3px; font-size: 0.7rem; text-align: left; }
     .day-number { font-weight: bold; color: #666; margin-bottom: 2px; }
     .day-cell.today { border: 2px solid #7b1fa2; background: #f3e5f5; }
 
-    .slot-tag {
-      font-size: 0.65rem;
-      padding: 2px 4px;
-      border-radius: 3px;
-      margin-top: 2px;
-      display: block;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+    .slot-tag { font-size: 0.65rem; padding: 2px 4px; border-radius: 3px; margin-top: 2px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .slot-tag.manana { background: #e0f7fa; color: #006064; border-left: 3px solid #00bcd4; }
     .slot-tag.tarde { background: #fff3e0; color: #e65100; border-left: 3px solid #ff9800; }
 
     .checkbox-container { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 0.85rem; font-weight: bold; color: #2e7d32; }
     .checkbox-container input { width: auto; margin: 0; }
 
-    /* TABLAS */
     table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.8rem; }
     th, td { border: 1px solid #e0e0e0; padding: 6px; text-align: left; }
     th { background: #f5f5f5; color: #333; }
@@ -139,19 +79,18 @@
     .auditor-only { display: none; background: #f3e5f5; border: 1px solid #ce93d8; }
     .auditor-only h2 { color: #6a1b9a; }
 
+    .kpi-box { background: #e8f5e9; padding: 10px; border-radius: 8px; border: 1px solid #a5d6a7; margin-top: 10px; font-size: 0.9rem; }
     .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; background: #e1f5fe; color: #0288d1; font-weight: bold; }
   </style>
 </head>
 <body>
 
-  <!-- LOGO PRINCIPAL -->
   <div class="header-banner">
     <img src="logo.jpg" alt="RU-Bi KiDS">
   </div>
 
   <div class="container">
 
-    <!-- BOTONES PRINCIPALES DE ACCESO -->
     <div class="menu-principal">
       <button class="btn-main btn-calendar" onclick="mostrarSeccion('seccion-calendario')">
         📅 Ver Calendario / Agenda
@@ -161,7 +100,7 @@
       </button>
     </div>
 
-    <!-- SECCIÓN 1: CALENDARIO DE EVENTOS -->
+    <!-- CALENDARIO -->
     <div id="seccion-calendario" class="seccion">
       <div class="card">
         <h2>Agenda de Eventos (Almanaque)</h2>
@@ -187,22 +126,21 @@
       </div>
     </div>
 
-    <!-- SECCIÓN 2: OPERACIONES (RECEPCIÓN, INGRESO Y VENTAS) -->
+    <!-- OPERACIONES -->
     <div id="seccion-operaciones" class="seccion">
 
-      <!-- PERFIL DE USUARIO DENTRO DE OPERACIONES -->
       <div class="role-selector">
         <label>Perfil de Usuario:</label>
         <select id="rol-select" onchange="cambiarRol()">
-          <option value="personal">Personal / Recepción (Sin permiso de editar stock/balance)</option>
-          <option value="auditor">Auditor / Control de Inventario (Cargar Pedidos)</option>
-          <option value="dueno">Dueño / Administrador (Acceso Total)</option>
+          <option value="personal">Personal / Recepción (Ingresos y Ventas)</option>
+          <option value="auditor">Auditor / Inventario (Cargar Compras y Costos)</option>
+          <option value="dueno">Dueño / Administrador (Acceso Total y Balance)</option>
         </select>
       </div>
 
-      <!-- AGENDAR EVENTO (PERSONAL Y DUEÑO) -->
+      <!-- AGENDAR EVENTO -->
       <div class="card op-block">
-        <h2>Agendar Evento / Reserva</h2>
+        <h2>Agendar Evento, Alquiler y Decoración</h2>
         <label>Fecha del Evento:</label>
         <input type="date" id="reserva-fecha">
 
@@ -218,15 +156,25 @@
         <label>Motivo del Evento:</label>
         <input type="text" id="reserva-motivo" placeholder="Ej: Cumpleaños Santi (5 años)">
 
+        <label>Precio Alquiler del Local (Gs.):</label>
+        <input type="number" id="reserva-alquiler" placeholder="Ej: 800000">
+
+        <label>Tipo de Decoración:</label>
+        <select id="reserva-decoracion">
+          <option value="Sin Decoración|0">Sin Decoración (Gs. 0)</option>
+          <option value="Estándar|300000">Decoración Estándar (Gs. 300.000)</option>
+          <option value="Big Premium|600000">Decoración Big Premium (Gs. 600.000)</option>
+        </select>
+
         <div class="checkbox-container">
           <input type="checkbox" id="reserva-contrato" checked>
           <label for="reserva-contrato" style="margin: 0;">¿Contrato firmado?</label>
         </div>
 
-        <button class="action-btn" onclick="crearReserva()">Agendar Evento</button>
+        <button class="action-btn" onclick="crearReserva()">Agendar y Guardar Reserva</button>
       </div>
 
-      <!-- INGRESO DE INVITADOS (PERSONAL Y DUEÑO) -->
+      <!-- INGRESO INVITADOS -->
       <div class="card op-block">
         <h2>Control de Ingreso de Invitados</h2>
         <label>Evento Activo:</label>
@@ -256,22 +204,28 @@
         </table>
       </div>
 
-      <!-- PUNTO DE VENTA Y SALIDA DE STOCK (PERSONAL Y DUEÑO) -->
+      <!-- SALIDA DE PRODUCTOS E INSUMOS -->
       <div class="card op-block">
-        <h2>Salida de Stock / Venta de Productos</h2>
-        <label>Seleccionar Producto (Gaseosa, Cerveza, Snack):</label>
+        <h2>Salida de Productos / Insumos de Evento</h2>
+        <label>Producto o Insumo (Carne, Papas, Globos, Bebidas):</label>
         <select id="select-producto"></select>
 
-        <label>Cantidad a entregar:</label>
+        <label>Cantidad a entregar / usar:</label>
         <input type="number" id="cant-producto" value="1" min="1">
 
-        <button class="action-btn warning" onclick="registrarVenta()">Dar Salida / Cobrar</button>
+        <label>Tipo de Movimiento:</label>
+        <select id="tipo-salida">
+          <option value="venta">Venta / Cobro al Cliente</option>
+          <option value="insumo">Insumo de Evento / Decoración (Sin Cobro)</option>
+        </select>
+
+        <button class="action-btn warning" onclick="registrarVenta()">Procesar Salida</button>
 
         <h3>Consulta de Inventario Disponible</h3>
         <table>
           <thead>
             <tr>
-              <th>Producto</th>
+              <th>Producto / Insumo</th>
               <th>Precio Venta</th>
               <th>Stock Disponible</th>
             </tr>
@@ -280,35 +234,54 @@
         </table>
       </div>
 
-      <!-- SECCIÓN EXCLUSIVA AUDITOR (RECEPCIONAR PEDIDOS) -->
+      <!-- SECCIÓN AUDITOR (ENTRADA DE MERCADERÍA CON PRECIO DE COMPRA) -->
       <div class="card auditor-only" id="seccion-auditor">
-        <h2>Auditoría: Cargar Recepción de Pedidos</h2>
-        <label>Producto Existente:</label>
+        <h2>Auditoría: Ingreso de Mercadería y Costos de Compra</h2>
+        
+        <h3>Recepcionar Mercadería Existente</h3>
+        <label>Producto en Catálogo:</label>
         <select id="audit-select-prod"></select>
 
-        <label>Cantidad Recepcionada (Unidades recibidas):</label>
-        <input type="number" id="audit-cant-ingreso" placeholder="Ej: 24">
+        <label>Cantidad Ingresada (Unidades/Paquetes):</label>
+        <input type="number" id="audit-cant-ingreso" placeholder="Ej: 50">
 
-        <button class="action-btn purple" onclick="recepcionarPedido()">Sumar al Stock</button>
+        <label>Costo de Compra Unitario (Gs.):</label>
+        <input type="number" id="audit-costo-unitario" placeholder="Ej: 3500">
+
+        <button class="action-btn purple" onclick="recepcionarPedido()">Cargar Entrada y Actualizar Costo</button>
 
         <hr>
-        <h3>Agregar Nuevo Producto al Catálogo</h3>
-        <label>Nombre del Producto:</label>
-        <input type="text" id="prod-nombre" placeholder="Ej: Cerveza 330ml">
+        <h3>Agregar Nuevo Producto / Insumo</h3>
+        <label>Nombre del Ítem:</label>
+        <input type="text" id="prod-nombre" placeholder="Ej: Paquete Globos Multicolor / Carne Asado">
         
-        <label>Precio Venta (Gs.):</label>
-        <input type="number" id="prod-precio" placeholder="Gs. 12000">
+        <label>Precio Venta al Público (Gs. - Si aplica):</label>
+        <input type="number" id="prod-precio" placeholder="Gs. 0 si es solo insumo">
+
+        <label>Costo de Compra Unitario (Gs.):</label>
+        <input type="number" id="prod-costo-inicial" placeholder="Gs. 15000">
 
         <label>Stock Inicial:</label>
-        <input type="number" id="prod-stock" placeholder="24">
+        <input type="number" id="prod-stock" placeholder="10">
 
-        <button class="action-btn purple" onclick="agregarProducto()">Guardar Producto Nuevo</button>
+        <button class="action-btn purple" onclick="agregarProducto()">Guardar Ítem en Inventario</button>
       </div>
 
-      <!-- SECCIÓN EXCLUSIVA DUEÑO (FINANZAS Y BALANCES) -->
+      <!-- SECCIÓN DUEÑO (BALANCE GENERAL Y GANANCIA NETA) -->
       <div class="card dueno-only" id="modulo-dueno">
-        <h2>Balance General y Finanzas</h2>
-        <p><strong>Recaudación por Ventas:</strong> <span id="balance-ventas">Gs. 0</span></p>
+        <h2>Balance Financiero Completo</h2>
+
+        <div class="kpi-box">
+          <p><strong>+ Ingresos por Alquileres de Local:</strong> <span id="bal-alquileres">Gs. 0</span></p>
+          <p><strong>+ Ingresos por Decoraciones:</strong> <span id="bal-decoraciones">Gs. 0</span></p>
+          <p><strong>+ Venta de Productos / Cantina:</strong> <span id="bal-ventas">Gs. 0</span></p>
+          <hr>
+          <p><strong>- Costo de Mercadería / Insumos Vendidos:</strong> <span id="bal-costos" style="color: #c62828;">Gs. 0</span></p>
+          <hr>
+          <h3 style="margin: 0; color: #2e7d32;">GANANCIA NET ESTIMADA: <span id="bal-ganancia-neta">Gs. 0</span></h3>
+        </div>
+
+        <h3 style="margin-top: 15px;">Estadísticas de Asistencia</h3>
         <p><strong>Total Niños Ingresados:</strong> <span id="balance-ninos">0</span></p>
         <p><strong>Total Adultos Ingresados:</strong> <span id="balance-adultos">0</span></p>
       </div>
@@ -321,34 +294,39 @@
     let mesActualOffset = 0;
 
     function formatearGs(monto) {
-      return 'Gs. ' + Number(monto).toLocaleString('es-PY');
+      return 'Gs. ' + Number(monto || 0).toLocaleString('es-PY');
     }
 
     const datosIniciales = {
       reservas: [
-        { id: 1, fecha: '2026-09-12', turno: 'Tarde', titular: 'Juan Lezcano', motivo: 'Cumpleaños Santi', contratoFirmado: true, asistencia: [] }
+        { 
+          id: 1, fecha: '2026-09-12', turno: 'Tarde', titular: 'Juan Lezcano', motivo: 'Cumpleaños Santi', 
+          alquiler: 800000, decoracionNombre: 'Decoración Big Premium', decoracionPrecio: 600000, 
+          contratoFirmado: true, asistencia: [] 
+        }
       ],
       productos: [
-        { id: 101, nombre: 'Gaseosa 500ml', precio: 10000, stock: 48 },
-        { id: 102, nombre: 'Cerveza 330ml', precio: 15000, stock: 24 },
-        { id: 103, nombre: 'Papas Fritas', precio: 8000, stock: 30 }
+        { id: 101, nombre: 'Gaseosa 500ml', precio: 10000, costo: 5000, stock: 48 },
+        { id: 102, nombre: 'Paquete Globos Multicolor', precio: 0, costo: 15000, stock: 20 },
+        { id: 103, nombre: 'Papas Fritas', precio: 8000, costo: 3500, stock: 30 }
       ],
-      ventasTotal: 0
+      ventasTotal: 0,
+      costoVentasTotal: 0
     };
 
-    let db = JSON.parse(localStorage.getItem('rubikids_pos_v6_db')) || datosIniciales;
+    let db = JSON.parse(localStorage.getItem('rubikids_pos_v7_db')) || datosIniciales;
 
     function guardarDB() {
-      localStorage.setItem('rubikids_pos_v6_db', JSON.stringify(db));
+      localStorage.setItem('rubikids_pos_v7_db', JSON.stringify(db));
       render();
     }
 
     function mostrarSeccion(idSeccion) {
       document.querySelectorAll('.seccion').forEach(sec => sec.classList.remove('activa'));
-      const secSeleccionada = document.getElementById(idSeccion);
-      if (secSeleccionada) {
-        secSeleccionada.classList.add('activa');
-        secSeleccionada.scrollIntoView({ behavior: 'smooth' });
+      const sec = document.getElementById(idSeccion);
+      if (sec) {
+        sec.classList.add('activa');
+        sec.scrollIntoView({ behavior: 'smooth' });
       }
     }
 
@@ -367,7 +345,6 @@
         duenoSec.style.display = 'block';
         auditorSec.style.display = 'block';
       } else {
-        // Personal
         opBlocks.forEach(b => b.style.display = 'block');
         duenoSec.style.display = 'none';
         auditorSec.style.display = 'none';
@@ -415,7 +392,7 @@
           htmlSlot += `
             <div class="slot-tag ${claseTurno}">
               <strong>[${textoTurno}] ${r.titular}</strong>
-              <div>${r.motivo}</div>
+              <div>${r.decoracionNombre}</div>
             </div>`;
         });
 
@@ -430,7 +407,6 @@
     function render() {
       renderCalendario();
 
-      // Select Reservas
       const selectRes = document.getElementById('select-reserva');
       selectRes.innerHTML = '';
       db.reservas.forEach(r => {
@@ -439,7 +415,6 @@
 
       renderAsistencia();
 
-      // Productos
       const selectProd = document.getElementById('select-producto');
       const auditSelectProd = document.getElementById('audit-select-prod');
       const tablaStock = document.getElementById('tabla-stock');
@@ -450,18 +425,29 @@
 
       db.productos.forEach(p => {
         selectProd.innerHTML += `<option value="${p.id}">${p.nombre} - ${formatearGs(p.precio)}</option>`;
-        auditSelectProd.innerHTML += `<option value="${p.id}">${p.nombre} (Stock actual: ${p.stock})</option>`;
+        auditSelectProd.innerHTML += `<option value="${p.id}">${p.nombre} (Costo actual: ${formatearGs(p.costo)})</option>`;
 
         tablaStock.innerHTML += `
           <tr>
             <td>${p.nombre}</td>
-            <td>${formatearGs(p.precio)}</td>
+            <td>${p.precio > 0 ? formatearGs(p.precio) : 'Insumo Interno'}</td>
             <td><strong>${p.stock}</strong></td>
           </tr>`;
       });
 
-      // Balances
-      document.getElementById('balance-ventas').innerText = formatearGs(db.ventasTotal);
+      // Cálculos de Balance
+      let totalAlquileres = db.reservas.reduce((sum, r) => sum + Number(r.alquiler || 0), 0);
+      let totalDecoraciones = db.reservas.reduce((sum, r) => sum + Number(r.decoracionPrecio || 0), 0);
+      let totalVentas = db.ventasTotal || 0;
+      let totalCostos = db.costoVentasTotal || 0;
+      let gananciaNeta = (totalAlquileres + totalDecoraciones + totalVentas) - totalCostos;
+
+      document.getElementById('bal-alquileres').innerText = formatearGs(totalAlquileres);
+      document.getElementById('bal-decoraciones').innerText = formatearGs(totalDecoraciones);
+      document.getElementById('bal-ventas').innerText = formatearGs(totalVentas);
+      document.getElementById('bal-costos').innerText = formatearGs(totalCostos);
+      document.getElementById('bal-ganancia-neta').innerText = formatearGs(gananciaNeta);
+
       let totalNinos = 0;
       let totalAdultos = 0;
       db.reservas.forEach(r => {
@@ -514,14 +500,22 @@
     function registrarVenta() {
       const idProd = parseInt(document.getElementById('select-producto').value);
       const cant = parseInt(document.getElementById('cant-producto').value);
+      const tipoSalida = document.getElementById('tipo-salida').value;
       const prod = db.productos.find(p => p.id === idProd);
 
       if (!prod) return alert('Seleccioná un producto');
       if (prod.stock < cant) return alert('Stock insuficiente');
 
       prod.stock -= cant;
-      db.ventasTotal += (prod.precio * cant);
-      alert('Salida de stock registrada');
+      db.costoVentasTotal = (db.costoVentasTotal || 0) + (prod.costo * cant);
+
+      if (tipoSalida === 'venta') {
+        db.ventasTotal += (prod.precio * cant);
+        alert('Venta procesada con éxito');
+      } else {
+        alert('Insumo/Decoración descontada del stock');
+      }
+
       guardarDB();
     }
 
@@ -530,47 +524,62 @@
       const turno = document.getElementById('reserva-turno').value;
       const titular = document.getElementById('reserva-titular').value;
       const motivo = document.getElementById('reserva-motivo').value;
+      const alquiler = parseFloat(document.getElementById('reserva-alquiler').value) || 0;
+      
+      const decoRaw = document.getElementById('reserva-decoracion').value.split('|');
+      const decoracionNombre = decoRaw[0];
+      const decoracionPrecio = parseFloat(decoRaw[1]) || 0;
+
       const contratoFirmado = document.getElementById('reserva-contrato').checked;
 
       if (!fecha || !titular || !motivo) return alert('Completá fecha, titular y motivo');
 
       const ocupado = db.reservas.some(r => r.fecha === fecha && r.turno === turno);
-      if (ocupado) return alert(`La fecha ${fecha} (${turno}) ya se encuentra reservada.`);
+      if (ocupado) return alert(`La fecha ${fecha} (${turno}) ya está reservada.`);
 
-      db.reservas.push({ id: Date.now(), fecha, turno, titular, motivo, contratoFirmado, asistencia: [] });
-      alert('Evento agendado exitosamente');
-      
+      db.reservas.push({ 
+        id: Date.now(), fecha, turno, titular, motivo, alquiler, 
+        decoracionNombre, decoracionPrecio, contratoFirmado, asistencia: [] 
+      });
+
+      alert('Reserva agendada exitosamente');
       document.getElementById('reserva-titular').value = '';
       document.getElementById('reserva-motivo').value = '';
+      document.getElementById('reserva-alquiler').value = '';
       guardarDB();
     }
 
     function recepcionarPedido() {
       const idProd = parseInt(document.getElementById('audit-select-prod').value);
       const cant = parseInt(document.getElementById('audit-cant-ingreso').value);
+      const nuevoCosto = parseFloat(document.getElementById('audit-costo-unitario').value);
 
-      if (!idProd || isNaN(cant) || cant <= 0) return alert('Ingresá una cantidad válida');
+      if (!idProd || isNaN(cant) || cant <= 0 || isNaN(nuevoCosto)) return alert('Completá cantidad y costo unitario');
 
       const prod = db.productos.find(p => p.id === idProd);
       if (prod) {
         prod.stock += cant;
-        alert(`Stock actualizado: +${cant} unidades a ${prod.nombre}`);
+        prod.costo = nuevoCosto; // Actualiza el costo de compra
+        alert(`Stock cargado: +${cant} un. a ${prod.nombre} (Costo: ${formatearGs(nuevoCosto)})`);
         document.getElementById('audit-cant-ingreso').value = '';
+        document.getElementById('audit-costo-unitario').value = '';
         guardarDB();
       }
     }
 
     function agregarProducto() {
       const nombre = document.getElementById('prod-nombre').value;
-      const precio = parseFloat(document.getElementById('prod-precio').value);
-      const stock = parseInt(document.getElementById('prod-stock').value);
+      const precio = parseFloat(document.getElementById('prod-precio').value) || 0;
+      const costo = parseFloat(document.getElementById('prod-costo-inicial').value) || 0;
+      const stock = parseInt(document.getElementById('prod-stock').value) || 0;
 
-      if (!nombre || isNaN(precio) || isNaN(stock)) return alert('Completá los datos del producto');
+      if (!nombre) return alert('Ingresá el nombre del producto o insumo');
 
-      db.productos.push({ id: Date.now(), nombre, precio, stock });
-      alert('Producto agregado al catálogo');
+      db.productos.push({ id: Date.now(), nombre, precio, costo, stock });
+      alert('Ítem guardado en catálogo');
       document.getElementById('prod-nombre').value = '';
       document.getElementById('prod-precio').value = '';
+      document.getElementById('prod-costo-inicial').value = '';
       document.getElementById('prod-stock').value = '';
       guardarDB();
     }
