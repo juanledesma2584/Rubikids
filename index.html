@@ -1,25 +1,11 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RU-Bi KiDS - Sistema POS</title>
-
-  <!-- RECURSOS PARA INSTALAR COMO APP EN EL CELULAR -->
-  <link rel="icon" type="image/jpeg" href="logo.jpg">
-  <link rel="apple-touch-icon" href="logo.jpg">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#007bff">
-  
   <style>
     * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
     body { background: #f0f2f5; margin: 0; padding: 0 0 20px 0; color: #333; }
 
-    /* MEMBRETE OPTIMIZADO PARA EL LOGO DE RU-BI KIDS */
+    /* MEMBRETE CONTENEDOR OPTIMIZADO PARA RU-BI KIDS */
     .header-banner {
       width: 100%;
-      height: 120px;
+      height: 100px;
       background-color: #ffffff;
       display: flex;
       align-items: center;
@@ -27,218 +13,14 @@
       margin-bottom: 15px;
       border-bottom-left-radius: 15px;
       border-bottom-right-radius: 15px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
       padding: 10px;
     }
+
     .header-banner img {
       max-height: 100%;
-      max-width: 100%;
+      max-width: 90%;
       object-fit: contain;
     }
 
     .container { padding: 0 15px; }
-
-    /* Selector de Rol */
-    .role-selector { background: #fff; padding: 12px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-    .role-selector select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-weight: bold; }
-
-    /* Tarjetas de Módulos */
-    .card { background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-    .card h2 { font-size: 1.1rem; margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 8px; color: #007bff; }
-    
-    label { display: block; font-size: 0.85rem; margin-top: 10px; font-weight: 600; }
-    input, select, button { width: 100%; padding: 10px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; font-size: 0.95rem; }
-    button { background: #007bff; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 12px; }
-    button.success { background: #28a745; }
-    
-    /* Tablas */
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    th { background: #f8f9fa; }
-
-    /* Control de acceso por rol */
-    .admin-only { display: none; background: #fff1f0; border: 1px solid #ffa39e; }
-    .admin-only h2 { color: #cf1322; }
-    
-    .badge { display: inline-block; padding: 3px 7px; border-radius: 4px; font-size: 0.75rem; background: #e6f7ff; color: #1890ff; font-weight: bold; }
-  </style>
-</head>
-<body>
-
-  <!-- ENCABEZADO Y MEMBRETE CON IMAGEN DE RU-BI KIDS -->
-  <div class="header-banner">
-    <img src="logo.jpg" alt="RU-Bi KiDS">
-  </div>
-
-  <div class="container">
-
-    <!-- SIMULADOR DE ROLES -->
-    <div class="role-selector">
-      <label>Simular Rol Actual:</label>
-      <select id="rol-select" onchange="cambiarRol()">
-        <option value="personal">Personal / Cajero (Acceso Restringido)</option>
-        <option value="dueno">Dueño / Administrador (Acceso Total)</option>
-      </select>
-    </div>
-
-    <!-- MÓDULO DE VENTAS (PERSONAL Y DUEÑO) -->
-    <div class="card">
-      <h2>1. Módulo de Venta y Stock</h2>
-      <span class="badge">Disponible para Personal</span>
-      
-      <label>Seleccionar Producto:</label>
-      <select id="select-producto"></select>
-
-      <label>Cantidad a cobrar:</label>
-      <input type="number" id="cant-venta" value="1" min="1">
-
-      <button onclick="registrarVenta()">Registrar Venta / Cobro</button>
-
-      <h3>Inventario Disponible</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Producto</th>
-            <th>Precio</th>
-            <th>Stock</th>
-          </tr>
-        </thead>
-        <tbody id="tabla-stock"></tbody>
-      </table>
-    </div>
-
-    <!-- MÓDULO DE AFORO (PERSONAL Y DUEÑO) -->
-    <div class="card">
-      <h2>2. Control de Ingreso (Aforo)</h2>
-      <span class="badge">Disponible para Personal</span>
-
-      <label>Personas ingresando:</label>
-      <input type="number" id="cant-aforo" value="1" min="1">
-      <button class="success" onclick="registrarAforo()">Registrar Entrada</button>
-
-      <p style="margin-top: 10px; font-weight: bold;">Total personas hoy: <span id="total-aforo">0</span></p>
-    </div>
-
-    <!-- MÓDULO FINANCIERO (EXCLUSIVO DUEÑO) -->
-    <div class="card admin-only" id="modulo-dueno">
-      <h2>3. Balance y Finanzas (Privado)</h2>
-      <span class="badge" style="background: #fff1f0; color: #cf1322;">Exclusivo Propietario</span>
-
-      <p><strong>Total Recaudado (Ventas):</strong> $<span id="balance-ventas">0</span></p>
-      <p><strong>Valor del Stock a Precio Costo:</strong> $<span id="balance-costo">0</span></p>
-
-      <hr>
-      <h3>Agregar / Ajustar Inventario</h3>
-      <label>Nombre del Producto:</label>
-      <input type="text" id="nuevo-nombre" placeholder="Ej: Entradas Niños">
-
-      <label>Precio Venta ($):</label>
-      <input type="number" id="nuevo-precio" placeholder="100">
-
-      <label>Costo de Compra ($):</label>
-      <input type="number" id="nuevo-costo" placeholder="40">
-
-      <label>Stock Inicial:</label>
-      <input type="number" id="nuevo-stock" placeholder="50">
-
-      <button onclick="agregarProducto()">Guardar Producto</button>
-    </div>
-
-  </div>
-
-  <script>
-    const datosIniciales = {
-      productos: [
-        { id: 1, nombre: 'Entrada General', precio: 50, costo: 15, stock: 80 },
-        { id: 2, nombre: 'Consumición Estándar', precio: 30, costo: 10, stock: 150 }
-      ],
-      ventasTotal: 0,
-      totalAforo: 0
-    };
-
-    let db = JSON.parse(localStorage.getItem('pos_demo_db')) || datosIniciales;
-
-    function guardarDB() {
-      localStorage.setItem('pos_demo_db', JSON.stringify(db));
-      render();
-    }
-
-    function cambiarRol() {
-      const rol = document.getElementById('rol-select').value;
-      const moduloDueno = document.getElementById('modulo-dueno');
-      moduloDueno.style.display = (rol === 'dueno') ? 'block' : 'none';
-    }
-
-    function render() {
-      const selectProd = document.getElementById('select-producto');
-      selectProd.innerHTML = '';
-      db.productos.forEach(p => {
-        selectProd.innerHTML += `<option value="${p.id}">${p.nombre} - $${p.precio}</option>`;
-      });
-
-      const tablaStock = document.getElementById('tabla-stock');
-      tablaStock.innerHTML = '';
-      db.productos.forEach(p => {
-        tablaStock.innerHTML += `
-          <tr>
-            <td>${p.nombre}</td>
-            <td>$${p.precio}</td>
-            <td>${p.stock}</td>
-          </tr>`;
-      });
-
-      document.getElementById('total-aforo').innerText = db.totalAforo;
-      document.getElementById('balance-ventas').innerText = db.ventasTotal;
-      
-      let costoInventario = db.productos.reduce((acc, p) => acc + (p.costo * p.stock), 0);
-      document.getElementById('balance-costo').innerText = costoInventario;
-    }
-
-    function registrarVenta() {
-      const id = parseInt(document.getElementById('select-producto').value);
-      const cant = parseInt(document.getElementById('cant-venta').value);
-      const prod = db.productos.find(p => p.id === id);
-
-      if (!prod) return alert('Seleccioná un producto');
-      if (prod.stock < cant) return alert('¡Stock insuficiente!');
-
-      prod.stock -= cant;
-      db.ventasTotal += (prod.precio * cant);
-      alert('Venta registrada con éxito');
-      guardarDB();
-    }
-
-    function registrarAforo() {
-      const cant = parseInt(document.getElementById('cant-aforo').value);
-      if (isNaN(cant) || cant < 1) return;
-      db.totalAforo += cant;
-      alert('Ingreso registrado');
-      guardarDB();
-    }
-
-    function agregarProducto() {
-      const nombre = document.getElementById('nuevo-nombre').value;
-      const precio = parseFloat(document.getElementById('nuevo-precio').value);
-      const costo = parseFloat(document.getElementById('nuevo-costo').value);
-      const stock = parseInt(document.getElementById('nuevo-stock').value);
-
-      if (!nombre || isNaN(precio) || isNaN(costo) || isNaN(stock)) {
-        return alert('Completá todos los campos del producto correctamente');
-      }
-
-      db.productos.push({ id: Date.now(), nombre, precio, costo, stock });
-      alert('Producto guardado');
-      
-      document.getElementById('nuevo-nombre').value = '';
-      document.getElementById('nuevo-precio').value = '';
-      document.getElementById('nuevo-costo').value = '';
-      document.getElementById('nuevo-stock').value = '';
-      
-      guardarDB();
-    }
-
-    cambiarRol();
-    render();
-  </script>
-</body>
-</html>
