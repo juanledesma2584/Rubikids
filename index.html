@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RU-Bi KiDS - Sistema POS</title>
+  <title>RU-Bi KiDS - POS & Recetario</title>
 
   <link rel="icon" type="image/jpeg" href="logo.jpg">
   <link rel="apple-touch-icon" href="logo.jpg">
@@ -24,7 +24,6 @@
 
     .container { padding: 0 15px; }
 
-    /* MENÚ PRINCIPAL 4 BOTONES */
     .menu-cuatro-botones {
       display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px;
     }
@@ -56,7 +55,7 @@
     button.danger { background: #c62828; color: white; border: none; }
     button.purple { background: #7b1fa2; }
     
-    /* MODAL DE PIN Y TECLADO NUMÉRICO */
+    /* MODAL PIN */
     .pin-overlay {
       display: none; position: fixed; top:0; left:0; width:100%; height:100%;
       background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center;
@@ -74,9 +73,8 @@
       padding: 15px; font-size: 1.2rem; font-weight: bold; background: #f8fafc;
       border: 1px solid #cbd5e1; border-radius: 10px; cursor: pointer; color: #1e293b;
     }
-    .num-btn:active { background: #e2e8f0; }
 
-    /* ESTILO TARJETAS STOCK */
+    /* TARJETAS LIMPIAS STOCK */
     .stock-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
     .stock-item {
       display: flex; justify-content: space-between; align-items: center;
@@ -88,13 +86,21 @@
       padding: 3px 8px; font-size: 0.8rem; font-weight: bold; color: #1976d2;
     }
 
-    /* EDICIÓN DE PRODUCTOS */
+    /* EDICIÓN Y RECETAS */
     .edit-grid {
       display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 6px; align-items: center;
       background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px; margin-top: 6px;
     }
     .edit-grid input { margin: 0; padding: 6px; font-size: 0.8rem; }
     .edit-grid button { margin: 0; padding: 6px; font-size: 0.75rem; width: auto; }
+
+    .recipe-box {
+      background: #fffde7; border: 1px solid #fff59d; border-radius: 8px; padding: 10px; margin-top: 8px;
+    }
+    .recipe-item {
+      display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;
+      border-bottom: 1px dashed #e0e0e0; padding: 4px 0;
+    }
 
     table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.8rem; }
     th, td { border: 1px solid #e0e0e0; padding: 6px; text-align: left; }
@@ -128,7 +134,7 @@
       </button>
     </div>
 
-    <!-- MODAL PIN TÁCTIL -->
+    <!-- MODAL PIN -->
     <div class="pin-overlay" id="pin-overlay">
       <div class="pin-modal">
         <h3 style="margin-top:0; color:#1e293b;">Ingrese PIN de Acceso</h3>
@@ -151,7 +157,7 @@
       </div>
     </div>
 
-    <!-- MÓDULO 1: CALENDARIO ANUAL -->
+    <!-- MÓDULO 1: CALENDARIO -->
     <div id="sec-calendario" class="seccion">
       <div class="card">
         <h2>Agenda de Eventos (RU-Bi KiDS)</h2>
@@ -191,7 +197,7 @@
       </div>
     </div>
 
-    <!-- MÓDULO 2: CREAR EVENTO / CONTRATO -->
+    <!-- MÓDULO 2: CREAR EVENTO -->
     <div id="sec-crear" class="seccion">
       <div class="card">
         <h2>Crear / Agendar Evento</h2>
@@ -243,16 +249,11 @@
         <label>Seña Abonada (Reserva Gs. 1.000.000):</label>
         <input type="number" id="reserva-sena" value="1000000">
 
-        <div class="checkbox-container">
-          <input type="checkbox" id="reserva-contrato" checked>
-          <label for="reserva-contrato" style="margin: 0;">¿Contrato Aceptado?</label>
-        </div>
-
         <button class="action-btn" onclick="crearReserva()">Generar Contrato y Guardar Evento</button>
       </div>
     </div>
 
-    <!-- MÓDULO 3: EJECUTAR CUMPLEAÑOS (PERSONAL EN VIVO) -->
+    <!-- MÓDULO 3: EJECUTAR CUMPLEAÑOS -->
     <div id="sec-ejecutar" class="seccion">
       <div class="card">
         <h2>Control de Ingreso (Recepción)</h2>
@@ -293,41 +294,54 @@
 
         <button class="action-btn warning" onclick="registrarVenta()">Procesar Salida / Venta</button>
 
-        <h3>Stock Disponible en Local</h3>
+        <h3>Stock de Insumos en Depósito</h3>
         <div class="stock-list" id="lista-stock-personal"></div>
       </div>
     </div>
 
-    <!-- MÓDULO 4: PANEL DE CONTROL DE INVENTARIO Y BALANCES (PROTEGIDO) -->
+    <!-- MÓDULO 4: PANEL DE CONTROL (ADMINISTRADOR Y AUDITOR) -->
     <div id="sec-admin" class="seccion">
 
-      <!-- GESTIÓN TOTAL DE INVENTARIO -->
+      <!-- MANTENIMIENTO DE RECETARIO DE PRODUCTOS -->
       <div class="card">
-        <h2>Gestión de Stock, Productos e Insumos</h2>
-        
-        <h3>1. Crear Nuevo Producto / Insumo</h3>
-        <label>Nombre del Producto o Insumo:</label>
-        <input type="text" id="nuevo-prod-nombre" placeholder="Ej: Sprite 600ml">
+        <h2> Configuración de Recetario e Insumos</h2>
+        <span class="badge">Definí los insumos que descuenta cada plato vendido</span>
 
-        <label>Precio Venta Cliente (Gs. - Colocar 0 si es Insumo de Cocina):</label>
-        <input type="number" id="nuevo-prod-precio" value="0">
+        <label>Seleccionar Plato del Menú:</label>
+        <select id="receta-select-plato" onchange="renderDetalleReceta()"></select>
+
+        <div class="recipe-box" id="box-insumos-receta"></div>
+
+        <h4 style="margin-bottom: 4px; margin-top: 12px;">Agregar Insumo a la Receta:</h4>
+        <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 6px;">
+          <select id="receta-select-insumo" style="margin:0;"></select>
+          <input type="number" id="receta-cant-insumo" value="1" min="1" placeholder="Cant" style="margin:0;">
+          <button class="success" style="margin:0; width:auto;" onclick="agregarInsumoAReceta()">+ Agregar</button>
+        </div>
+      </div>
+
+      <!-- ALTA Y EDICIÓN DE INSUMOS -->
+      <div class="card">
+        <h2>Carga de Compras y Control de Insumos</h2>
+        
+        <h3>1. Registrar Nuevo Insumo / Materia Prima</h3>
+        <label>Nombre del Insumo (Ej: Harina, Queso, Jamón, Pan, Carne, Huevo):</label>
+        <input type="text" id="nuevo-prod-nombre" placeholder="Ej: Jamón cocido">
 
         <label>Costo de Compra Unitario (Gs.):</label>
         <input type="number" id="nuevo-prod-costo" value="0">
 
-        <label>Stock Inicial Real:</label>
+        <label>Stock Inicial en Depósito:</label>
         <input type="number" id="nuevo-prod-stock" value="10">
 
-        <button class="action-btn purple" onclick="crearNuevoProducto()">Guardar Producto en Sistema</button>
+        <button class="action-btn purple" onclick="crearNuevoInsumo()">Cargar Insumo al Sistema</button>
 
         <hr style="margin-top:20px;">
-        <h3>2. Modificar / Editar Productos Existentes</h3>
-        <span class="badge">Ajustá Stock, Precio, Costo o Elimina directamente</span>
-        
+        <h3>2. Modificar Insumos Existentes en Depósito</h3>
         <div id="lista-edicion-productos" style="margin-top: 10px;"></div>
       </div>
 
-      <!-- FINANZAS Y BALANCES (SOLO DUEÑO) -->
+      <!-- FINANZAS (SOLO DUEÑO) -->
       <div class="card" id="card-finanzas-dueno">
         <h2>Liquidación Financiera General</h2>
 
@@ -367,33 +381,69 @@
       return 'Gs. ' + Number(monto || 0).toLocaleString('es-PY');
     }
 
-    const recetas = {
-      'Lomito Completo': [
-        { ingrediente: 'Pan de Lomito', cantidad: 1 },
-        { ingrediente: 'Carne / Lomito', cantidad: 1 },
-        { ingrediente: 'Huevo', cantidad: 1 }
-      ],
-      'Lomito Simple': [
-        { ingrediente: 'Pan de Lomito', cantidad: 1 },
-        { ingrediente: 'Carne / Lomito', cantidad: 1 }
-      ],
-      'Hamburguesa': [
-        { ingrediente: 'Pan de Hamburguesa', cantidad: 1 },
-        { ingrediente: 'Carne Hamburguesa', cantidad: 1 }
-      ],
-      'Milanesa al Plato': [
-        { ingrediente: 'Milanesa (Unidad)', cantidad: 1 }
-      ],
-      'Papas Fritas': [
-        { ingrediente: 'Papas Crudas (Porción)', cantidad: 1 }
-      ],
-      'Pizzetas': [
-        { ingrediente: 'Masa Pizzeta', cantidad: 1 },
-        { ingrediente: 'Queso Mozzarella (Porción)', cantidad: 1 }
-      ]
-    };
-
+    // BASE DE DATOS INICIAL DE PRODUCTOS E INSUMOS REALES
     const datosIniciales = {
+      platosMenu: [
+        { id: 1, nombre: 'Lomito Completo', precio: 35000 },
+        { id: 2, nombre: 'Lomito Simple', precio: 30000 },
+        { id: 3, nombre: 'Hamburguesa', precio: 28000 },
+        { id: 4, nombre: 'Pizzetas', precio: 25000 },
+        { id: 5, nombre: 'Papas Fritas', precio: 10000 },
+        { id: 6, nombre: 'Gaseosas 600ml', precio: 9000 },
+        { id: 7, nombre: 'Cerveza Heineken', precio: 22000 }
+      ],
+      insumos: [
+        { id: 101, nombre: 'Pan de Lomito', costo: 2500, stock: 50 },
+        { id: 102, nombre: 'Carne / Lomito', costo: 10000, stock: 40 },
+        { id: 103, nombre: 'Huevo', costo: 1000, stock: 100 },
+        { id: 104, nombre: 'Lechuga (Porción)', costo: 500, stock: 60 },
+        { id: 105, nombre: 'Tomate (Porción)', costo: 500, stock: 60 },
+        { id: 106, nombre: 'Mayonesa (Porción)', costo: 500, stock: 100 },
+        { id: 107, nombre: 'Pan de Hamburguesa', costo: 2000, stock: 50 },
+        { id: 108, nombre: 'Carne Hamburguesa', costo: 6000, stock: 50 },
+        { id: 109, nombre: 'Harina (Masa Pizza)', costo: 2000, stock: 30 },
+        { id: 110, nombre: 'Queso Mozzarella', costo: 4000, stock: 40 },
+        { id: 111, nombre: 'Jamón Cocido', costo: 3000, stock: 40 },
+        { id: 112, nombre: 'Papas Crudas (Porción)', costo: 3000, stock: 50 },
+        { id: 113, nombre: 'Gaseosas 600ml (Botella)', costo: 4500, stock: 60 },
+        { id: 114, nombre: 'Cerveza Heineken (Botella)', costo: 12000, stock: 40 }
+      ],
+      // RECETARIO: Asocia Plato ID -> Array de Insumos
+      recetasMap: {
+        'Lomito Completo': [
+          { insumoId: 101, cantidad: 1 },
+          { insumoId: 102, cantidad: 1 },
+          { insumoId: 103, cantidad: 1 },
+          { insumoId: 104, cantidad: 1 },
+          { insumoId: 105, cantidad: 1 },
+          { insumoId: 106, cantidad: 1 }
+        ],
+        'Lomito Simple': [
+          { insumoId: 101, cantidad: 1 },
+          { insumoId: 102, cantidad: 1 },
+          { insumoId: 106, cantidad: 1 }
+        ],
+        'Hamburguesa': [
+          { insumoId: 107, cantidad: 1 },
+          { insumoId: 108, cantidad: 1 },
+          { insumoId: 104, cantidad: 1 },
+          { insumoId: 105, cantidad: 1 }
+        ],
+        'Pizzetas': [
+          { insumoId: 109, cantidad: 1 },
+          { insumoId: 110, cantidad: 1 },
+          { insumoId: 111, cantidad: 1 }
+        ],
+        'Papas Fritas': [
+          { insumoId: 112, cantidad: 1 }
+        ],
+        'Gaseosas 600ml': [
+          { insumoId: 113, cantidad: 1 }
+        ],
+        'Cerveza Heineken': [
+          { insumoId: 114, cantidad: 1 }
+        ]
+      },
       reservas: [
         { 
           id: 1, fecha: '2026-09-12', turno: 'Tarde', titular: 'Juan Lezcano', telefono: '0981 123456', motivo: 'Santi (5 años)', 
@@ -403,30 +453,15 @@
           senaAbonada: 1000000, contratoFirmado: true, asistencia: [] 
         }
       ],
-      productos: [
-        { id: 1, nombre: 'Lomito Completo', precio: 35000, costo: 0, stock: 50 },
-        { id: 2, nombre: 'Lomito Simple', precio: 30000, costo: 0, stock: 50 },
-        { id: 3, nombre: 'Hamburguesa', precio: 28000, costo: 0, stock: 50 },
-        { id: 4, nombre: 'Papas Fritas', precio: 10000, costo: 0, stock: 50 },
-        { id: 5, nombre: 'Pizzetas', precio: 25000, costo: 0, stock: 40 },
-        { id: 6, nombre: 'Gaseosas 600ml', precio: 9000, costo: 4500, stock: 60 },
-        { id: 7, nombre: 'Cerveza Heineken', precio: 22000, costo: 12000, stock: 40 },
-        { id: 8, nombre: 'Agua mineral', precio: 8000, costo: 3000, stock: 50 },
-        { id: 101, nombre: 'Pan de Lomito', precio: 0, costo: 2500, stock: 60 },
-        { id: 102, nombre: 'Pan de Hamburguesa', precio: 0, costo: 2000, stock: 60 },
-        { id: 103, nombre: 'Carne / Lomito', precio: 0, costo: 10000, stock: 50 },
-        { id: 104, nombre: 'Carne Hamburguesa', precio: 0, costo: 6000, stock: 50 },
-        { id: 105, nombre: 'Huevo', precio: 0, costo: 1000, stock: 100 }
-      ],
       movimientos: [],
       ventasTotal: 0,
       costoVentasTotal: 0
     };
 
-    let db = JSON.parse(localStorage.getItem('rubikids_pos_v16_db')) || datosIniciales;
+    let db = JSON.parse(localStorage.getItem('rubikids_pos_v17_db')) || datosIniciales;
 
     function guardarDB() {
-      localStorage.setItem('rubikids_pos_v16_db', JSON.stringify(db));
+      localStorage.setItem('rubikids_pos_v17_db', JSON.stringify(db));
       render();
     }
 
@@ -439,7 +474,7 @@
       }
     }
 
-    /* FUNCIONES PIN TÁCTIL */
+    /* PIN CONTROL */
     function mostrarModalPin() {
       pinInput = "";
       document.getElementById('pin-display').innerText = "";
@@ -469,7 +504,7 @@
         abrirModulo('sec-admin');
       } else if (pinInput === PIN_AUDITOR) {
         cerrarModalPin();
-        document.getElementById('card-finanzas-dueno').style.display = 'none'; // Oculta finanzas
+        document.getElementById('card-finanzas-dueno').style.display = 'none';
         abrirModulo('sec-admin');
       } else {
         alert("PIN Incorrecto");
@@ -477,43 +512,122 @@
       }
     }
 
-    function crearNuevoProducto() {
+    /* GESTIÓN DE RECETAS */
+    function renderDetalleReceta() {
+      const platoNombre = document.getElementById('receta-select-plato').value;
+      const box = document.getElementById('box-insumos-receta');
+      box.innerHTML = `<strong>Ingredientes de ${platoNombre}:</strong><br>`;
+
+      const listaInsumosReceta = db.recetasMap[platoNombre] || [];
+
+      if (listaInsumosReceta.length === 0) {
+        box.innerHTML += `<small style="color:#777;">Sin insumos configurados.</small>`;
+        return;
+      }
+
+      listaInsumosReceta.forEach((item, index) => {
+        const ins = db.insumos.find(i => i.id === item.insumoId);
+        if (ins) {
+          box.innerHTML += `
+            <div class="recipe-item">
+              <span>• ${ins.nombre} (x${item.cantidad})</span>
+              <button class="danger" style="padding:2px 6px; width:auto;" onclick="quitarInsumoDeReceta('${platoNombre}', ${index})">❌</button>
+            </div>`;
+        }
+      });
+    }
+
+    function agregarInsumoAReceta() {
+      const platoNombre = document.getElementById('receta-select-plato').value;
+      const insumoId = parseInt(document.getElementById('receta-select-insumo').value);
+      const cant = parseInt(document.getElementById('receta-cant-insumo').value) || 1;
+
+      if (!db.recetasMap[platoNombre]) db.recetasMap[platoNombre] = [];
+
+      db.recetasMap[platoNombre].push({ insumoId, cantidad: cant });
+      guardarDB();
+      renderDetalleReceta();
+    }
+
+    function quitarInsumoDeReceta(platoNombre, index) {
+      if (db.recetasMap[platoNombre]) {
+        db.recetasMap[platoNombre].splice(index, 1);
+        guardarDB();
+        renderDetalleReceta();
+      }
+    }
+
+    /* INSUMOS Y DEPÓSITO */
+    function crearNuevoInsumo() {
       const nombre = document.getElementById('nuevo-prod-nombre').value;
-      const precio = parseFloat(document.getElementById('nuevo-prod-precio').value) || 0;
       const costo = parseFloat(document.getElementById('nuevo-prod-costo').value) || 0;
       const stock = parseInt(document.getElementById('nuevo-prod-stock').value) || 0;
 
-      if (!nombre) return alert('Ingresá el nombre del producto');
+      if (!nombre) return alert('Ingresá el nombre del insumo');
 
-      db.productos.push({
+      db.insumos.push({
         id: Date.now(),
-        nombre, precio, costo, stock
+        nombre, costo, stock
       });
 
-      alert(`Producto registrado: ${nombre}`);
+      alert(`Insumo guardado: ${nombre}`);
       document.getElementById('nuevo-prod-nombre').value = '';
-      document.getElementById('nuevo-prod-precio').value = '0';
       document.getElementById('nuevo-prod-costo').value = '0';
       document.getElementById('nuevo-prod-stock').value = '10';
       guardarDB();
     }
 
-    function actualizarProducto(id) {
-      const p = db.productos.find(item => item.id === id);
-      if (p) {
-        p.stock = parseInt(document.getElementById(`edit-stock-${id}`).value) || 0;
-        p.precio = parseFloat(document.getElementById(`edit-precio-${id}`).value) || 0;
-        p.costo = parseFloat(document.getElementById(`edit-costo-${id}`).value) || 0;
-        alert(`Guardados los cambios para ${p.nombre}`);
+    function actualizarInsumo(id) {
+      const ins = db.insumos.find(item => item.id === id);
+      if (ins) {
+        ins.stock = parseInt(document.getElementById(`edit-stock-${id}`).value) || 0;
+        ins.costo = parseFloat(document.getElementById(`edit-costo-${id}`).value) || 0;
+        alert(`Guardado: ${ins.nombre}`);
         guardarDB();
       }
     }
 
-    function eliminarProducto(id) {
-      if (confirm('¿Eliminar este producto del sistema?')) {
-        db.productos = db.productos.filter(p => p.id !== id);
+    function eliminarInsumo(id) {
+      if (confirm('¿Eliminar este insumo del depósito?')) {
+        db.insumos = db.insumos.filter(i => i.id !== id);
         guardarDB();
       }
+    }
+
+    /* VENTA DE MENÚ Y DESCUENTO DE RECETA */
+    function registrarVenta() {
+      const platoId = parseInt(document.getElementById('select-producto').value);
+      const cantVenta = parseInt(document.getElementById('cant-producto').value) || 1;
+      const plato = db.platosMenu.find(p => p.id === platoId);
+
+      if (!plato) return alert('Seleccioná un plato del menú');
+
+      const receta = db.recetasMap[plato.nombre] || [];
+
+      if (receta.length === 0) {
+        return alert(`El plato ${plato.nombre} no tiene insumos asignados en la receta.`);
+      }
+
+      // 1. Verificar stock suficiente de todos los insumos de la receta
+      for (let item of receta) {
+        const insumo = db.insumos.find(i => i.id === item.insumoId);
+        const req = item.cantidad * cantVenta;
+        if (!insumo || insumo.stock < req) {
+          return alert(`Stock insuficiente de ${insumo ? insumo.nombre : 'Insumo'}. Se requieren ${req} un.`);
+        }
+      }
+
+      // 2. Descontar stock real
+      receta.forEach(item => {
+        const insumo = db.insumos.find(i => i.id === item.insumoId);
+        const req = item.cantidad * cantVenta;
+        insumo.stock -= req;
+        db.costoVentasTotal = (db.costoVentasTotal || 0) + (insumo.costo * req);
+      });
+
+      db.ventasTotal += (plato.precio * cantVenta);
+      alert(`Salida registrada: ${cantVenta}x ${plato.nombre}. Insumos descontados del depósito.`);
+      guardarDB();
     }
 
     function cambiarMes(delta) {
@@ -598,6 +712,7 @@
     function render() {
       renderCalendario();
 
+      // Desplegable Eventos
       const selectRes = document.getElementById('select-reserva');
       selectRes.innerHTML = '';
       db.reservas.forEach(r => {
@@ -606,42 +721,62 @@
 
       renderAsistencia();
 
-      const selectProd = document.getElementById('select-producto');
+      // Menú y Venta Cantina
+      const selectPlato = document.getElementById('select-producto');
+      selectPlato.innerHTML = '';
+      db.platosMenu.forEach(p => {
+        selectPlato.innerHTML += `<option value="${p.id}">${p.nombre} - ${formatearGs(p.precio)}</option>`;
+      });
+
+      // Stock de Insumos Personal
       const listaStockPersonal = document.getElementById('lista-stock-personal');
-      const listaEdicion = document.getElementById('lista-edicion-productos');
-
-      selectProd.innerHTML = '';
       listaStockPersonal.innerHTML = '';
-      listaEdicion.innerHTML = '';
-
-      db.productos.forEach(p => {
-        if (p.precio > 0) {
-          selectProd.innerHTML += `<option value="${p.id}">${p.nombre}</option>`;
-        }
-        
+      db.insumos.forEach(i => {
         listaStockPersonal.innerHTML += `
           <div class="stock-item">
-            <span class="item-name">${p.nombre}</span>
-            <span class="item-badge">${p.stock} un.</span>
+            <span class="item-name">${i.nombre}</span>
+            <span class="item-badge">${i.stock} un.</span>
           </div>`;
+      });
 
+      // Recetario Selects
+      const selPlatoRec = document.getElementById('receta-select-plato');
+      const selInsRec = document.getElementById('receta-select-insumo');
+      
+      if (selPlatoRec.options.length === 0) {
+        db.platosMenu.forEach(p => {
+          selPlatoRec.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
+        });
+      }
+
+      selInsRec.innerHTML = '';
+      db.insumos.forEach(i => {
+        selInsRec.innerHTML += `<option value="${i.id}">${i.nombre}</option>`;
+      });
+
+      renderDetalleReceta();
+
+      // Edición Insumos Admin
+      const listaEdicion = document.getElementById('lista-edicion-productos');
+      listaEdicion.innerHTML = '';
+      db.insumos.forEach(i => {
         listaEdicion.innerHTML += `
           <div class="edit-grid">
-            <strong>${p.nombre}</strong>
-            <input type="number" id="edit-stock-${p.id}" value="${p.stock}" title="Stock">
-            <input type="number" id="edit-precio-${p.id}" value="${p.precio}" title="Precio Venta">
-            <input type="number" id="edit-costo-${p.id}" value="${p.costo}" title="Costo Compra">
+            <strong>${i.nombre}</strong>
+            <input type="number" id="edit-stock-${i.id}" value="${i.stock}" title="Stock Depósito">
+            <input type="number" id="edit-costo-${i.id}" value="${i.costo}" title="Costo Compra">
+            <span></span>
             <div style="display:flex; gap:4px;">
-              <button class="success" onclick="actualizarProducto(${p.id})">💾</button>
-              <button class="danger" onclick="eliminarProducto(${p.id})">🗑️</button>
+              <button class="success" onclick="actualizarInsumo(${i.id})">💾</button>
+              <button class="danger" onclick="eliminarInsumo(${i.id})">🗑️</button>
             </div>
           </div>`;
       });
 
-      // Saldos Dueño
+      // Balances
+      let totalContratadoGeneral = 0;
       const tablaSaldos = document.getElementById('tabla-saldos-eventos');
       tablaSaldos.innerHTML = '';
-      let totalContratadoGeneral = 0;
 
       db.reservas.forEach(r => {
         let costoContrato = Number(r.paquetePrecio || 0) + Number(r.decoracionPrecio || 0) + Number(r.adicionalPrecio || 0);
@@ -659,7 +794,6 @@
           </tr>`;
       });
 
-      // Balances
       let totalVentas = db.ventasTotal || 0;
       let totalCostos = db.costoVentasTotal || 0;
       let gananciaNeta = (totalContratadoGeneral + totalVentas) - totalCostos;
@@ -708,42 +842,6 @@
       }
     }
 
-    function registrarVenta() {
-      const idProd = parseInt(document.getElementById('select-producto').value);
-      const cant = parseInt(document.getElementById('cant-producto').value);
-      const prod = db.productos.find(p => p.id === idProd);
-
-      if (!prod) return alert('Seleccioná un producto');
-
-      if (recetas[prod.nombre]) {
-        const ingredientes = recetas[prod.nombre];
-
-        for (let item of ingredientes) {
-          const insumo = db.productos.find(p => p.nombre === item.ingrediente);
-          const necesario = item.cantidad * cant;
-          if (!insumo || insumo.stock < necesario) {
-            return alert(`Insumo insuficiente para ${prod.nombre}: Falta ${item.ingrediente}`);
-          }
-        }
-
-        ingredientes.forEach(item => {
-          const insumo = db.productos.find(p => p.nombre === item.ingrediente);
-          const descuento = item.cantidad * cant;
-          insumo.stock -= descuento;
-          db.costoVentasTotal = (db.costoVentasTotal || 0) + (insumo.costo * descuento);
-        });
-
-      } else {
-        if (prod.stock < cant) return alert('Stock insuficiente');
-        prod.stock -= cant;
-        db.costoVentasTotal = (db.costoVentasTotal || 0) + (prod.costo * cant);
-      }
-
-      db.ventasTotal += (prod.precio * cant);
-      alert(`Salida registrada para: ${prod.nombre}`);
-      guardarDB();
-    }
-
     function crearReserva() {
       const fecha = document.getElementById('reserva-fecha').value;
       const turno = document.getElementById('reserva-turno').value;
@@ -764,7 +862,6 @@
       const adicionalPrecio = parseFloat(adicRaw[1]) || 0;
 
       const senaAbonada = parseFloat(document.getElementById('reserva-sena').value) || 0;
-      const contratoFirmado = document.getElementById('reserva-contrato').checked;
 
       if (!fecha || !titular || !motivo) return alert('Completá la fecha, cliente y cumpleañero/a');
 
@@ -774,7 +871,7 @@
       db.reservas.push({ 
         id: Date.now(), fecha, turno, titular, telefono, motivo, 
         paqueteNombre, paquetePrecio, decoracionNombre, decoracionPrecio,
-        adicionalNombre, adicionalPrecio, senaAbonada, contratoFirmado, asistencia: [] 
+        adicionalNombre, adicionalPrecio, senaAbonada, asistencia: [] 
       });
 
       alert('Contrato generado y evento agendado exitosamente');
