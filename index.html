@@ -62,9 +62,19 @@
     .day-number { font-weight: bold; color: #666; margin-bottom: 2px; }
     .day-cell.today { border: 2px solid #7b1fa2; background: #f3e5f5; }
 
-    .slot-tag { font-size: 0.65rem; padding: 2px 4px; border-radius: 3px; margin-top: 2px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .slot-tag { 
+      font-size: 0.65rem; padding: 3px 4px; border-radius: 4px; margin-top: 2px; 
+      display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;
+    }
     .slot-tag.manana { background: #e0f7fa; color: #006064; border-left: 3px solid #00bcd4; }
     .slot-tag.tarde { background: #fff3e0; color: #e65100; border-left: 3px solid #ff9800; }
+
+    /* DETALLE FICHA EVENTO EN CALENDARIO */
+    .modal-detalle {
+      display: none; background: #f3e5f5; border: 2px solid #7b1fa2;
+      border-radius: 10px; padding: 12px; margin-top: 12px; font-size: 0.85rem;
+    }
+    .modal-detalle h3 { margin-top: 0; color: #4a148c; border-bottom: 1px solid #ce93d8; padding-bottom: 4px; }
 
     .checkbox-container { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 0.85rem; font-weight: bold; color: #2e7d32; }
     .checkbox-container input { width: auto; margin: 0; }
@@ -107,7 +117,7 @@
     <div id="seccion-calendario" class="seccion">
       <div class="card">
         <h2>Agenda de Eventos (Anual RU-Bi KiDS)</h2>
-        <span class="badge">Programación a 12 Meses</span>
+        <span class="badge">Tocá cualquier evento para ver su ficha técnica</span>
         
         <div class="calendar-controls" style="margin-top: 10px;">
           <button onclick="cambiarMes(-1)">◀ Anterior</button>
@@ -126,6 +136,22 @@
         </div>
 
         <div class="month-grid" id="grid-calendario"></div>
+
+        <!-- FICHA DETALLE DEL EVENTO SELECCIONADO -->
+        <div class="modal-detalle" id="box-detalle-evento">
+          <h3 id="det-titulo">Detalles del Evento</h3>
+          <p><strong>Fecha / Turno:</strong> <span id="det-fecha-turno"></span></p>
+          <p><strong>Responsable:</strong> <span id="det-responsable"></span> (<span id="det-telefono"></span>)</p>
+          <p><strong>Paquete Contratado:</strong> <span id="det-paquete"></span></p>
+          <p><strong>Tipo de Decoración:</strong> <span id="det-decoracion"></span></p>
+          <p><strong>Adicionales Fijos:</strong> <span id="det-adicional"></span></p>
+          <hr>
+          <p><strong>Total Contrato:</strong> <span id="det-monto-total" style="font-weight:bold; color:#2e7d32;"></span></p>
+          <p><strong>Monto Abonado (Seña/Pagos):</strong> <span id="det-monto-abonado"></span></p>
+          <p><strong>Saldo Pendiente:</strong> <span id="det-monto-saldo" style="font-weight:bold; color:#c62828;"></span></p>
+          <button class="action-btn" style="margin-top:8px;" onclick="cerrarDetalle()">Cerrar Ficha</button>
+        </div>
+
       </div>
     </div>
 
@@ -200,7 +226,7 @@
         <button class="action-btn" onclick="crearReserva()">Generar Contrato y Guardar Evento</button>
       </div>
 
-      <!-- CONTROL DE RECEPCIÓN DE INVITADOS -->
+      <!-- RECEPCIÓN DE INVITADOS -->
       <div class="card op-block">
         <h2>Control de Ingreso (Recepción)</h2>
         <label>Seleccionar Evento del Día:</label>
@@ -230,7 +256,7 @@
         </table>
       </div>
 
-      <!-- SALIDA DE PRODUCTOS (PERSONAL) -->
+      <!-- SALIDA DE PRODUCTOS -->
       <div class="card op-block">
         <h2>Venta y Consumo de Cantina / Menú</h2>
         <label>Seleccionar Menú / Producto:</label>
@@ -253,7 +279,7 @@
         </table>
       </div>
 
-      <!-- AUDITORÍA DE STOCK -->
+      <!-- AUDITORÍA -->
       <div class="card auditor-only" id="seccion-auditor">
         <h2>Auditoría: Carga de Compras e Insumos</h2>
         
@@ -284,7 +310,7 @@
         </table>
       </div>
 
-      <!-- BALANCE GENERAL Y ESTADO DE CUENTAS (DUEÑO) -->
+      <!-- BALANCE DUEÑO -->
       <div class="card dueno-only" id="modulo-dueno">
         <h2>Liquidación Financiera y Estado de Contratos</h2>
 
@@ -318,11 +344,11 @@
   <script>
     let mesActualOffset = 0;
 
+    // FORMATEADOR CON SEPARADOR DE MILES EN PARAGUAY (Gs. X.XXX.XXX)
     function formatearGs(monto) {
       return 'Gs. ' + Number(monto || 0).toLocaleString('es-PY');
     }
 
-    // RECETAS DEL MENÚ OFICIAL RU-BI KIDS
     const recetas = {
       'Lomito Completo': [
         { ingrediente: 'Pan de Lomito', cantidad: 1 },
@@ -352,7 +378,7 @@
     const datosIniciales = {
       reservas: [
         { 
-          id: 1, fecha: '2026-09-12', turno: 'Tarde', titular: 'Juan Lezcano', motivo: 'Santi (5 años)', 
+          id: 1, fecha: '2026-09-12', turno: 'Tarde', titular: 'Juan Lezcano', telefono: '0981 123456', motivo: 'Santi (5 años)', 
           paqueteNombre: 'Paquete Standard (20 niños)', paquetePrecio: 2100000,
           decoracionNombre: 'Deco RU-Bi KiDS', decoracionPrecio: 600000, 
           adicionalNombre: 'APA y SGP', adicionalPrecio: 198000,
@@ -360,7 +386,6 @@
         }
       ],
       productos: [
-        // MENÚ CARTA OFICIAL CON PRECIOS
         { id: 1, nombre: 'Lomito Completo', precio: 35000, costo: 0, stock: 999 },
         { id: 2, nombre: 'Lomito Simple', precio: 30000, costo: 0, stock: 999 },
         { id: 3, nombre: 'Lomito al Plato', precio: 35000, costo: 0, stock: 999 },
@@ -372,7 +397,6 @@
         { id: 9, nombre: 'Cerveza Heineken', precio: 22000, costo: 12000, stock: 40 },
         { id: 10, nombre: 'Agua mineral', precio: 8000, costo: 3000, stock: 50 },
 
-        // INSUMOS EN COCINA
         { id: 101, nombre: 'Pan de Lomito', precio: 0, costo: 2500, stock: 60 },
         { id: 102, nombre: 'Pan de Hamburguesa', precio: 0, costo: 2000, stock: 60 },
         { id: 103, nombre: 'Carne / Lomito', precio: 0, costo: 10000, stock: 50 },
@@ -388,10 +412,10 @@
       costoVentasTotal: 0
     };
 
-    let db = JSON.parse(localStorage.getItem('rubikids_pos_v10_db')) || datosIniciales;
+    let db = JSON.parse(localStorage.getItem('rubikids_pos_v11_db')) || datosIniciales;
 
     function guardarDB() {
-      localStorage.setItem('rubikids_pos_v10_db', JSON.stringify(db));
+      localStorage.setItem('rubikids_pos_v11_db', JSON.stringify(db));
       render();
     }
 
@@ -435,6 +459,32 @@
       }
     }
 
+    function verDetalleEvento(idReserva) {
+      const res = db.reservas.find(r => r.id === idReserva);
+      if (!res) return;
+
+      let totalContrato = Number(res.paquetePrecio || 0) + Number(res.decoracionPrecio || 0) + Number(res.adicionalPrecio || 0);
+      let saldo = totalContrato - Number(res.senaAbonada || 0);
+
+      document.getElementById('det-titulo').innerText = `Cumpleaños: ${res.motivo}`;
+      document.getElementById('det-fecha-turno').innerText = `${res.fecha} (${res.turno})`;
+      document.getElementById('det-responsable').innerText = res.titular;
+      document.getElementById('det-telefono').innerText = res.telefono || 'Sin registrar';
+      document.getElementById('det-paquete').innerText = `${res.paqueteNombre} (${formatearGs(res.paquetePrecio)})`;
+      document.getElementById('det-decoracion').innerText = `${res.decoracionNombre} (${formatearGs(res.decoracionPrecio)})`;
+      document.getElementById('det-adicional').innerText = `${res.adicionalNombre} (${formatearGs(res.adicionalPrecio)})`;
+      document.getElementById('det-monto-total').innerText = formatearGs(totalContrato);
+      document.getElementById('det-monto-abonado').innerText = formatearGs(res.senaAbonada);
+      document.getElementById('det-monto-saldo').innerText = formatearGs(saldo);
+
+      document.getElementById('box-detalle-evento').style.display = 'block';
+      document.getElementById('box-detalle-evento').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function cerrarDetalle() {
+      document.getElementById('box-detalle-evento').style.display = 'none';
+    }
+
     function renderCalendario() {
       const hoy = new Date();
       const fechaVista = new Date(hoy.getFullYear(), hoy.getMonth() + mesActualOffset, 1);
@@ -464,7 +514,7 @@
           const claseTurno = r.turno === 'Medio Dia' ? 'manana' : 'tarde';
           const textoTurno = r.turno === 'Medio Dia' ? 'M.Día' : 'Tarde';
           htmlSlot += `
-            <div class="slot-tag ${claseTurno}">
+            <div class="slot-tag ${claseTurno}" onclick="verDetalleEvento(${r.id})">
               <strong>[${textoTurno}] ${r.titular}</strong>
               <div>${r.motivo}</div>
             </div>`;
@@ -658,6 +708,7 @@
       const fecha = document.getElementById('reserva-fecha').value;
       const turno = document.getElementById('reserva-turno').value;
       const titular = document.getElementById('reserva-titular').value;
+      const telefono = document.getElementById('reserva-telefono').value;
       const motivo = document.getElementById('reserva-motivo').value;
 
       const paqRaw = document.getElementById('reserva-paquete').value.split('|');
@@ -681,7 +732,7 @@
       if (ocupado) return alert(`La fecha ${fecha} (${turno}) ya cuenta con una reserva agendada.`);
 
       db.reservas.push({ 
-        id: Date.now(), fecha, turno, titular, motivo, 
+        id: Date.now(), fecha, turno, titular, telefono, motivo, 
         paqueteNombre, paquetePrecio, decoracionNombre, decoracionPrecio,
         adicionalNombre, adicionalPrecio, senaAbonada, contratoFirmado, asistencia: [] 
       });
@@ -689,6 +740,7 @@
       alert('Contrato generado y evento agendado exitosamente');
       document.getElementById('reserva-titular').value = '';
       document.getElementById('reserva-motivo').value = '';
+      document.getElementById('reserva-telefono').value = '';
       guardarDB();
     }
 
