@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RU-Bi KiDS - POS & Recetario v21</title>
+  <title>RU-Bi KiDS - POS & Gestión v22</title>
 
   <link rel="icon" type="image/jpeg" href="logo.jpg">
   <link rel="apple-touch-icon" href="logo.jpg">
@@ -24,13 +24,14 @@
 
     .container { padding: 0 15px; }
 
-    .menu-cuatro-botones {
-      display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px;
+    /* MENU DE 5 BOTONES PRINCIPALES */
+    .menu-cinco-botones {
+      display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px;
     }
 
     .btn-modulo {
-      padding: 16px; border: none; border-radius: 12px; font-size: 1rem; font-weight: bold;
-      color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 14px; border: none; border-radius: 12px; font-size: 0.95rem; font-weight: bold;
+      color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: transform 0.1s;
     }
     .btn-modulo:active { transform: scale(0.98); }
@@ -38,6 +39,7 @@
     .btn-cal { background: linear-gradient(135deg, #7b1fa2, #9c27b0); }
     .btn-add { background: linear-gradient(135deg, #0288d1, #03a9f4); }
     .btn-eje { background: linear-gradient(135deg, #2e7d32, #4caf50); }
+    .btn-aud { background: linear-gradient(135deg, #f57c00, #ff9800); }
     .btn-adm { background: linear-gradient(135deg, #d84315, #ff5722); }
 
     .seccion { display: none; }
@@ -74,14 +76,6 @@
       border: 1px solid #cbd5e1; border-radius: 10px; cursor: pointer; color: #1e293b;
     }
 
-    /* PESTAÑAS ADMIN */
-    .tab-admin-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-    .btn-tab-admin {
-      padding: 12px; border: 2px solid #ccc; border-radius: 10px; background: #fff;
-      font-weight: bold; font-size: 0.85rem; cursor: pointer; text-align: center; color: #555;
-    }
-    .btn-tab-admin.activo { border-color: #d84315; background: #fbe9e7; color: #d84315; }
-
     /* CALENDARIO */
     .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .calendar-controls button { width: auto; padding: 8px 14px; margin: 0; font-size: 0.85rem; font-weight: bold; }
@@ -111,14 +105,13 @@
     .slot-tag.manana { background: #e0f7fa; color: #006064; border-left: 2px solid #00bcd4; }
     .slot-tag.tarde { background: #fff3e0; color: #e65100; border-left: 2px solid #ff9800; }
 
-    /* TARJETAS LIQUIDACIÓN RECEPCIÓN */
+    /* TARJETAS RECEPCIÓN Y AUDITORÍA */
     .box-cobro-evento {
       background: #f1f8e9; border: 1px solid #c5e1a5; border-radius: 10px; padding: 12px; margin-top: 10px;
     }
     .linea-cobro { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 4px; }
     .linea-total { display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: bold; color: #2e7d32; border-top: 2px solid #a5d6a7; padding-top: 6px; margin-top: 6px; }
 
-    /* STOCK LIST */
     .stock-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
     .stock-item {
       display: flex; justify-content: space-between; align-items: center;
@@ -128,19 +121,6 @@
     .stock-item .item-badge {
       background: #ffffff; border: 1px solid #d0d7de; border-radius: 6px;
       padding: 3px 8px; font-size: 0.8rem; font-weight: bold; color: #1976d2;
-    }
-
-    .edit-grid {
-      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 6px; align-items: center;
-      background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px; margin-top: 6px;
-    }
-    .edit-grid input { margin: 0; padding: 6px; font-size: 0.8rem; }
-    .edit-grid button { margin: 0; padding: 6px; font-size: 0.75rem; width: auto; }
-
-    .recipe-box { background: #fffde7; border: 1px solid #fff59d; border-radius: 8px; padding: 10px; margin-top: 8px; }
-    .recipe-item {
-      display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;
-      border-bottom: 1px dashed #e0e0e0; padding: 4px 0;
     }
 
     table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.8rem; }
@@ -159,17 +139,18 @@
 
   <div class="container">
 
-    <div class="menu-cuatro-botones">
+    <div class="menu-cinco-botones">
       <button class="btn-modulo btn-cal" onclick="abrirModulo('sec-calendario')">📅 1. Calendario de Eventos</button>
       <button class="btn-modulo btn-add" onclick="abrirModulo('sec-crear')">📝 2. Agregar Nuevo Evento</button>
-      <button class="btn-modulo btn-eje" onclick="abrirModulo('sec-ejecutar')">🎉 3. Ejecutar Cumpleaños (Personal)</button>
-      <button class="btn-modulo btn-adm" onclick="mostrarModalPin()">🔒 4. Panel de Control (Dueño / Auditor)</button>
+      <button class="btn-modulo btn-eje" onclick="abrirModulo('sec-ejecutar')">🎉 3. Ejecutar Evento (Personal)</button>
+      <button class="btn-modulo btn-aud" onclick="mostrarModalPin('auditoria')">🔍 4. Auditoría de Inventario</button>
+      <button class="btn-modulo btn-adm" onclick="mostrarModalPin('administracion')">💼 5. Administración (Dueño)</button>
     </div>
 
     <!-- MODAL PIN -->
     <div class="pin-overlay" id="pin-overlay">
       <div class="pin-modal">
-        <h3 style="margin-top:0; color:#1e293b;">Ingrese PIN de Acceso</h3>
+        <h3 style="margin-top:0; color:#1e293b;" id="pin-titulo">Ingrese PIN de Acceso</h3>
         <div class="pin-display" id="pin-display"></div>
         <div class="numpad">
           <button class="num-btn" onclick="pressNum('1')">1</button>
@@ -285,14 +266,13 @@
       </div>
     </div>
 
-    <!-- MÓDULO 3: EJECUTAR CUMPLEAÑOS (CON ESTADO DE CUENTA DE SEÑA Y CONSUMOS) -->
+    <!-- MÓDULO 3: EJECUTAR EVENTO (PERSONAL) -->
     <div id="sec-ejecutar" class="seccion">
       <div class="card">
         <h2>Control de Evento Seleccionado</h2>
         <label>Seleccionar Evento Activo:</label>
         <select id="select-reserva" onchange="renderEstadoCobroEvento(); renderAsistencia();"></select>
 
-        <!-- FICHA RESUMEN DE SEÑA Y CONSUMOS PARA EL PERSONAL -->
         <div class="box-cobro-evento" id="box-cobro-evento">
           <div class="linea-cobro"><span>Total Contrato:</span> <strong id="eje-total-contrato">Gs. 0</strong></div>
           <div class="linea-cobro"><span>Seña Abonada:</span> <span id="eje-sena-abonada" style="color:#2e7d32;">Gs. 0</span></div>
@@ -344,11 +324,46 @@
       </div>
     </div>
 
-    <!-- MÓDULO 4: PANEL DE CONTROL -->
+    <!-- MÓDULO 4: AUDITORÍA DE INVENTARIO -->
+    <div id="sec-auditoria" class="seccion">
+      <div class="card">
+        <h2>🔍 Módulo de Auditoría de Depósito</h2>
+        <span class="badge">Verificación física, reposición de mínimos y pedidos de compra</span>
+
+        <h3>1. Conteo Físico vs. Stock del Sistema</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Insumo</th>
+              <th>Stock Sistema</th>
+              <th>Stock Físico Real</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-auditoria-inventario"></tbody>
+        </table>
+
+        <hr style="margin-top:20px;">
+        <h3>2. Sugerencia de Pedido de Compra (Stock Mínimo)</h3>
+        <div id="box-sugerencia-compras"></div>
+
+        <hr style="margin-top:20px;">
+        <h3>3. Recepción / Entradas de Compras al Depósito</h3>
+        <label>Insumo a Recibir:</label>
+        <select id="auditor-select-insumo"></select>
+
+        <label>Cantidad que Ingresa:</label>
+        <input type="number" id="auditor-cant-ingreso" value="10" min="1">
+
+        <button class="action-btn success" onclick="recibirMercaderiaAuditoria()">📥 Confirmar Recepción de Mercadería</button>
+      </div>
+    </div>
+
+    <!-- MÓDULO 5: ADMINISTRACIÓN (DUEÑO) -->
     <div id="sec-admin" class="seccion">
 
-      <div class="card" id="card-finanzas-dueno">
-        <h2>Liquidación Financiera General</h2>
+      <div class="card">
+        <h2>💼 Tablero Financiero de Dirección</h2>
 
         <div class="kpi-box">
           <p><strong>+ Total Contratado (Paquetes + Decos):</strong> <span id="bal-contratos">Gs. 0</span></p>
@@ -359,63 +374,32 @@
           <h3 style="margin: 0; color: #2e7d32;">GANANCIA NETA ESTIMADA: <span id="bal-ganancia-neta">Gs. 0</span></h3>
         </div>
 
-        <h3 style="margin-top: 15px;">Seguimiento de Saldo por Evento</h3>
+        <h3 style="margin-top: 15px;">Cuentas Pendientes por Cobrar (Deudas)</h3>
         <table>
           <thead>
             <tr>
               <th>Evento / Cliente</th>
               <th>Total Contrato</th>
               <th>Seña / Pagos</th>
-              <th>Saldo a Cobrar</th>
+              <th>Saldo Pendiente</th>
             </tr>
           </thead>
           <tbody id="tabla-saldos-eventos"></tbody>
         </table>
       </div>
 
-      <div class="tab-admin-bar">
-        <button class="btn-tab-admin activo" id="tab-btn-stock" onclick="switchAdminTab('stock')">📦 1. Gestión de Stock</button>
-        <button class="btn-tab-admin" id="tab-btn-receta" onclick="switchAdminTab('receta')">📖 2. Recetario de Platos</button>
-      </div>
+      <div class="card">
+        <h2> Configuración de Recetarios de Productos</h2>
+        <label>Seleccionar Plato del Menú:</label>
+        <select id="receta-select-plato" onchange="renderDetalleReceta()"></select>
 
-      <div id="sub-admin-stock">
-        <div class="card">
-          <h2>Carga de Compras y Control de Insumos</h2>
-          
-          <h3>1. Registrar Nuevo Insumo / Materia Prima</h3>
-          <label>Nombre del Insumo:</label>
-          <input type="text" id="nuevo-prod-nombre" placeholder="Ej: Pre-pizza (Unidad)">
+        <div class="recipe-box" id="box-insumos-receta" style="background:#fffde7; padding:10px; border-radius:8px; margin-top:8px;"></div>
 
-          <label>Costo de Compra Unitario (Gs.):</label>
-          <input type="text" id="nuevo-prod-costo-formatted" value="0" oninput="formatInputMiles(this)">
-
-          <label>Stock Inicial en Depósito:</label>
-          <input type="number" id="nuevo-prod-stock" value="10">
-
-          <button class="action-btn purple" onclick="crearNuevoInsumo()">Cargar Insumo al Sistema</button>
-
-          <hr style="margin-top:20px;">
-          <h3>2. Modificar Insumos Existentes en Depósito</h3>
-          <div id="lista-edicion-productos" style="margin-top: 10px;"></div>
-        </div>
-      </div>
-
-      <div id="sub-admin-receta" style="display: none;">
-        <div class="card">
-          <h2>Configuración de Recetario e Insumos</h2>
-          <span class="badge">Definí los insumos que descuenta cada plato vendido</span>
-
-          <label>Seleccionar Plato del Menú:</label>
-          <select id="receta-select-plato" onchange="renderDetalleReceta()"></select>
-
-          <div class="recipe-box" id="box-insumos-receta"></div>
-
-          <h4 style="margin-bottom: 4px; margin-top: 12px;">Agregar Insumo a la Receta:</h4>
-          <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 6px;">
-            <select id="receta-select-insumo" style="margin:0;"></select>
-            <input type="number" id="receta-cant-insumo" value="1" min="1" placeholder="Cant" style="margin:0;">
-            <button class="success" style="margin:0; width:auto;" onclick="agregarInsumoAReceta()">+ Agregar</button>
-          </div>
+        <h4 style="margin-bottom: 4px; margin-top: 12px;">Agregar Insumo a la Receta:</h4>
+        <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 6px;">
+          <select id="receta-select-insumo" style="margin:0;"></select>
+          <input type="number" id="receta-cant-insumo" value="1" min="1" placeholder="Cant" style="margin:0;">
+          <button class="success" style="margin:0; width:auto;" onclick="agregarInsumoAReceta()">+ Agregar</button>
         </div>
       </div>
 
@@ -428,6 +412,7 @@
     const PIN_DUENO = "1234";
     const PIN_AUDITOR = "5678";
     let pinInput = "";
+    let destinoPin = "";
 
     function formatearGs(monto) {
       return 'Gs. ' + Number(monto || 0).toLocaleString('es-PY');
@@ -458,20 +443,20 @@
         { id: 7, nombre: 'Cerveza Heineken', precio: 22000 }
       ],
       insumos: [
-        { id: 101, nombre: 'Pan de Lomito', costo: 2500, stock: 50 },
-        { id: 102, nombre: 'Carne / Lomito', costo: 10000, stock: 40 },
-        { id: 103, nombre: 'Huevo', costo: 1000, stock: 100 },
-        { id: 104, nombre: 'Lechuga (Porción)', costo: 500, stock: 60 },
-        { id: 105, nombre: 'Tomate (Porción)', costo: 500, stock: 60 },
-        { id: 106, nombre: 'Mayonesa (Porción)', costo: 500, stock: 100 },
-        { id: 107, nombre: 'Pan de Hamburguesa', costo: 2000, stock: 50 },
-        { id: 108, nombre: 'Carne Hamburguesa', costo: 6000, stock: 50 },
-        { id: 109, nombre: 'Pre-pizza (Unidad)', costo: 3500, stock: 30 },
-        { id: 110, nombre: 'Queso Mozzarella', costo: 4000, stock: 40 },
-        { id: 111, nombre: 'Jamón Cocido', costo: 3000, stock: 40 },
-        { id: 112, nombre: 'Papas Crudas (Porción)', costo: 3000, stock: 50 },
-        { id: 113, nombre: 'Gaseosas 600ml (Botella)', costo: 4500, stock: 60 },
-        { id: 114, nombre: 'Cerveza Heineken (Botella)', costo: 12000, stock: 40 }
+        { id: 101, nombre: 'Pan de Lomito', costo: 2500, stock: 50, stockMinimo: 15 },
+        { id: 102, nombre: 'Carne / Lomito', costo: 10000, stock: 40, stockMinimo: 10 },
+        { id: 103, nombre: 'Huevo', costo: 1000, stock: 100, stockMinimo: 20 },
+        { id: 104, nombre: 'Lechuga (Porción)', costo: 500, stock: 60, stockMinimo: 15 },
+        { id: 105, nombre: 'Tomate (Porción)', costo: 500, stock: 60, stockMinimo: 15 },
+        { id: 106, nombre: 'Mayonesa (Porción)', costo: 500, stock: 100, stockMinimo: 25 },
+        { id: 107, nombre: 'Pan de Hamburguesa', costo: 2000, stock: 50, stockMinimo: 15 },
+        { id: 108, nombre: 'Carne Hamburguesa', costo: 6000, stock: 50, stockMinimo: 15 },
+        { id: 109, nombre: 'Pre-pizza (Unidad)', costo: 3500, stock: 30, stockMinimo: 10 },
+        { id: 110, nombre: 'Queso Mozzarella', costo: 4000, stock: 40, stockMinimo: 10 },
+        { id: 111, nombre: 'Jamón Cocido', costo: 3000, stock: 40, stockMinimo: 10 },
+        { id: 112, nombre: 'Papas Crudas (Porción)', costo: 3000, stock: 50, stockMinimo: 15 },
+        { id: 113, nombre: 'Gaseosas 600ml (Botella)', costo: 4500, stock: 60, stockMinimo: 20 },
+        { id: 114, nombre: 'Cerveza Heineken (Botella)', costo: 12000, stock: 40, stockMinimo: 12 }
       ],
       recetasMap: {
         'Lomito Completo': [
@@ -517,15 +502,14 @@
           senaAbonada: 1000000, contratoFirmado: true, asistencia: [], consumos: []
         }
       ],
-      movimientos: [],
       ventasTotal: 0,
       costoVentasTotal: 0
     };
 
-    let db = JSON.parse(localStorage.getItem('rubikids_pos_v21_db')) || datosIniciales;
+    let db = JSON.parse(localStorage.getItem('rubikids_pos_v22_db')) || datosIniciales;
 
     function guardarDB() {
-      localStorage.setItem('rubikids_pos_v21_db', JSON.stringify(db));
+      localStorage.setItem('rubikids_pos_v22_db', JSON.stringify(db));
       render();
     }
 
@@ -538,28 +522,11 @@
       }
     }
 
-    function switchAdminTab(tab) {
-      const subStock = document.getElementById('sub-admin-stock');
-      const subReceta = document.getElementById('sub-admin-receta');
-      const btnStock = document.getElementById('tab-btn-stock');
-      const btnReceta = document.getElementById('tab-btn-receta');
-
-      if (tab === 'stock') {
-        subStock.style.display = 'block';
-        subReceta.style.display = 'none';
-        btnStock.classList.add('activo');
-        btnReceta.classList.remove('activo');
-      } else {
-        subStock.style.display = 'none';
-        subReceta.style.display = 'block';
-        btnStock.classList.remove('activo');
-        btnReceta.classList.add('activo');
-      }
-    }
-
-    function mostrarModalPin() {
+    function mostrarModalPin(destino) {
+      destinoPin = destino;
       pinInput = "";
       document.getElementById('pin-display').innerText = "";
+      document.getElementById('pin-titulo').innerText = destino === 'auditoria' ? 'PIN Auditoría' : 'PIN Administración';
       document.getElementById('pin-overlay').style.display = 'flex';
     }
 
@@ -580,13 +547,11 @@
     }
 
     function checkPin() {
-      if (pinInput === PIN_DUENO) {
+      if (destinoPin === 'auditoria' && (pinInput === PIN_AUDITOR || pinInput === PIN_DUENO)) {
         cerrarModalPin();
-        document.getElementById('card-finanzas-dueno').style.display = 'block';
-        abrirModulo('sec-admin');
-      } else if (pinInput === PIN_AUDITOR) {
+        abrirModulo('sec-auditoria');
+      } else if (destinoPin === 'administracion' && pinInput === PIN_DUENO) {
         cerrarModalPin();
-        document.getElementById('card-finanzas-dueno').style.display = 'none';
         abrirModulo('sec-admin');
       } else {
         alert("PIN Incorrecto");
@@ -673,7 +638,6 @@
       document.getElementById('box-detalle-evento').style.display = 'none';
     }
 
-    /* ESTADO DE CUENTA Y COBRO DEL EVENTO SELECCIONADO */
     function renderEstadoCobroEvento() {
       const selectRes = document.getElementById('select-reserva');
       if (!selectRes.value) return;
@@ -767,6 +731,73 @@
       guardarDB();
     }
 
+    /* AUDITORÍA Y PEDIDO DE COMPRA */
+    function renderAuditoria() {
+      const tablaAud = document.getElementById('tabla-auditoria-inventario');
+      tablaAud.innerHTML = '';
+
+      db.insumos.forEach(i => {
+        tablaAud.innerHTML += `
+          <tr>
+            <td><strong>${i.nombre}</strong></td>
+            <td>${i.stock} un.</td>
+            <td><input type="number" id="aud-fisico-${i.id}" value="${i.stock}" style="width:70px; padding:4px;"></td>
+            <td><button class="success" style="padding:4px 8px; width:auto;" onclick="ajustarStockAuditoria(${i.id})">Ajustar</button></td>
+          </tr>`;
+      });
+
+      // Sugerencia de Compras (Insumos cerca del stock mínimo)
+      const boxSugerencia = document.getElementById('box-sugerencia-compras');
+      let htmlSugerencia = `<ul>`;
+      let hayFaltantes = false;
+
+      db.insumos.forEach(i => {
+        const min = i.stockMinimo || 10;
+        if (i.stock <= min) {
+          hayFaltantes = true;
+          let aComprar = (min * 3) - i.stock;
+          htmlSugerencia += `<li><strong>${i.nombre}:</strong> Quedan solo <b>${i.stock} un.</b> (Mínimo: ${min}). Sugerido pedir: <span style="color:#c62828; font-weight:bold;">${aComprar} un.</span></li>`;
+        }
+      });
+
+      htmlSugerencia += `</ul>`;
+
+      if (!hayFaltantes) {
+        boxSugerencia.innerHTML = `<p style="color:#2e7d32;"> En stock saludable. Todos los insumos superan el mínimo recomendado.</p>`;
+      } else {
+        boxSugerencia.innerHTML = htmlSugerencia;
+      }
+
+      // Select de Insumos para Recepción
+      const selAud = document.getElementById('auditor-select-insumo');
+      selAud.innerHTML = '';
+      db.insumos.forEach(i => {
+        selAud.innerHTML += `<option value="${i.id}">${i.nombre} (Stock Actual: ${i.stock})</option>`;
+      });
+    }
+
+    function ajustarStockAuditoria(id) {
+      const ins = db.insumos.find(i => i.id === id);
+      const nuevoVal = parseInt(document.getElementById(`aud-fisico-${id}`).value);
+      if (ins && !isNaN(nuevoVal)) {
+        ins.stock = nuevoVal;
+        alert(`Stock de ${ins.nombre} actualizado a ${nuevoVal} un.`);
+        guardarDB();
+      }
+    }
+
+    function recibirMercaderiaAuditoria() {
+      const insumoId = parseInt(document.getElementById('auditor-select-insumo').value);
+      const cant = parseInt(document.getElementById('auditor-cant-ingreso').value) || 0;
+
+      const ins = db.insumos.find(i => i.id === insumoId);
+      if (ins && cant > 0) {
+        ins.stock += cant;
+        alert(`Entrada confirmada: Se sumaron ${cant} un. a ${ins.nombre}. Nuevo stock: ${ins.stock} un.`);
+        guardarDB();
+      }
+    }
+
     function renderDetalleReceta() {
       const platoNombre = document.getElementById('receta-select-plato').value;
       const box = document.getElementById('box-insumos-receta');
@@ -783,7 +814,7 @@
         const ins = db.insumos.find(i => i.id === item.insumoId);
         if (ins) {
           box.innerHTML += `
-            <div class="recipe-item">
+            <div style="display:flex; justify-space-between; align-items:center; font-size:0.85rem; border-bottom:1px dashed #ccc; padding:4px 0;">
               <span>• ${ins.nombre} (x${item.cantidad})</span>
               <button class="danger" style="padding:2px 6px; width:auto;" onclick="quitarInsumoDeReceta('${platoNombre}', ${index})">❌</button>
             </div>`;
@@ -811,42 +842,6 @@
       }
     }
 
-    function crearNuevoInsumo() {
-      const nombre = document.getElementById('nuevo-prod-nombre').value;
-      const costo = parseMilesVal(document.getElementById('nuevo-prod-costo-formatted').value);
-      const stock = parseInt(document.getElementById('nuevo-prod-stock').value) || 0;
-
-      if (!nombre) return alert('Ingresá el nombre del insumo');
-
-      db.insumos.push({
-        id: Date.now(),
-        nombre, costo, stock
-      });
-
-      alert(`Insumo guardado: ${nombre}`);
-      document.getElementById('nuevo-prod-nombre').value = '';
-      document.getElementById('nuevo-prod-costo-formatted').value = '0';
-      document.getElementById('nuevo-prod-stock').value = '10';
-      guardarDB();
-    }
-
-    function actualizarInsumo(id) {
-      const ins = db.insumos.find(item => item.id === id);
-      if (ins) {
-        ins.stock = parseInt(document.getElementById(`edit-stock-${id}`).value) || 0;
-        ins.costo = parseMilesVal(document.getElementById(`edit-costo-${id}`).value);
-        alert(`Guardado: ${ins.nombre}`);
-        guardarDB();
-      }
-    }
-
-    function eliminarInsumo(id) {
-      if (confirm('¿Eliminar este insumo del depósito?')) {
-        db.insumos = db.insumos.filter(i => i.id !== id);
-        guardarDB();
-      }
-    }
-
     function render() {
       renderCalendario();
 
@@ -858,6 +853,7 @@
 
       renderEstadoCobroEvento();
       renderAsistencia();
+      renderAuditoria();
 
       const selectPlato = document.getElementById('select-producto');
       selectPlato.innerHTML = '';
@@ -890,22 +886,6 @@
       });
 
       renderDetalleReceta();
-
-      const listaEdicion = document.getElementById('lista-edicion-productos');
-      listaEdicion.innerHTML = '';
-      db.insumos.forEach(i => {
-        listaEdicion.innerHTML += `
-          <div class="edit-grid">
-            <strong>${i.nombre}</strong>
-            <input type="number" id="edit-stock-${i.id}" value="${i.stock}" title="Stock Depósito">
-            <input type="text" id="edit-costo-${i.id}" value="${Number(i.costo).toLocaleString('es-PY')}" oninput="formatInputMiles(this)" title="Costo Compra">
-            <span></span>
-            <div style="display:flex; gap:4px;">
-              <button class="success" onclick="actualizarInsumo(${i.id})">💾</button>
-              <button class="danger" onclick="eliminarInsumo(${i.id})">🗑️</button>
-            </div>
-          </div>`;
-      });
 
       let totalContratadoGeneral = 0;
       const tablaSaldos = document.getElementById('tabla-saldos-eventos');
