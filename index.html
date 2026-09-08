@@ -3,88 +3,824 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RU-Bi KiDS - Sistema POS</title>
+  <title>RU-Bi KiDS - Sistema POS & Gestión de Eventos</title>
 
+  <link rel="icon" type="image/jpeg" href="logo.jpg">
+  <link rel="apple-touch-icon" href="logo.jpg">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#ffffff">
+  
   <style>
     * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
-    body { background: #f4f6f9; margin: 0; padding: 15px; color: #333; }
+    body { background: #f4f6f9; margin: 0; padding: 0 0 30px 0; color: #333; }
 
-    .card { background: #fff; padding: 16px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
-    .card h2 { font-size: 1.1rem; margin-top: 0; color: #1976d2; }
+    .header-banner {
+      width: 100%; height: 100px; background-color: #ffffff;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 15px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06); padding: 10px;
+    }
+    .header-banner img { max-height: 100%; max-width: 85%; object-fit: contain; }
 
-    /* ESTILO MODERNO DE TARJETAS LIGERAS TIPO IMAGEN 2 */
-    .stock-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .container { padding: 0 15px; }
+
+    /* MENÚ PRINCIPAL */
+    .menu-principal { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px; }
+
+    .btn-main {
+      padding: 14px; border: none; border-radius: 12px; font-size: 0.95rem; font-weight: bold;
+      color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: transform 0.1s;
+    }
+    .btn-main:active { transform: scale(0.98); }
+    .btn-calendar { background: linear-gradient(135deg, #7b1fa2, #9c27b0); }
+    .btn-operaciones { background: linear-gradient(135deg, #1976d2, #2196f3); }
+
+    /* SUBMENÚ OPERATIVO (NUEVO EVENTO VS EJECUTAR) */
+    .submenu-op {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;
+    }
+    .btn-sub {
+      padding: 12px 8px; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: bold;
+      color: #333; background: #ffffff; border: 2px solid #e0e0e0; cursor: pointer; text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    }
+    .btn-sub.activo {
+      border-color: #1976d2; background: #e3f2fd; color: #1565c0;
+    }
+
+    .role-selector { background: #ffffff; padding: 12px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #e0e0e0; }
+    .role-selector select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #1976d2; font-weight: bold; background: #f4f8fb; }
+
+    .seccion { display: none; }
+    .seccion.activa { display: block; }
+
+    .card { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+    .card h2 { font-size: 1.05rem; margin-top: 0; border-bottom: 2px solid #f0f0f0; padding-bottom: 6px; color: #1976d2; }
     
+    label { display: block; font-size: 0.85rem; margin-top: 10px; font-weight: 600; color: #555; }
+    input, select, button { width: 100%; padding: 10px; margin-top: 4px; border-radius: 6px; border: 1px solid #ccc; font-size: 0.9rem; }
+    
+    button.action-btn { background: #1976d2; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 12px; }
+    button.success { background: #388e3c; }
+    button.warning { background: #f57c00; }
+    button.purple { background: #7b1fa2; }
+    
+    .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .calendar-controls button { width: auto; padding: 6px 12px; margin: 0; font-size: 0.8rem; }
+    .month-title { font-weight: bold; font-size: 1.1rem; color: #4a148c; }
+
+    .month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 8px; text-align: center; }
+    .month-header { font-weight: bold; font-size: 0.75rem; background: #f3e5f5; color: #4a148c; padding: 5px 0; border-radius: 4px; }
+    
+    .day-cell { background: #fafafa; border: 1px solid #e0e0e0; border-radius: 6px; min-height: 70px; padding: 3px; font-size: 0.7rem; text-align: left; }
+    .day-number { font-weight: bold; color: #666; margin-bottom: 2px; }
+    .day-cell.today { border: 2px solid #7b1fa2; background: #f3e5f5; }
+
+    .slot-tag { 
+      font-size: 0.65rem; padding: 3px 4px; border-radius: 4px; margin-top: 2px; 
+      display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;
+    }
+    .slot-tag.manana { background: #e0f7fa; color: #006064; border-left: 3px solid #00bcd4; }
+    .slot-tag.tarde { background: #fff3e0; color: #e65100; border-left: 3px solid #ff9800; }
+
+    /* DETALLE FICHA EVENTO */
+    .modal-detalle {
+      display: none; background: #f3e5f5; border: 2px solid #7b1fa2;
+      border-radius: 10px; padding: 12px; margin-top: 12px; font-size: 0.85rem;
+    }
+    .modal-detalle h3 { margin-top: 0; color: #4a148c; border-bottom: 1px solid #ce93d8; padding-bottom: 4px; }
+
+    .checkbox-container { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 0.85rem; font-weight: bold; color: #2e7d32; }
+    .checkbox-container input { width: auto; margin: 0; }
+
+    /* STOCK LIMPIO TIPO IMAGEN 2 */
+    .stock-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
     .stock-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #f8fafd;
-      border: 1px solid #e1e8ed;
-      border-radius: 8px;
-      padding: 8px 12px;
+      display: flex; justify-content: space-between; align-items: center;
+      background: #f8fafd; border: 1px solid #e1e8ed; border-radius: 8px; padding: 8px 12px;
     }
-
-    .stock-item .item-name {
-      font-size: 0.9rem;
-      color: #333;
-      font-weight: 500;
-    }
-
+    .stock-item .item-name { font-size: 0.85rem; color: #333; font-weight: 500; }
     .stock-item .item-badge {
-      background: #ffffff;
-      border: 1px solid #d0d7de;
-      border-radius: 6px;
-      padding: 4px 10px;
-      font-size: 0.85rem;
-      font-weight: bold;
-      color: #1976d2;
-      min-width: 60px;
-      text-align: center;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      background: #ffffff; border: 1px solid #d0d7de; border-radius: 6px;
+      padding: 3px 8px; font-size: 0.8rem; font-weight: bold; color: #1976d2;
     }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.8rem; }
+    th, td { border: 1px solid #e0e0e0; padding: 6px; text-align: left; }
+    th { background: #f5f5f5; color: #333; }
+
+    .dueno-only { display: none; background: #fff8e1; border: 1px solid #ffe082; }
+    .dueno-only h2 { color: #d84315; }
+
+    .auditor-only { display: none; background: #f3e5f5; border: 1px solid #ce93d8; }
+    .auditor-only h2 { color: #6a1b9a; }
+
+    .kpi-box { background: #e8f5e9; padding: 10px; border-radius: 8px; border: 1px solid #a5d6a7; margin-top: 10px; font-size: 0.9rem; }
+    .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; background: #e1f5fe; color: #0288d1; font-weight: bold; }
+    
+    .mov-entrada { color: #2e7d32; font-weight: bold; }
+    .mov-salida { color: #c62828; font-weight: bold; }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <h2>Stock Disponible en Local</h2>
+  <div class="header-banner">
+    <img src="logo.jpg" alt="RU-Bi KiDS">
+  </div>
 
-    <!-- CONTENEDOR TIPO FILAS REDONDEADAS DE LA SEGUNDA IMAGEN -->
-    <div class="stock-list" id="lista-stock-clean">
-      <div class="stock-item">
-        <span class="item-name">Lomito Completo</span>
-        <span class="item-badge">999 un.</span>
-      </div>
-      <div class="stock-item">
-        <span class="item-name">Gaseosas 600ml</span>
-        <span class="item-badge">60 un.</span>
-      </div>
-      <div class="stock-item">
-        <span class="item-name">Cerveza Heineken</span>
-        <span class="item-badge">40 un.</span>
-      </div>
-      <div class="stock-item">
-        <span class="item-name">Pan de Lomito</span>
-        <span class="item-badge">60 un.</span>
+  <div class="container">
+
+    <div class="menu-principal">
+      <button class="btn-main btn-calendar" onclick="mostrarSeccion('seccion-calendario')">
+        📅 Ver Calendario / Agenda (12 Meses)
+      </button>
+      <button class="btn-main btn-operaciones" onclick="mostrarSeccion('seccion-operaciones')">
+        👥 Acceso Operativo / Recepción
+      </button>
+    </div>
+
+    <!-- CALENDARIO ANUAL -->
+    <div id="seccion-calendario" class="seccion">
+      <div class="card">
+        <h2>Agenda de Eventos (Anual RU-Bi KiDS)</h2>
+        <span class="badge">Tocá cualquier evento para ver su ficha técnica</span>
+        
+        <div class="calendar-controls" style="margin-top: 10px;">
+          <button onclick="cambiarMes(-1)">◀ Anterior</button>
+          <span class="month-title" id="titulo-mes">Septiembre 2026</span>
+          <button onclick="cambiarMes(1)">Siguiente ▶</button>
+        </div>
+
+        <div class="month-grid">
+          <div class="month-header">Dom</div>
+          <div class="month-header">Lun</div>
+          <div class="month-header">Mar</div>
+          <div class="month-header">Mié</div>
+          <div class="month-header">Jue</div>
+          <div class="month-header">Vie</div>
+          <div class="month-header">Sáb</div>
+        </div>
+
+        <div class="month-grid" id="grid-calendario"></div>
+
+        <!-- FICHA DETALLE DEL EVENTO -->
+        <div class="modal-detalle" id="box-detalle-evento">
+          <h3 id="det-titulo">Detalles del Evento</h3>
+          <p><strong>Fecha / Turno:</strong> <span id="det-fecha-turno"></span></p>
+          <p><strong>Responsable:</strong> <span id="det-responsable"></span> (<span id="det-telefono"></span>)</p>
+          <p><strong>Paquete Contratado:</strong> <span id="det-paquete"></span></p>
+          <p><strong>Tipo de Decoración:</strong> <span id="det-decoracion"></span></p>
+          <p><strong>Adicionales Fijos:</strong> <span id="det-adicional"></span></p>
+          <hr>
+          <p><strong>Total Contrato:</strong> <span id="det-monto-total" style="font-weight:bold; color:#2e7d32;"></span></p>
+          <p><strong>Monto Abonado (Seña/Pagos):</strong> <span id="det-monto-abonado"></span></p>
+          <p><strong>Saldo Pendiente:</strong> <span id="det-monto-saldo" style="font-weight:bold; color:#c62828;"></span></p>
+          <button class="action-btn" style="margin-top:8px;" onclick="cerrarDetalle()">Cerrar Ficha</button>
+        </div>
+
       </div>
     </div>
+
+    <!-- OPERACIONES -->
+    <div id="seccion-operaciones" class="seccion">
+
+      <div class="role-selector">
+        <label>Perfil de Usuario:</label>
+        <select id="rol-select" onchange="cambiarRol()">
+          <option value="personal">Personal / Recepción (Ingresos y Salidas)</option>
+          <option value="auditor">Auditor / Inventario (Cargas y Compras)</option>
+          <option value="dueno">Dueño / Administrador (Acceso Total y Liquidaciones)</option>
+        </select>
+      </div>
+
+      <!-- BOTONES SECUNDARIOS EN EL PANEL DE OPERACIONES -->
+      <div class="submenu-op" id="panel-botones-sub">
+        <button class="btn-sub activo" id="btn-tab-crear" onclick="switchTabOp('crear')">
+          📝 1. Crear Nuevo Evento
+        </button>
+        <button class="btn-sub" id="btn-tab-ejecutar" onclick="switchTabOp('ejecutar')">
+          🎉 2. Ejecutar Evento / Recepción
+        </button>
+      </div>
+
+      <!-- VISTA A: CONTRATO Y AGENDAMIENTO NUEVO -->
+      <div id="vista-crear-evento">
+        <div class="card op-block">
+          <h2>Crear Contrato de Evento RU-Bi KiDS</h2>
+          
+          <label>Nombre del Cumpleañero/a y Edad:</label>
+          <input type="text" id="reserva-motivo" placeholder="Ej: Santi (5 años)">
+
+          <label>Responsable del Evento (Cliente):</label>
+          <input type="text" id="reserva-titular" placeholder="Ej: Juan Lezcano">
+
+          <label>Teléfono / Celular:</label>
+          <input type="text" id="reserva-telefono" placeholder="Ej: 0981 123456">
+
+          <label>Fecha del Evento:</label>
+          <input type="date" id="reserva-fecha">
+
+          <label>Turno:</label>
+          <select id="reserva-turno">
+            <option value="Medio Dia">Turno Medio Día</option>
+            <option value="Tarde">Turno Tarde</option>
+          </select>
+
+          <label>Seleccionar Paquete Oficial:</label>
+          <select id="reserva-paquete">
+            <option value="Paquete Mini (10 niños)|1800000">Paquete Mini (10 Niños) - Gs. 1.800.000</option>
+            <option value="Paquete Standard (20 niños)|2100000">Paquete Standard (20 Niños) - Gs. 2.100.000</option>
+            <option value="Paquete Full (30 niños)|2400000">Paquete Full (30 Niños) - Gs. 2.400.000</option>
+          </select>
+
+          <label>Opción de Decoración:</label>
+          <select id="reserva-decoracion">
+            <option value="Sin Decoración|0">Sin Decoración Incluida (Gs. 0)</option>
+            <option value="Deco RU-Bi KiDS|600000">Deco RU-Bi KiDS (Gs. 600.000)</option>
+            <option value="Deco Básica|1200000">Deco Básica (Gs. 1.200.000)</option>
+            <option value="Deco Full|1900000">Deco Full (Gs. 1.900.000)</option>
+            <option value="Deco VIP Premium|2800000">Deco VIP Premium (Gs. 2.800.000)</option>
+            <option value="Derecho a Decoración Externa|500000">Derecho a Decoración Externa (Gs. 500.000)</option>
+          </select>
+
+          <label>Derechos / Adicionales Fijos:</label>
+          <select id="reserva-adicionales-fijos">
+            <option value="Sin Adicional Fijo|0">Ninguno</option>
+            <option value="APA y SGP Ley 1328/98|198000">APA y SGP Música (Gs. 198.000)</option>
+            <option value="Plus Fin de Semana / Feriado|300000">Plus Fin de Semana / Feriado (Gs. 300.000)</option>
+            <option value="Derecho a Show|300000">Derecho a Show Externo (Gs. 300.000)</option>
+            <option value="Derecho a Fotografía|200000">Derecho a Fotografía (Gs. 200.000)</option>
+          </select>
+
+          <label>Seña Abonada (Reserva de Local Gs. 1.000.000 por defecto):</label>
+          <input type="number" id="reserva-sena" value="1000000">
+
+          <div class="checkbox-container">
+            <input type="checkbox" id="reserva-contrato" checked>
+            <label for="reserva-contrato" style="margin: 0;">¿Términos y Contrato Aceptados?</label>
+          </div>
+
+          <button class="action-btn" onclick="crearReserva()">Generar Contrato y Guardar Evento</button>
+        </div>
+      </div>
+
+      <!-- VISTA B: EJECUTAR EVENTO EN VIVO (RECEPCIÓN Y SALIDA DE STOCK) -->
+      <div id="vista-ejecutar-evento" style="display: none;">
+        <!-- RECEPCIÓN DE INVITADOS -->
+        <div class="card op-block">
+          <h2>Control de Ingreso (Recepción en Vivo)</h2>
+          <label>Seleccionar Evento del Día:</label>
+          <select id="select-reserva" onchange="renderAsistencia()"></select>
+
+          <label>Adulto Responsable / Invitado:</label>
+          <input type="text" id="nombre-invitado" placeholder="Ej: María Giménez">
+
+          <label>Cantidad de Niños:</label>
+          <input type="number" id="cant-ninos" value="1" min="0">
+
+          <label>Nombres / Detalle de los Niños:</label>
+          <input type="text" id="detalle-ninos" placeholder="Ej: Lucas y Sofía">
+
+          <button class="action-btn success" onclick="registrarIngreso()">Registrar Ingreso</button>
+
+          <h3>Invitados Presentes en Local</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Adulto</th>
+                <th>Niños</th>
+                <th>Detalle</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-asistencia"></tbody>
+          </table>
+        </div>
+
+        <!-- SALIDA DE PRODUCTOS Y VISTA STOCK LIMPIA -->
+        <div class="card op-block">
+          <h2>Venta y Consumo de Cantina / Menú</h2>
+          <label>Seleccionar Menú / Producto:</label>
+          <select id="select-producto"></select>
+
+          <label>Cantidad:</label>
+          <input type="number" id="cant-producto" value="1" min="1">
+
+          <button class="action-btn warning" onclick="registrarVenta()">Procesar Salida / Venta</button>
+
+          <h3>Stock Disponible en Local</h3>
+          <div class="stock-list" id="lista-stock-personal"></div>
+        </div>
+      </div>
+
+      <!-- AUDITORÍA -->
+      <div class="card auditor-only" id="seccion-auditor">
+        <h2>Auditoría: Carga de Compras e Insumos</h2>
+        
+        <h3>Recepcionar Mercadería</h3>
+        <label>Insumo o Producto:</label>
+        <select id="audit-select-prod"></select>
+
+        <label>Cantidad Recibida:</label>
+        <input type="number" id="audit-cant-ingreso" placeholder="Ej: 50">
+
+        <label>Costo de Compra Unitario (Gs.):</label>
+        <input type="number" id="audit-costo-unitario" placeholder="Ej: 3500">
+
+        <button class="action-btn purple" onclick="recepcionarPedido()">Cargar Entrada a Stock</button>
+
+        <hr>
+        <h3>Cotejo de Entradas y Salidas</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Hora</th>
+              <th>Tipo</th>
+              <th>Ítem</th>
+              <th>Cant.</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-historial-movimientos"></tbody>
+        </table>
+      </div>
+
+      <!-- BALANCE DUEÑO -->
+      <div class="card dueno-only" id="modulo-dueno">
+        <h2>Liquidación Financiera y Estado de Contratos</h2>
+
+        <div class="kpi-box">
+          <p><strong>+ Total Contratado (Paquetes + Decos):</strong> <span id="bal-contratos">Gs. 0</span></p>
+          <p><strong>+ Ventas de Cantina / Menú Extra:</strong> <span id="bal-ventas">Gs. 0</span></p>
+          <hr>
+          <p><strong>- Costo Real de Insumos Usados:</strong> <span id="bal-costos" style="color: #c62828;">Gs. 0</span></p>
+          <hr>
+          <h3 style="margin: 0; color: #2e7d32;">GANANCIA NETA ESTIMADA: <span id="bal-ganancia-neta">Gs. 0</span></h3>
+        </div>
+
+        <h3 style="margin-top: 15px;">Seguimiento de Saldo por Evento</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Evento / Cliente</th>
+              <th>Total Contrato</th>
+              <th>Seña / Pagos</th>
+              <th>Saldo a Cobrar</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-saldos-eventos"></tbody>
+        </table>
+      </div>
+
+    </div>
+
   </div>
 
   <script>
-    // Función JavaScript para renderizar dinámicamente con este estilo
-    function renderStockClean(productos) {
-      const contenedor = document.getElementById('lista-stock-clean');
-      contenedor.innerHTML = '';
+    let mesActualOffset = 0;
 
-      productos.forEach(p => {
-        contenedor.innerHTML += `
+    function formatearGs(monto) {
+      return 'Gs. ' + Number(monto || 0).toLocaleString('es-PY');
+    }
+
+    const recetas = {
+      'Lomito Completo': [
+        { ingrediente: 'Pan de Lomito', cantidad: 1 },
+        { ingrediente: 'Carne / Lomito', cantidad: 1 },
+        { ingrediente: 'Huevo', cantidad: 1 }
+      ],
+      'Lomito Simple': [
+        { ingrediente: 'Pan de Lomito', cantidad: 1 },
+        { ingrediente: 'Carne / Lomito', cantidad: 1 }
+      ],
+      'Hamburguesa': [
+        { ingrediente: 'Pan de Hamburguesa', cantidad: 1 },
+        { ingrediente: 'Carne Hamburguesa', cantidad: 1 }
+      ],
+      'Milanesa al Plato': [
+        { ingrediente: 'Milanesa (Unidad)', cantidad: 1 }
+      ],
+      'Papas Fritas': [
+        { ingrediente: 'Papas Crudas (Porción)', cantidad: 1 }
+      ],
+      'Pizzetas': [
+        { ingrediente: 'Masa Pizzeta', cantidad: 1 },
+        { ingrediente: 'Queso Mozzarella (Porción)', cantidad: 1 }
+      ]
+    };
+
+    const datosIniciales = {
+      reservas: [
+        { 
+          id: 1, fecha: '2026-09-12', turno: 'Tarde', titular: 'Juan Lezcano', telefono: '0981 123456', motivo: 'Santi (5 años)', 
+          paqueteNombre: 'Paquete Standard (20 niños)', paquetePrecio: 2100000,
+          decoracionNombre: 'Deco RU-Bi KiDS', decoracionPrecio: 600000, 
+          adicionalNombre: 'APA y SGP', adicionalPrecio: 198000,
+          senaAbonada: 1000000, contratoFirmado: true, asistencia: [] 
+        }
+      ],
+      productos: [
+        { id: 1, nombre: 'Lomito Completo', precio: 35000, costo: 0, stock: 999 },
+        { id: 2, nombre: 'Lomito Simple', precio: 30000, costo: 0, stock: 999 },
+        { id: 3, nombre: 'Lomito al Plato', precio: 35000, costo: 0, stock: 999 },
+        { id: 4, nombre: 'Hamburguesa', precio: 28000, costo: 0, stock: 999 },
+        { id: 5, nombre: 'Milanesa al Plato', precio: 35000, costo: 0, stock: 999 },
+        { id: 6, nombre: 'Papas Fritas', precio: 10000, costo: 0, stock: 999 },
+        { id: 7, nombre: 'Pizzetas', precio: 25000, costo: 0, stock: 999 },
+        { id: 8, nombre: 'Gaseosas 600ml', precio: 9000, costo: 4500, stock: 60 },
+        { id: 9, nombre: 'Cerveza Heineken', precio: 22000, costo: 12000, stock: 40 },
+        { id: 10, nombre: 'Agua mineral', precio: 8000, costo: 3000, stock: 50 },
+
+        { id: 101, nombre: 'Pan de Lomito', precio: 0, costo: 2500, stock: 60 },
+        { id: 102, nombre: 'Pan de Hamburguesa', precio: 0, costo: 2000, stock: 60 },
+        { id: 103, nombre: 'Carne / Lomito', precio: 0, costo: 10000, stock: 50 },
+        { id: 104, nombre: 'Carne Hamburguesa', precio: 0, costo: 6000, stock: 50 },
+        { id: 105, nombre: 'Huevo', precio: 0, costo: 1000, stock: 100 },
+        { id: 106, nombre: 'Milanesa (Unidad)', precio: 0, costo: 9000, stock: 30 },
+        { id: 107, nombre: 'Papas Crudas (Porción)', precio: 0, costo: 3000, stock: 50 },
+        { id: 108, nombre: 'Masa Pizzeta', precio: 0, costo: 4000, stock: 30 },
+        { id: 109, nombre: 'Queso Mozzarella (Porción)', precio: 0, costo: 3500, stock: 50 }
+      ],
+      movimientos: [],
+      ventasTotal: 0,
+      costoVentasTotal: 0
+    };
+
+    let db = JSON.parse(localStorage.getItem('rubikids_pos_v13_db')) || datosIniciales;
+
+    function guardarDB() {
+      localStorage.setItem('rubikids_pos_v13_db', JSON.stringify(db));
+      render();
+    }
+
+    function mostrarSeccion(idSeccion) {
+      document.querySelectorAll('.seccion').forEach(sec => sec.classList.remove('activa'));
+      const sec = document.getElementById(idSeccion);
+      if (sec) {
+        sec.classList.add('activa');
+        sec.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function switchTabOp(tab) {
+      const vCrear = document.getElementById('vista-crear-evento');
+      const vEjecutar = document.getElementById('vista-ejecutar-evento');
+      const btnCrear = document.getElementById('btn-tab-crear');
+      const btnEjecutar = document.getElementById('btn-tab-ejecutar');
+
+      if (tab === 'crear') {
+        vCrear.style.display = 'block';
+        vEjecutar.style.display = 'none';
+        btnCrear.classList.add('activo');
+        btnEjecutar.classList.remove('activo');
+      } else {
+        vCrear.style.display = 'none';
+        vEjecutar.style.display = 'block';
+        btnCrear.classList.remove('activo');
+        btnEjecutar.classList.add('activo');
+      }
+    }
+
+    function cambiarRol() {
+      const rol = document.getElementById('rol-select').value;
+      const subMenuBtns = document.getElementById('panel-botones-sub');
+      const duenoSec = document.getElementById('modulo-dueno');
+      const auditorSec = document.getElementById('seccion-auditor');
+
+      if (rol === 'auditor') {
+        subMenuBtns.style.display = 'none';
+        document.getElementById('vista-crear-evento').style.display = 'none';
+        document.getElementById('vista-ejecutar-evento').style.display = 'none';
+        duenoSec.style.display = 'none';
+        auditorSec.style.display = 'block';
+      } else if (rol === 'dueno') {
+        subMenuBtns.style.display = 'grid';
+        switchTabOp('crear');
+        duenoSec.style.display = 'block';
+        auditorSec.style.display = 'block';
+      } else {
+        // Personal
+        subMenuBtns.style.display = 'grid';
+        switchTabOp('ejecutar'); // Por defecto al personal lo envía directamente a la ejecución en vivo
+        duenoSec.style.display = 'none';
+        auditorSec.style.display = 'none';
+      }
+    }
+
+    function cambiarMes(delta) {
+      const nuevoOffset = mesActualOffset + delta;
+      if (nuevoOffset >= 0 && nuevoOffset <= 12) {
+        mesActualOffset = nuevoOffset;
+        renderCalendario();
+      } else {
+        alert('El calendario abarca hasta 12 meses a futuro.');
+      }
+    }
+
+    function verDetalleEvento(idReserva) {
+      const res = db.reservas.find(r => r.id === idReserva);
+      if (!res) return;
+
+      let totalContrato = Number(res.paquetePrecio || 0) + Number(res.decoracionPrecio || 0) + Number(res.adicionalPrecio || 0);
+      let saldo = totalContrato - Number(res.senaAbonada || 0);
+
+      document.getElementById('det-titulo').innerText = `Cumpleaños: ${res.motivo}`;
+      document.getElementById('det-fecha-turno').innerText = `${res.fecha} (${res.turno})`;
+      document.getElementById('det-responsable').innerText = res.titular;
+      document.getElementById('det-telefono').innerText = res.telefono || 'Sin registrar';
+      document.getElementById('det-paquete').innerText = `${res.paqueteNombre} (${formatearGs(res.paquetePrecio)})`;
+      document.getElementById('det-decoracion').innerText = `${res.decoracionNombre} (${formatearGs(res.decoracionPrecio)})`;
+      document.getElementById('det-adicional').innerText = `${res.adicionalNombre} (${formatearGs(res.adicionalPrecio)})`;
+      document.getElementById('det-monto-total').innerText = formatearGs(totalContrato);
+      document.getElementById('det-monto-abonado').innerText = formatearGs(res.senaAbonada);
+      document.getElementById('det-monto-saldo').innerText = formatearGs(saldo);
+
+      document.getElementById('box-detalle-evento').style.display = 'block';
+      document.getElementById('box-detalle-evento').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function cerrarDetalle() {
+      document.getElementById('box-detalle-evento').style.display = 'none';
+    }
+
+    function renderCalendario() {
+      const hoy = new Date();
+      const fechaVista = new Date(hoy.getFullYear(), hoy.getMonth() + mesActualOffset, 1);
+      
+      const mesNombre = fechaVista.toLocaleString('es', { month: 'long' });
+      const ano = fechaVista.getFullYear();
+      document.getElementById('titulo-mes').innerText = `${mesNombre.charAt(0).toUpperCase() + mesNombre.slice(1)} ${ano}`;
+
+      const primerDiaSemana = new Date(ano, fechaVista.getMonth(), 1).getDay();
+      const ultimoDiaMes = new Date(ano, fechaVista.getMonth() + 1, 0).getDate();
+
+      const grid = document.getElementById('grid-calendario');
+      grid.innerHTML = '';
+
+      for (let i = 0; i < primerDiaSemana; i++) {
+        grid.innerHTML += `<div class="day-cell" style="background:#f5f5f5;"></div>`;
+      }
+
+      for (let dia = 1; dia <= ultimoDiaMes; dia++) {
+        const fechaStr = `${ano}-${String(fechaVista.getMonth() + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+        const esHoy = (dia === hoy.getDate() && fechaVista.getMonth() === hoy.getMonth() && ano === hoy.getFullYear());
+
+        const reservasDia = db.reservas.filter(r => r.fecha === fechaStr);
+        
+        let htmlSlot = '';
+        reservasDia.forEach(r => {
+          const claseTurno = r.turno === 'Medio Dia' ? 'manana' : 'tarde';
+          const textoTurno = r.turno === 'Medio Dia' ? 'M.Día' : 'Tarde';
+          htmlSlot += `
+            <div class="slot-tag ${claseTurno}" onclick="verDetalleEvento(${r.id})">
+              <strong>[${textoTurno}] ${r.titular}</strong>
+              <div>${r.motivo}</div>
+            </div>`;
+        });
+
+        grid.innerHTML += `
+          <div class="day-cell ${esHoy ? 'today' : ''}">
+            <div class="day-number">${dia}</div>
+            ${htmlSlot}
+          </div>`;
+      }
+    }
+
+    function render() {
+      renderCalendario();
+
+      const selectRes = document.getElementById('select-reserva');
+      selectRes.innerHTML = '';
+      db.reservas.forEach(r => {
+        selectRes.innerHTML += `<option value="${r.id}">${r.fecha} (${r.turno}) - ${r.titular} [${r.motivo}]</option>`;
+      });
+
+      renderAsistencia();
+
+      const selectProd = document.getElementById('select-producto');
+      const auditSelectProd = document.getElementById('audit-select-prod');
+      const listaStockPersonal = document.getElementById('lista-stock-personal');
+
+      selectProd.innerHTML = '';
+      auditSelectProd.innerHTML = '';
+      listaStockPersonal.innerHTML = '';
+
+      db.productos.forEach(p => {
+        if (p.precio > 0) {
+          selectProd.innerHTML += `<option value="${p.id}">${p.nombre}</option>`;
+        }
+        
+        auditSelectProd.innerHTML += `<option value="${p.id}">${p.nombre} (Stock: ${p.stock})</option>`;
+
+        listaStockPersonal.innerHTML += `
           <div class="stock-item">
             <span class="item-name">${p.nombre}</span>
             <span class="item-badge">${p.stock} un.</span>
           </div>`;
       });
+
+      // Historial
+      const tablaHistorial = document.getElementById('tabla-historial-movimientos');
+      tablaHistorial.innerHTML = '';
+      db.movimientos.slice(-10).reverse().forEach(m => {
+        tablaHistorial.innerHTML += `
+          <tr>
+            <td>${m.fecha}</td>
+            <td class="${m.tipo === 'ENTRADA' ? 'mov-entrada' : 'mov-salida'}">${m.tipo}</td>
+            <td>${m.producto}</td>
+            <td>${m.cantidad}</td>
+          </tr>`;
+      });
+
+      // Saldos Dueño
+      const tablaSaldos = document.getElementById('tabla-saldos-eventos');
+      tablaSaldos.innerHTML = '';
+      let totalContratadoGeneral = 0;
+
+      db.reservas.forEach(r => {
+        let costoContrato = Number(r.paquetePrecio || 0) + Number(r.decoracionPrecio || 0) + Number(r.adicionalPrecio || 0);
+        let saldoPendiente = costoContrato - Number(r.senaAbonada || 0);
+        totalContratadoGeneral += costoContrato;
+
+        tablaSaldos.innerHTML += `
+          <tr>
+            <td><strong>${r.titular}</strong><br><small>${r.motivo}</small></td>
+            <td>${formatearGs(costoContrato)}</td>
+            <td>${formatearGs(r.senaAbonada)}</td>
+            <td style="color: ${saldoPendiente > 0 ? '#c62828' : '#2e7d32'}; font-weight:bold;">
+              ${formatearGs(saldoPendiente)}
+            </td>
+          </tr>`;
+      });
+
+      // Balances
+      let totalVentas = db.ventasTotal || 0;
+      let totalCostos = db.costoVentasTotal || 0;
+      let gananciaNeta = (totalContratadoGeneral + totalVentas) - totalCostos;
+
+      document.getElementById('bal-contratos').innerText = formatearGs(totalContratadoGeneral);
+      document.getElementById('bal-ventas').innerText = formatearGs(totalVentas);
+      document.getElementById('bal-costos').innerText = formatearGs(totalCostos);
+      document.getElementById('bal-ganancia-neta').innerText = formatearGs(gananciaNeta);
     }
+
+    function renderAsistencia() {
+      const selectRes = document.getElementById('select-reserva');
+      if (!selectRes.value) return;
+      const idReserva = parseInt(selectRes.value);
+      const reservaActual = db.reservas.find(r => r.id === idReserva);
+      const tablaAsistencia = document.getElementById('tabla-asistencia');
+      tablaAsistencia.innerHTML = '';
+
+      if (reservaActual && reservaActual.asistencia) {
+        reservaActual.asistencia.forEach(a => {
+          tablaAsistencia.innerHTML += `
+            <tr>
+              <td>${a.adulto}</td>
+              <td>${a.ninos}</td>
+              <td>${a.detalle || '-'}</td>
+            </tr>`;
+        });
+      }
+    }
+
+    function registrarIngreso() {
+      const idReserva = parseInt(document.getElementById('select-reserva').value);
+      const adulto = document.getElementById('nombre-invitado').value;
+      const ninos = parseInt(document.getElementById('cant-ninos').value) || 0;
+      const detalle = document.getElementById('detalle-ninos').value;
+
+      if (!adulto) return alert('Ingresá el nombre del adulto/invitado');
+
+      const reserva = db.reservas.find(r => r.id === idReserva);
+      if (reserva) {
+        reserva.asistencia.push({ adulto, ninos, detalle });
+        alert('Ingreso registrado');
+        document.getElementById('nombre-invitado').value = '';
+        document.getElementById('detalle-ninos').value = '';
+        guardarDB();
+      }
+    }
+
+    function registrarVenta() {
+      const idProd = parseInt(document.getElementById('select-producto').value);
+      const cant = parseInt(document.getElementById('cant-producto').value);
+      const prod = db.productos.find(p => p.id === idProd);
+
+      if (!prod) return alert('Seleccioná un producto');
+
+      if (recetas[prod.nombre]) {
+        const ingredientes = recetas[prod.nombre];
+
+        for (let item of ingredientes) {
+          const insumo = db.productos.find(p => p.nombre === item.ingrediente);
+          const necesario = item.cantidad * cant;
+          if (!insumo || insumo.stock < necesario) {
+            return alert(`Insumo insuficiente para ${prod.nombre}: Falta ${item.ingrediente}`);
+          }
+        }
+
+        ingredientes.forEach(item => {
+          const insumo = db.productos.find(p => p.nombre === item.ingrediente);
+          const descuento = item.cantidad * cant;
+          insumo.stock -= descuento;
+          db.costoVentasTotal = (db.costoVentasTotal || 0) + (insumo.costo * descuento);
+
+          db.movimientos.push({
+            fecha: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            tipo: 'RECETA',
+            producto: `${insumo.nombre} (por ${prod.nombre})`,
+            cantidad: `-${descuento}`
+          });
+        });
+
+      } else {
+        if (prod.stock < cant) return alert('Stock insuficiente');
+        prod.stock -= cant;
+        db.costoVentasTotal = (db.costoVentasTotal || 0) + (prod.costo * cant);
+
+        db.movimientos.push({
+          fecha: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          tipo: 'SALIDA',
+          producto: prod.nombre,
+          cantidad: `-${cant}`
+        });
+      }
+
+      db.ventasTotal += (prod.precio * cant);
+      alert(`Salida registrada para: ${prod.nombre}`);
+      guardarDB();
+    }
+
+    function crearReserva() {
+      const fecha = document.getElementById('reserva-fecha').value;
+      const turno = document.getElementById('reserva-turno').value;
+      const titular = document.getElementById('reserva-titular').value;
+      const telefono = document.getElementById('reserva-telefono').value;
+      const motivo = document.getElementById('reserva-motivo').value;
+
+      const paqRaw = document.getElementById('reserva-paquete').value.split('|');
+      const paqueteNombre = paqRaw[0];
+      const paquetePrecio = parseFloat(paqRaw[1]) || 0;
+
+      const decoRaw = document.getElementById('reserva-decoracion').value.split('|');
+      const decoracionNombre = decoRaw[0];
+      const decoracionPrecio = parseFloat(decoRaw[1]) || 0;
+
+      const adicRaw = document.getElementById('reserva-adicionales-fijos').value.split('|');
+      const adicionalNombre = adicRaw[0];
+      const adicionalPrecio = parseFloat(adicRaw[1]) || 0;
+
+      const senaAbonada = parseFloat(document.getElementById('reserva-sena').value) || 0;
+      const contratoFirmado = document.getElementById('reserva-contrato').checked;
+
+      if (!fecha || !titular || !motivo) return alert('Completá la fecha, cliente y cumpleañero/a');
+
+      const ocupado = db.reservas.some(r => r.fecha === fecha && r.turno === turno);
+      if (ocupado) return alert(`La fecha ${fecha} (${turno}) ya cuenta con una reserva agendada.`);
+
+      db.reservas.push({ 
+        id: Date.now(), fecha, turno, titular, telefono, motivo, 
+        paqueteNombre, paquetePrecio, decoracionNombre, decoracionPrecio,
+        adicionalNombre, adicionalPrecio, senaAbonada, contratoFirmado, asistencia: [] 
+      });
+
+      alert('Contrato generado y evento agendado exitosamente');
+      document.getElementById('reserva-titular').value = '';
+      document.getElementById('reserva-motivo').value = '';
+      document.getElementById('reserva-telefono').value = '';
+      guardarDB();
+    }
+
+    function recepcionarPedido() {
+      const idProd = parseInt(document.getElementById('audit-select-prod').value);
+      const cant = parseInt(document.getElementById('audit-cant-ingreso').value);
+      const nuevoCosto = parseFloat(document.getElementById('audit-costo-unitario').value);
+
+      if (!idProd || isNaN(cant) || cant <= 0 || isNaN(nuevoCosto)) return alert('Completá cantidad y costo unitario');
+
+      const prod = db.productos.find(p => p.id === idProd);
+      if (prod) {
+        prod.stock += cant;
+        prod.costo = nuevoCosto;
+
+        db.movimientos.push({
+          fecha: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          tipo: 'ENTRADA',
+          producto: prod.nombre,
+          cantidad: `+${cant}`
+        });
+
+        alert(`Stock cargado: +${cant} un. a ${prod.nombre}`);
+        document.getElementById('audit-cant-ingreso').value = '';
+        document.getElementById('audit-costo-unitario').value = '';
+        guardarDB();
+      }
+    }
+
+    document.getElementById('reserva-fecha').valueAsDate = new Date();
+
+    cambiarRol();
+    render();
   </script>
 </body>
 </html>
