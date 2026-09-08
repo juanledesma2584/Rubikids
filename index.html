@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RU-Bi KiDS - Sistema POS & Gestión de Eventos</title>
+  <title>RU-Bi KiDS - Sistema Integrado</title>
 
   <link rel="icon" type="image/jpeg" href="logo.jpg">
   <link rel="apple-touch-icon" href="logo.jpg">
@@ -24,34 +24,27 @@
 
     .container { padding: 0 15px; }
 
-    /* MENÚ PRINCIPAL */
-    .menu-principal { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px; }
+    /* MENÚ PRINCIPAL DE 4 BOTONES */
+    .menu-cuatro-botones {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
 
-    .btn-main {
-      padding: 14px; border: none; border-radius: 12px; font-size: 0.95rem; font-weight: bold;
-      color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    .btn-modulo {
+      padding: 16px; border: none; border-radius: 12px; font-size: 1rem; font-weight: bold;
+      color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: transform 0.1s;
     }
-    .btn-main:active { transform: scale(0.98); }
-    .btn-calendar { background: linear-gradient(135deg, #7b1fa2, #9c27b0); }
-    .btn-operaciones { background: linear-gradient(135deg, #1976d2, #2196f3); }
+    .btn-modulo:active { transform: scale(0.98); }
+    
+    .btn-cal { background: linear-gradient(135deg, #7b1fa2, #9c27b0); }
+    .btn-add { background: linear-gradient(135deg, #0288d1, #03a9f4); }
+    .btn-eje { background: linear-gradient(135deg, #2e7d32, #4caf50); }
+    .btn-adm { background: linear-gradient(135deg, #d84315, #ff5722); }
 
-    /* SUBMENÚ OPERATIVO (NUEVO EVENTO VS EJECUTAR) */
-    .submenu-op {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;
-    }
-    .btn-sub {
-      padding: 12px 8px; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: bold;
-      color: #333; background: #ffffff; border: 2px solid #e0e0e0; cursor: pointer; text-align: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
-    }
-    .btn-sub.activo {
-      border-color: #1976d2; background: #e3f2fd; color: #1565c0;
-    }
-
-    .role-selector { background: #ffffff; padding: 12px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #e0e0e0; }
-    .role-selector select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #1976d2; font-weight: bold; background: #f4f8fb; }
-
+    /* SECCIONES OCULTABLES */
     .seccion { display: none; }
     .seccion.activa { display: block; }
 
@@ -84,7 +77,6 @@
     .slot-tag.manana { background: #e0f7fa; color: #006064; border-left: 3px solid #00bcd4; }
     .slot-tag.tarde { background: #fff3e0; color: #e65100; border-left: 3px solid #ff9800; }
 
-    /* DETALLE FICHA EVENTO */
     .modal-detalle {
       display: none; background: #f3e5f5; border: 2px solid #7b1fa2;
       border-radius: 10px; padding: 12px; margin-top: 12px; font-size: 0.85rem;
@@ -94,7 +86,6 @@
     .checkbox-container { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 0.85rem; font-weight: bold; color: #2e7d32; }
     .checkbox-container input { width: auto; margin: 0; }
 
-    /* STOCK LIMPIO TIPO IMAGEN 2 */
     .stock-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
     .stock-item {
       display: flex; justify-content: space-between; align-items: center;
@@ -110,17 +101,8 @@
     th, td { border: 1px solid #e0e0e0; padding: 6px; text-align: left; }
     th { background: #f5f5f5; color: #333; }
 
-    .dueno-only { display: none; background: #fff8e1; border: 1px solid #ffe082; }
-    .dueno-only h2 { color: #d84315; }
-
-    .auditor-only { display: none; background: #f3e5f5; border: 1px solid #ce93d8; }
-    .auditor-only h2 { color: #6a1b9a; }
-
     .kpi-box { background: #e8f5e9; padding: 10px; border-radius: 8px; border: 1px solid #a5d6a7; margin-top: 10px; font-size: 0.9rem; }
     .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; background: #e1f5fe; color: #0288d1; font-weight: bold; }
-    
-    .mov-entrada { color: #2e7d32; font-weight: bold; }
-    .mov-salida { color: #c62828; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -131,20 +113,27 @@
 
   <div class="container">
 
-    <div class="menu-principal">
-      <button class="btn-main btn-calendar" onclick="mostrarSeccion('seccion-calendario')">
-        📅 Ver Calendario / Agenda (12 Meses)
+    <!-- PANTALLA PRINCIPAL CON 4 BOTONES UNICAMENTE -->
+    <div class="menu-cuatro-botones">
+      <button class="btn-modulo btn-cal" onclick="abrirModulo('sec-calendario')">
+        📅 1. Calendario de Eventos
       </button>
-      <button class="btn-main btn-operaciones" onclick="mostrarSeccion('seccion-operaciones')">
-        👥 Acceso Operativo / Recepción
+      <button class="btn-modulo btn-add" onclick="abrirModulo('sec-crear')">
+        📝 2. Agregar Nuevo Evento
+      </button>
+      <button class="btn-modulo btn-eje" onclick="abrirModulo('sec-ejecutar')">
+        🎉 3. Ejecutar Cumpleaños
+      </button>
+      <button class="btn-modulo btn-adm" onclick="abrirModulo('sec-admin')">
+        📊 4. Panel de Control y Balances
       </button>
     </div>
 
-    <!-- CALENDARIO ANUAL -->
-    <div id="seccion-calendario" class="seccion">
+    <!-- MÓDULO 1: CALENDARIO ANUAL -->
+    <div id="sec-calendario" class="seccion">
       <div class="card">
-        <h2>Agenda de Eventos (Anual RU-Bi KiDS)</h2>
-        <span class="badge">Tocá cualquier evento para ver su ficha técnica</span>
+        <h2>Agenda de Eventos (RU-Bi KiDS)</h2>
+        <span class="badge">Tocá cualquier evento para ver su detalle</span>
         
         <div class="calendar-controls" style="margin-top: 10px;">
           <button onclick="cambiarMes(-1)">◀ Anterior</button>
@@ -164,160 +153,136 @@
 
         <div class="month-grid" id="grid-calendario"></div>
 
-        <!-- FICHA DETALLE DEL EVENTO -->
         <div class="modal-detalle" id="box-detalle-evento">
           <h3 id="det-titulo">Detalles del Evento</h3>
           <p><strong>Fecha / Turno:</strong> <span id="det-fecha-turno"></span></p>
           <p><strong>Responsable:</strong> <span id="det-responsable"></span> (<span id="det-telefono"></span>)</p>
-          <p><strong>Paquete Contratado:</strong> <span id="det-paquete"></span></p>
-          <p><strong>Tipo de Decoración:</strong> <span id="det-decoracion"></span></p>
-          <p><strong>Adicionales Fijos:</strong> <span id="det-adicional"></span></p>
+          <p><strong>Paquete:</strong> <span id="det-paquete"></span></p>
+          <p><strong>Decoración:</strong> <span id="det-decoracion"></span></p>
+          <p><strong>Adicionales:</strong> <span id="det-adicional"></span></p>
           <hr>
           <p><strong>Total Contrato:</strong> <span id="det-monto-total" style="font-weight:bold; color:#2e7d32;"></span></p>
-          <p><strong>Monto Abonado (Seña/Pagos):</strong> <span id="det-monto-abonado"></span></p>
+          <p><strong>Monto Abonado:</strong> <span id="det-monto-abonado"></span></p>
           <p><strong>Saldo Pendiente:</strong> <span id="det-monto-saldo" style="font-weight:bold; color:#c62828;"></span></p>
           <button class="action-btn" style="margin-top:8px;" onclick="cerrarDetalle()">Cerrar Ficha</button>
         </div>
-
       </div>
     </div>
 
-    <!-- OPERACIONES -->
-    <div id="seccion-operaciones" class="seccion">
-
-      <div class="role-selector">
-        <label>Perfil de Usuario:</label>
-        <select id="rol-select" onchange="cambiarRol()">
-          <option value="personal">Personal / Recepción (Ingresos y Salidas)</option>
-          <option value="auditor">Auditor / Inventario (Cargas y Compras)</option>
-          <option value="dueno">Dueño / Administrador (Acceso Total y Liquidaciones)</option>
-        </select>
-      </div>
-
-      <!-- BOTONES SECUNDARIOS EN EL PANEL DE OPERACIONES -->
-      <div class="submenu-op" id="panel-botones-sub">
-        <button class="btn-sub activo" id="btn-tab-crear" onclick="switchTabOp('crear')">
-          📝 1. Crear Nuevo Evento
-        </button>
-        <button class="btn-sub" id="btn-tab-ejecutar" onclick="switchTabOp('ejecutar')">
-          🎉 2. Ejecutar Evento / Recepción
-        </button>
-      </div>
-
-      <!-- VISTA A: CONTRATO Y AGENDAMIENTO NUEVO -->
-      <div id="vista-crear-evento">
-        <div class="card op-block">
-          <h2>Crear Contrato de Evento RU-Bi KiDS</h2>
-          
-          <label>Nombre del Cumpleañero/a y Edad:</label>
-          <input type="text" id="reserva-motivo" placeholder="Ej: Santi (5 años)">
-
-          <label>Responsable del Evento (Cliente):</label>
-          <input type="text" id="reserva-titular" placeholder="Ej: Juan Lezcano">
-
-          <label>Teléfono / Celular:</label>
-          <input type="text" id="reserva-telefono" placeholder="Ej: 0981 123456">
-
-          <label>Fecha del Evento:</label>
-          <input type="date" id="reserva-fecha">
-
-          <label>Turno:</label>
-          <select id="reserva-turno">
-            <option value="Medio Dia">Turno Medio Día</option>
-            <option value="Tarde">Turno Tarde</option>
-          </select>
-
-          <label>Seleccionar Paquete Oficial:</label>
-          <select id="reserva-paquete">
-            <option value="Paquete Mini (10 niños)|1800000">Paquete Mini (10 Niños) - Gs. 1.800.000</option>
-            <option value="Paquete Standard (20 niños)|2100000">Paquete Standard (20 Niños) - Gs. 2.100.000</option>
-            <option value="Paquete Full (30 niños)|2400000">Paquete Full (30 Niños) - Gs. 2.400.000</option>
-          </select>
-
-          <label>Opción de Decoración:</label>
-          <select id="reserva-decoracion">
-            <option value="Sin Decoración|0">Sin Decoración Incluida (Gs. 0)</option>
-            <option value="Deco RU-Bi KiDS|600000">Deco RU-Bi KiDS (Gs. 600.000)</option>
-            <option value="Deco Básica|1200000">Deco Básica (Gs. 1.200.000)</option>
-            <option value="Deco Full|1900000">Deco Full (Gs. 1.900.000)</option>
-            <option value="Deco VIP Premium|2800000">Deco VIP Premium (Gs. 2.800.000)</option>
-            <option value="Derecho a Decoración Externa|500000">Derecho a Decoración Externa (Gs. 500.000)</option>
-          </select>
-
-          <label>Derechos / Adicionales Fijos:</label>
-          <select id="reserva-adicionales-fijos">
-            <option value="Sin Adicional Fijo|0">Ninguno</option>
-            <option value="APA y SGP Ley 1328/98|198000">APA y SGP Música (Gs. 198.000)</option>
-            <option value="Plus Fin de Semana / Feriado|300000">Plus Fin de Semana / Feriado (Gs. 300.000)</option>
-            <option value="Derecho a Show|300000">Derecho a Show Externo (Gs. 300.000)</option>
-            <option value="Derecho a Fotografía|200000">Derecho a Fotografía (Gs. 200.000)</option>
-          </select>
-
-          <label>Seña Abonada (Reserva de Local Gs. 1.000.000 por defecto):</label>
-          <input type="number" id="reserva-sena" value="1000000">
-
-          <div class="checkbox-container">
-            <input type="checkbox" id="reserva-contrato" checked>
-            <label for="reserva-contrato" style="margin: 0;">¿Términos y Contrato Aceptados?</label>
-          </div>
-
-          <button class="action-btn" onclick="crearReserva()">Generar Contrato y Guardar Evento</button>
-        </div>
-      </div>
-
-      <!-- VISTA B: EJECUTAR EVENTO EN VIVO (RECEPCIÓN Y SALIDA DE STOCK) -->
-      <div id="vista-ejecutar-evento" style="display: none;">
-        <!-- RECEPCIÓN DE INVITADOS -->
-        <div class="card op-block">
-          <h2>Control de Ingreso (Recepción en Vivo)</h2>
-          <label>Seleccionar Evento del Día:</label>
-          <select id="select-reserva" onchange="renderAsistencia()"></select>
-
-          <label>Adulto Responsable / Invitado:</label>
-          <input type="text" id="nombre-invitado" placeholder="Ej: María Giménez">
-
-          <label>Cantidad de Niños:</label>
-          <input type="number" id="cant-ninos" value="1" min="0">
-
-          <label>Nombres / Detalle de los Niños:</label>
-          <input type="text" id="detalle-ninos" placeholder="Ej: Lucas y Sofía">
-
-          <button class="action-btn success" onclick="registrarIngreso()">Registrar Ingreso</button>
-
-          <h3>Invitados Presentes en Local</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Adulto</th>
-                <th>Niños</th>
-                <th>Detalle</th>
-              </tr>
-            </thead>
-            <tbody id="tabla-asistencia"></tbody>
-          </table>
-        </div>
-
-        <!-- SALIDA DE PRODUCTOS Y VISTA STOCK LIMPIA -->
-        <div class="card op-block">
-          <h2>Venta y Consumo de Cantina / Menú</h2>
-          <label>Seleccionar Menú / Producto:</label>
-          <select id="select-producto"></select>
-
-          <label>Cantidad:</label>
-          <input type="number" id="cant-producto" value="1" min="1">
-
-          <button class="action-btn warning" onclick="registrarVenta()">Procesar Salida / Venta</button>
-
-          <h3>Stock Disponible en Local</h3>
-          <div class="stock-list" id="lista-stock-personal"></div>
-        </div>
-      </div>
-
-      <!-- AUDITORÍA -->
-      <div class="card auditor-only" id="seccion-auditor">
-        <h2>Auditoría: Carga de Compras e Insumos</h2>
+    <!-- MÓDULO 2: CREAR EVENTO / CONTRATO -->
+    <div id="sec-crear" class="seccion">
+      <div class="card">
+        <h2>Crear / Agendar Evento</h2>
         
-        <h3>Recepcionar Mercadería</h3>
+        <label>Nombre del Cumpleañero/a y Edad:</label>
+        <input type="text" id="reserva-motivo" placeholder="Ej: Santi (5 años)">
+
+        <label>Responsable del Evento (Cliente):</label>
+        <input type="text" id="reserva-titular" placeholder="Ej: Juan Lezcano">
+
+        <label>Teléfono / Celular:</label>
+        <input type="text" id="reserva-telefono" placeholder="Ej: 0981 123456">
+
+        <label>Fecha del Evento:</label>
+        <input type="date" id="reserva-fecha">
+
+        <label>Turno:</label>
+        <select id="reserva-turno">
+          <option value="Medio Dia">Turno Medio Día</option>
+          <option value="Tarde">Turno Tarde</option>
+        </select>
+
+        <label>Seleccionar Paquete Oficial:</label>
+        <select id="reserva-paquete">
+          <option value="Paquete Mini (10 niños)|1800000">Paquete Mini (10 Niños) - Gs. 1.800.000</option>
+          <option value="Paquete Standard (20 niños)|2100000">Paquete Standard (20 Niños) - Gs. 2.100.000</option>
+          <option value="Paquete Full (30 niños)|2400000">Paquete Full (30 Niños) - Gs. 2.400.000</option>
+        </select>
+
+        <label>Opción de Decoración:</label>
+        <select id="reserva-decoracion">
+          <option value="Sin Decoración|0">Sin Decoración Incluida (Gs. 0)</option>
+          <option value="Deco RU-Bi KiDS|600000">Deco RU-Bi KiDS (Gs. 600.000)</option>
+          <option value="Deco Básica|1200000">Deco Básica (Gs. 1.200.000)</option>
+          <option value="Deco Full|1900000">Deco Full (Gs. 1.900.000)</option>
+          <option value="Deco VIP Premium|2800000">Deco VIP Premium (Gs. 2.800.000)</option>
+          <option value="Derecho a Decoración Externa|500000">Derecho a Decoración Externa (Gs. 500.000)</option>
+        </select>
+
+        <label>Derechos / Adicionales Fijos:</label>
+        <select id="reserva-adicionales-fijos">
+          <option value="Sin Adicional Fijo|0">Ninguno</option>
+          <option value="APA y SGP Ley 1328/98|198000">APA y SGP Música (Gs. 198.000)</option>
+          <option value="Plus Fin de Semana / Feriado|300000">Plus Fin de Semana / Feriado (Gs. 300.000)</option>
+          <option value="Derecho a Show|300000">Derecho a Show Externo (Gs. 300.000)</option>
+          <option value="Derecho a Fotografía|200000">Derecho a Fotografía (Gs. 200.000)</option>
+        </select>
+
+        <label>Seña Abonada (Reserva Gs. 1.000.000):</label>
+        <input type="number" id="reserva-sena" value="1000000">
+
+        <div class="checkbox-container">
+          <input type="checkbox" id="reserva-contrato" checked>
+          <label for="reserva-contrato" style="margin: 0;">¿Contrato Aceptado?</label>
+        </div>
+
+        <button class="action-btn" onclick="crearReserva()">Generar Contrato y Guardar Evento</button>
+      </div>
+    </div>
+
+    <!-- MÓDULO 3: EJECUTAR CUMPLEAÑOS (PERSONAL EN VIVO) -->
+    <div id="sec-ejecutar" class="seccion">
+      <!-- RECEPCIÓN DE INVITADOS -->
+      <div class="card">
+        <h2>Control de Ingreso (Recepción)</h2>
+        <label>Seleccionar Evento del Día:</label>
+        <select id="select-reserva" onchange="renderAsistencia()"></select>
+
+        <label>Adulto Responsable / Invitado:</label>
+        <input type="text" id="nombre-invitado" placeholder="Ej: María Giménez">
+
+        <label>Cantidad de Niños:</label>
+        <input type="number" id="cant-ninos" value="1" min="0">
+
+        <label>Nombres / Detalle de los Niños:</label>
+        <input type="text" id="detalle-ninos" placeholder="Ej: Lucas y Sofía">
+
+        <button class="action-btn success" onclick="registrarIngreso()">Registrar Ingreso</button>
+
+        <h3>Invitados Presentes en Local</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Adulto</th>
+              <th>Niños</th>
+              <th>Detalle</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-asistencia"></tbody>
+        </table>
+      </div>
+
+      <!-- SALIDA DE PRODUCTOS (GANTINA/COCINA) -->
+      <div class="card">
+        <h2>Venta y Consumo de Cantina / Menú</h2>
+        <label>Seleccionar Menú / Producto:</label>
+        <select id="select-producto"></select>
+
+        <label>Cantidad:</label>
+        <input type="number" id="cant-producto" value="1" min="1">
+
+        <button class="action-btn warning" onclick="registrarVenta()">Procesar Salida / Venta</button>
+
+        <h3>Stock Disponible en Local</h3>
+        <div class="stock-list" id="lista-stock-personal"></div>
+      </div>
+    </div>
+
+    <!-- MÓDULO 4: PANEL DE CONTROL Y ADMINISTRACIÓN -->
+    <div id="sec-admin" class="seccion">
+      <!-- COTEJO Y AUDITORÍA DE STOCK -->
+      <div class="card">
+        <h2>Auditoría de Compras y Recepción</h2>
         <label>Insumo o Producto:</label>
         <select id="audit-select-prod"></select>
 
@@ -344,9 +309,9 @@
         </table>
       </div>
 
-      <!-- BALANCE DUEÑO -->
-      <div class="card dueno-only" id="modulo-dueno">
-        <h2>Liquidación Financiera y Estado de Contratos</h2>
+      <!-- FINANZAS Y BALANCES (DUEÑO) -->
+      <div class="card">
+        <h2>Liquidación Financiera General</h2>
 
         <div class="kpi-box">
           <p><strong>+ Total Contratado (Paquetes + Decos):</strong> <span id="bal-contratos">Gs. 0</span></p>
@@ -370,7 +335,6 @@
           <tbody id="tabla-saldos-eventos"></tbody>
         </table>
       </div>
-
     </div>
 
   </div>
@@ -445,64 +409,19 @@
       costoVentasTotal: 0
     };
 
-    let db = JSON.parse(localStorage.getItem('rubikids_pos_v13_db')) || datosIniciales;
+    let db = JSON.parse(localStorage.getItem('rubikids_pos_v14_db')) || datosIniciales;
 
     function guardarDB() {
-      localStorage.setItem('rubikids_pos_v13_db', JSON.stringify(db));
+      localStorage.setItem('rubikids_pos_v14_db', JSON.stringify(db));
       render();
     }
 
-    function mostrarSeccion(idSeccion) {
+    function abrirModulo(idSeccion) {
       document.querySelectorAll('.seccion').forEach(sec => sec.classList.remove('activa'));
       const sec = document.getElementById(idSeccion);
       if (sec) {
         sec.classList.add('activa');
         sec.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-
-    function switchTabOp(tab) {
-      const vCrear = document.getElementById('vista-crear-evento');
-      const vEjecutar = document.getElementById('vista-ejecutar-evento');
-      const btnCrear = document.getElementById('btn-tab-crear');
-      const btnEjecutar = document.getElementById('btn-tab-ejecutar');
-
-      if (tab === 'crear') {
-        vCrear.style.display = 'block';
-        vEjecutar.style.display = 'none';
-        btnCrear.classList.add('activo');
-        btnEjecutar.classList.remove('activo');
-      } else {
-        vCrear.style.display = 'none';
-        vEjecutar.style.display = 'block';
-        btnCrear.classList.remove('activo');
-        btnEjecutar.classList.add('activo');
-      }
-    }
-
-    function cambiarRol() {
-      const rol = document.getElementById('rol-select').value;
-      const subMenuBtns = document.getElementById('panel-botones-sub');
-      const duenoSec = document.getElementById('modulo-dueno');
-      const auditorSec = document.getElementById('seccion-auditor');
-
-      if (rol === 'auditor') {
-        subMenuBtns.style.display = 'none';
-        document.getElementById('vista-crear-evento').style.display = 'none';
-        document.getElementById('vista-ejecutar-evento').style.display = 'none';
-        duenoSec.style.display = 'none';
-        auditorSec.style.display = 'block';
-      } else if (rol === 'dueno') {
-        subMenuBtns.style.display = 'grid';
-        switchTabOp('crear');
-        duenoSec.style.display = 'block';
-        auditorSec.style.display = 'block';
-      } else {
-        // Personal
-        subMenuBtns.style.display = 'grid';
-        switchTabOp('ejecutar'); // Por defecto al personal lo envía directamente a la ejecución en vivo
-        duenoSec.style.display = 'none';
-        auditorSec.style.display = 'none';
       }
     }
 
@@ -819,7 +738,6 @@
 
     document.getElementById('reserva-fecha').valueAsDate = new Date();
 
-    cambiarRol();
     render();
   </script>
 </body>
