@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RU-Bi KiDS - POS & Recetario Corregido</title>
+  <title>RU-Bi KiDS - POS & Recetario v21</title>
 
   <link rel="icon" type="image/jpeg" href="logo.jpg">
   <link rel="apple-touch-icon" href="logo.jpg">
@@ -50,10 +50,10 @@
     input, select, button { width: 100%; padding: 10px; margin-top: 4px; border-radius: 6px; border: 1px solid #ccc; font-size: 0.9rem; }
     
     button.action-btn { background: #1976d2; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 12px; }
-    button.success { background: #388e3c; }
-    button.warning { background: #f57c00; }
+    button.success { background: #388e3c; color: white; font-weight: bold; }
+    button.warning { background: #f57c00; color: white; font-weight: bold; }
     button.danger { background: #c62828; color: white; border: none; }
-    button.purple { background: #7b1fa2; }
+    button.purple { background: #7b1fa2; color: white; font-weight: bold; }
     
     /* MODAL PIN */
     .pin-overlay {
@@ -73,6 +73,14 @@
       padding: 15px; font-size: 1.2rem; font-weight: bold; background: #f8fafc;
       border: 1px solid #cbd5e1; border-radius: 10px; cursor: pointer; color: #1e293b;
     }
+
+    /* PESTAÑAS ADMIN */
+    .tab-admin-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+    .btn-tab-admin {
+      padding: 12px; border: 2px solid #ccc; border-radius: 10px; background: #fff;
+      font-weight: bold; font-size: 0.85rem; cursor: pointer; text-align: center; color: #555;
+    }
+    .btn-tab-admin.activo { border-color: #d84315; background: #fbe9e7; color: #d84315; }
 
     /* CALENDARIO */
     .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
@@ -103,7 +111,14 @@
     .slot-tag.manana { background: #e0f7fa; color: #006064; border-left: 2px solid #00bcd4; }
     .slot-tag.tarde { background: #fff3e0; color: #e65100; border-left: 2px solid #ff9800; }
 
-    /* TARJETAS STOCK */
+    /* TARJETAS LIQUIDACIÓN RECEPCIÓN */
+    .box-cobro-evento {
+      background: #f1f8e9; border: 1px solid #c5e1a5; border-radius: 10px; padding: 12px; margin-top: 10px;
+    }
+    .linea-cobro { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 4px; }
+    .linea-total { display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: bold; color: #2e7d32; border-top: 2px solid #a5d6a7; padding-top: 6px; margin-top: 6px; }
+
+    /* STOCK LIST */
     .stock-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
     .stock-item {
       display: flex; justify-content: space-between; align-items: center;
@@ -263,20 +278,33 @@
           <option value="Derecho a Fotografía|200000">Derecho a Fotografía (Gs. 200.000)</option>
         </select>
 
-        <label>Seña Abonada (Reserva Gs. 1.000.000):</label>
-        <input type="number" id="reserva-sena" value="1000000">
+        <label>Seña Abonada (Gs. - Formato Automático):</label>
+        <input type="text" id="reserva-sena-formatted" value="1.000.000" oninput="formatInputMiles(this)">
 
         <button class="action-btn" onclick="crearReserva()">Generar Contrato y Guardar Evento</button>
       </div>
     </div>
 
-    <!-- MÓDULO 3: EJECUTAR CUMPLEAÑOS -->
+    <!-- MÓDULO 3: EJECUTAR CUMPLEAÑOS (CON ESTADO DE CUENTA DE SEÑA Y CONSUMOS) -->
     <div id="sec-ejecutar" class="seccion">
       <div class="card">
-        <h2>Control de Ingreso (Recepción)</h2>
-        <label>Seleccionar Evento del Día:</label>
-        <select id="select-reserva" onchange="renderAsistencia()"></select>
+        <h2>Control de Evento Seleccionado</h2>
+        <label>Seleccionar Evento Activo:</label>
+        <select id="select-reserva" onchange="renderEstadoCobroEvento(); renderAsistencia();"></select>
 
+        <!-- FICHA RESUMEN DE SEÑA Y CONSUMOS PARA EL PERSONAL -->
+        <div class="box-cobro-evento" id="box-cobro-evento">
+          <div class="linea-cobro"><span>Total Contrato:</span> <strong id="eje-total-contrato">Gs. 0</strong></div>
+          <div class="linea-cobro"><span>Seña Abonada:</span> <span id="eje-sena-abonada" style="color:#2e7d32;">Gs. 0</span></div>
+          <div class="linea-cobro"><span>Saldo Contrato Pendiente:</span> <span id="eje-saldo-contrato" style="color:#c62828;">Gs. 0</span></div>
+          <div class="linea-cobro"><span>Consumos Extras Cantina:</span> <span id="eje-total-consumo" style="color:#f57c00;">Gs. 0</span></div>
+          <div class="linea-total"><span>TOTAL A COBRAR:</span> <span id="eje-monto-final">Gs. 0</span></div>
+
+          <button class="action-btn purple" style="margin-top:10px;" onclick="verHistorialConsumoFamilia()">📋 Ver Historial de Consumos de la Familia</button>
+        </div>
+
+        <hr style="margin-top:15px;">
+        <h3>Registro de Invitados (Recepción)</h3>
         <label>Adulto Responsable / Invitado:</label>
         <input type="text" id="nombre-invitado" placeholder="Ej: María Giménez">
 
@@ -309,7 +337,7 @@
         <label>Cantidad:</label>
         <input type="number" id="cant-producto" value="1" min="1">
 
-        <button class="action-btn warning" onclick="registrarVenta()">Procesar Salida / Venta</button>
+        <button class="action-btn warning" onclick="registrarVenta()">Procesar Salida / Venta a la Cuenta</button>
 
         <h3>Stock de Insumos en Depósito</h3>
         <div class="stock-list" id="lista-stock-personal"></div>
@@ -318,43 +346,6 @@
 
     <!-- MÓDULO 4: PANEL DE CONTROL -->
     <div id="sec-admin" class="seccion">
-
-      <div class="card">
-        <h2>Configuración de Recetario e Insumos</h2>
-        <span class="badge">Definí los insumos que descuenta cada plato vendido</span>
-
-        <label>Seleccionar Plato del Menú:</label>
-        <select id="receta-select-plato" onchange="renderDetalleReceta()"></select>
-
-        <div class="recipe-box" id="box-insumos-receta"></div>
-
-        <h4 style="margin-bottom: 4px; margin-top: 12px;">Agregar Insumo a la Receta:</h4>
-        <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 6px;">
-          <select id="receta-select-insumo" style="margin:0;"></select>
-          <input type="number" id="receta-cant-insumo" value="1" min="1" placeholder="Cant" style="margin:0;">
-          <button class="success" style="margin:0; width:auto;" onclick="agregarInsumoAReceta()">+ Agregar</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Carga de Compras y Control de Insumos</h2>
-        
-        <h3>1. Registrar Nuevo Insumo / Materia Prima</h3>
-        <label>Nombre del Insumo:</label>
-        <input type="text" id="nuevo-prod-nombre" placeholder="Ej: Jamón cocido">
-
-        <label>Costo de Compra Unitario (Gs.):</label>
-        <input type="number" id="nuevo-prod-costo" value="0">
-
-        <label>Stock Inicial en Depósito:</label>
-        <input type="number" id="nuevo-prod-stock" value="10">
-
-        <button class="action-btn purple" onclick="crearNuevoInsumo()">Cargar Insumo al Sistema</button>
-
-        <hr style="margin-top:20px;">
-        <h3>2. Modificar Insumos Existentes en Depósito</h3>
-        <div id="lista-edicion-productos" style="margin-top: 10px;"></div>
-      </div>
 
       <div class="card" id="card-finanzas-dueno">
         <h2>Liquidación Financiera General</h2>
@@ -381,6 +372,53 @@
           <tbody id="tabla-saldos-eventos"></tbody>
         </table>
       </div>
+
+      <div class="tab-admin-bar">
+        <button class="btn-tab-admin activo" id="tab-btn-stock" onclick="switchAdminTab('stock')">📦 1. Gestión de Stock</button>
+        <button class="btn-tab-admin" id="tab-btn-receta" onclick="switchAdminTab('receta')">📖 2. Recetario de Platos</button>
+      </div>
+
+      <div id="sub-admin-stock">
+        <div class="card">
+          <h2>Carga de Compras y Control de Insumos</h2>
+          
+          <h3>1. Registrar Nuevo Insumo / Materia Prima</h3>
+          <label>Nombre del Insumo:</label>
+          <input type="text" id="nuevo-prod-nombre" placeholder="Ej: Pre-pizza (Unidad)">
+
+          <label>Costo de Compra Unitario (Gs.):</label>
+          <input type="text" id="nuevo-prod-costo-formatted" value="0" oninput="formatInputMiles(this)">
+
+          <label>Stock Inicial en Depósito:</label>
+          <input type="number" id="nuevo-prod-stock" value="10">
+
+          <button class="action-btn purple" onclick="crearNuevoInsumo()">Cargar Insumo al Sistema</button>
+
+          <hr style="margin-top:20px;">
+          <h3>2. Modificar Insumos Existentes en Depósito</h3>
+          <div id="lista-edicion-productos" style="margin-top: 10px;"></div>
+        </div>
+      </div>
+
+      <div id="sub-admin-receta" style="display: none;">
+        <div class="card">
+          <h2>Configuración de Recetario e Insumos</h2>
+          <span class="badge">Definí los insumos que descuenta cada plato vendido</span>
+
+          <label>Seleccionar Plato del Menú:</label>
+          <select id="receta-select-plato" onchange="renderDetalleReceta()"></select>
+
+          <div class="recipe-box" id="box-insumos-receta"></div>
+
+          <h4 style="margin-bottom: 4px; margin-top: 12px;">Agregar Insumo a la Receta:</h4>
+          <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 6px;">
+            <select id="receta-select-insumo" style="margin:0;"></select>
+            <input type="number" id="receta-cant-insumo" value="1" min="1" placeholder="Cant" style="margin:0;">
+            <button class="success" style="margin:0; width:auto;" onclick="agregarInsumoAReceta()">+ Agregar</button>
+          </div>
+        </div>
+      </div>
+
     </div>
 
   </div>
@@ -393,6 +431,20 @@
 
     function formatearGs(monto) {
       return 'Gs. ' + Number(monto || 0).toLocaleString('es-PY');
+    }
+
+    function formatInputMiles(input) {
+      let val = input.value.replace(/\D/g, "");
+      if (val === "") {
+        input.value = "";
+      } else {
+        input.value = Number(val).toLocaleString('es-PY');
+      }
+    }
+
+    function parseMilesVal(inputVal) {
+      if (!inputVal) return 0;
+      return parseFloat(inputVal.toString().replace(/\./g, "")) || 0;
     }
 
     const datosIniciales = {
@@ -414,7 +466,7 @@
         { id: 106, nombre: 'Mayonesa (Porción)', costo: 500, stock: 100 },
         { id: 107, nombre: 'Pan de Hamburguesa', costo: 2000, stock: 50 },
         { id: 108, nombre: 'Carne Hamburguesa', costo: 6000, stock: 50 },
-        { id: 109, nombre: 'Harina (Masa Pizza)', costo: 2000, stock: 30 },
+        { id: 109, nombre: 'Pre-pizza (Unidad)', costo: 3500, stock: 30 },
         { id: 110, nombre: 'Queso Mozzarella', costo: 4000, stock: 40 },
         { id: 111, nombre: 'Jamón Cocido', costo: 3000, stock: 40 },
         { id: 112, nombre: 'Papas Crudas (Porción)', costo: 3000, stock: 50 },
@@ -462,7 +514,7 @@
           paqueteNombre: 'Paquete Standard (20 niños)', paquetePrecio: 2100000,
           decoracionNombre: 'Deco RU-Bi KiDS', decoracionPrecio: 600000, 
           adicionalNombre: 'APA y SGP', adicionalPrecio: 198000,
-          senaAbonada: 1000000, contratoFirmado: true, asistencia: [] 
+          senaAbonada: 1000000, contratoFirmado: true, asistencia: [], consumos: []
         }
       ],
       movimientos: [],
@@ -470,10 +522,10 @@
       costoVentasTotal: 0
     };
 
-    let db = JSON.parse(localStorage.getItem('rubikids_pos_v19_db')) || datosIniciales;
+    let db = JSON.parse(localStorage.getItem('rubikids_pos_v21_db')) || datosIniciales;
 
     function guardarDB() {
-      localStorage.setItem('rubikids_pos_v19_db', JSON.stringify(db));
+      localStorage.setItem('rubikids_pos_v21_db', JSON.stringify(db));
       render();
     }
 
@@ -483,6 +535,25 @@
       if (sec) {
         sec.classList.add('activa');
         sec.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function switchAdminTab(tab) {
+      const subStock = document.getElementById('sub-admin-stock');
+      const subReceta = document.getElementById('sub-admin-receta');
+      const btnStock = document.getElementById('tab-btn-stock');
+      const btnReceta = document.getElementById('tab-btn-receta');
+
+      if (tab === 'stock') {
+        subStock.style.display = 'block';
+        subReceta.style.display = 'none';
+        btnStock.classList.add('activo');
+        btnReceta.classList.remove('activo');
+      } else {
+        subStock.style.display = 'none';
+        subReceta.style.display = 'block';
+        btnStock.classList.remove('activo');
+        btnReceta.classList.add('activo');
       }
     }
 
@@ -602,8 +673,61 @@
       document.getElementById('box-detalle-evento').style.display = 'none';
     }
 
-    /* VENTA CON DESCUENTO DIRECTO DE RECETA */
+    /* ESTADO DE CUENTA Y COBRO DEL EVENTO SELECCIONADO */
+    function renderEstadoCobroEvento() {
+      const selectRes = document.getElementById('select-reserva');
+      if (!selectRes.value) return;
+
+      const idReserva = parseInt(selectRes.value);
+      const res = db.reservas.find(r => r.id === idReserva);
+
+      if (res) {
+        let totalContrato = Number(res.paquetePrecio || 0) + Number(res.decoracionPrecio || 0) + Number(res.adicionalPrecio || 0);
+        let sena = Number(res.senaAbonada || 0);
+        let saldoContrato = totalContrato - sena;
+
+        let totalConsumos = (res.consumos || []).reduce((acc, c) => acc + (c.precio * c.cantidad), 0);
+        let montoFinalACobrar = saldoContrato + totalConsumos;
+
+        document.getElementById('eje-total-contrato').innerText = formatearGs(totalContrato);
+        document.getElementById('eje-sena-abonada').innerText = formatearGs(sena);
+        document.getElementById('eje-saldo-contrato').innerText = formatearGs(saldoContrato);
+        document.getElementById('eje-total-consumo').innerText = formatearGs(totalConsumos);
+        document.getElementById('eje-monto-final').innerText = formatearGs(montoFinalACobrar);
+      }
+    }
+
+    function verHistorialConsumoFamilia() {
+      const selectRes = document.getElementById('select-reserva');
+      if (!selectRes.value) return alert('Seleccioná un evento activo.');
+
+      const idReserva = parseInt(selectRes.value);
+      const res = db.reservas.find(r => r.id === idReserva);
+
+      if (!res || !res.consumos || res.consumos.length === 0) {
+        return alert(`La familia de ${res.titular} no registra consumos adicionales en cantina aún.`);
+      }
+
+      let detalleTexto = `📋 HISTORIAL DE CONSUMOS DE LA FAMILIA:\nCliente: ${res.titular} (${res.motivo})\n----------------------------------------\n`;
+      let total = 0;
+
+      res.consumos.forEach((c, idx) => {
+        let sub = c.precio * c.cantidad;
+        total += sub;
+        detalleTexto += `${idx + 1}. ${c.cantidad}x ${c.platoNombre} = ${formatearGs(sub)}\n`;
+      });
+
+      detalleTexto += `----------------------------------------\nTOTAL CONSUMIDO EN CANTINA: ${formatearGs(total)}`;
+      alert(detalleTexto);
+    }
+
     function registrarVenta() {
+      const selectRes = document.getElementById('select-reserva');
+      if (!selectRes.value) return alert('Seleccioná un evento activo para imputar el consumo.');
+
+      const idReserva = parseInt(selectRes.value);
+      const res = db.reservas.find(r => r.id === idReserva);
+
       const platoId = parseInt(document.getElementById('select-producto').value);
       const cantVenta = parseInt(document.getElementById('cant-producto').value) || 1;
       const plato = db.platosMenu.find(p => p.id === platoId);
@@ -616,7 +740,6 @@
         return alert(`El plato ${plato.nombre} no tiene insumos asignados en la receta.`);
       }
 
-      // 1. Verificar stock
       for (let item of receta) {
         const insumo = db.insumos.find(i => i.id === item.insumoId);
         const req = item.cantidad * cantVenta;
@@ -625,7 +748,6 @@
         }
       }
 
-      // 2. Descontar stock
       receta.forEach(item => {
         const insumo = db.insumos.find(i => i.id === item.insumoId);
         const req = item.cantidad * cantVenta;
@@ -633,12 +755,18 @@
         db.costoVentasTotal = (db.costoVentasTotal || 0) + (insumo.costo * req);
       });
 
+      if (!res.consumos) res.consumos = [];
+      res.consumos.push({
+        platoNombre: plato.nombre,
+        precio: plato.precio,
+        cantidad: cantVenta
+      });
+
       db.ventasTotal += (plato.precio * cantVenta);
-      alert(`Salida registrada: ${cantVenta}x ${plato.nombre}.\n\nInsumos descontados correctamente del depósito.`);
+      alert(`Consumo cargado a la cuenta de ${res.titular}:\n${cantVenta}x ${plato.nombre}.\nInsumos descontados del depósito.`);
       guardarDB();
     }
 
-    /* RECETAS */
     function renderDetalleReceta() {
       const platoNombre = document.getElementById('receta-select-plato').value;
       const box = document.getElementById('box-insumos-receta');
@@ -683,10 +811,9 @@
       }
     }
 
-    /* INSUMOS */
     function crearNuevoInsumo() {
       const nombre = document.getElementById('nuevo-prod-nombre').value;
-      const costo = parseFloat(document.getElementById('nuevo-prod-costo').value) || 0;
+      const costo = parseMilesVal(document.getElementById('nuevo-prod-costo-formatted').value);
       const stock = parseInt(document.getElementById('nuevo-prod-stock').value) || 0;
 
       if (!nombre) return alert('Ingresá el nombre del insumo');
@@ -698,7 +825,7 @@
 
       alert(`Insumo guardado: ${nombre}`);
       document.getElementById('nuevo-prod-nombre').value = '';
-      document.getElementById('nuevo-prod-costo').value = '0';
+      document.getElementById('nuevo-prod-costo-formatted').value = '0';
       document.getElementById('nuevo-prod-stock').value = '10';
       guardarDB();
     }
@@ -707,7 +834,7 @@
       const ins = db.insumos.find(item => item.id === id);
       if (ins) {
         ins.stock = parseInt(document.getElementById(`edit-stock-${id}`).value) || 0;
-        ins.costo = parseFloat(document.getElementById(`edit-costo-${id}`).value) || 0;
+        ins.costo = parseMilesVal(document.getElementById(`edit-costo-${id}`).value);
         alert(`Guardado: ${ins.nombre}`);
         guardarDB();
       }
@@ -729,6 +856,7 @@
         selectRes.innerHTML += `<option value="${r.id}">${r.fecha} (${r.turno}) - ${r.titular} [${r.motivo}]</option>`;
       });
 
+      renderEstadoCobroEvento();
       renderAsistencia();
 
       const selectPlato = document.getElementById('select-producto');
@@ -770,7 +898,7 @@
           <div class="edit-grid">
             <strong>${i.nombre}</strong>
             <input type="number" id="edit-stock-${i.id}" value="${i.stock}" title="Stock Depósito">
-            <input type="number" id="edit-costo-${i.id}" value="${i.costo}" title="Costo Compra">
+            <input type="text" id="edit-costo-${i.id}" value="${Number(i.costo).toLocaleString('es-PY')}" oninput="formatInputMiles(this)" title="Costo Compra">
             <span></span>
             <div style="display:flex; gap:4px;">
               <button class="success" onclick="actualizarInsumo(${i.id})">💾</button>
@@ -866,7 +994,7 @@
       const adicionalNombre = adicRaw[0];
       const adicionalPrecio = parseFloat(adicRaw[1]) || 0;
 
-      const senaAbonada = parseFloat(document.getElementById('reserva-sena').value) || 0;
+      const senaAbonada = parseMilesVal(document.getElementById('reserva-sena-formatted').value);
 
       if (!fecha || !titular || !motivo) return alert('Completá la fecha, cliente y cumpleañero/a');
 
@@ -876,7 +1004,7 @@
       db.reservas.push({ 
         id: Date.now(), fecha, turno, titular, telefono, motivo, 
         paqueteNombre, paquetePrecio, decoracionNombre, decoracionPrecio,
-        adicionalNombre, adicionalPrecio, senaAbonada, asistencia: [] 
+        adicionalNombre, adicionalPrecio, senaAbonada, asistencia: [], consumos: []
       });
 
       alert('Contrato generado y evento agendado exitosamente');
