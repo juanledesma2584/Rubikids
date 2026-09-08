@@ -24,12 +24,9 @@
 
     .container { padding: 0 15px; }
 
-    /* MENÚ PRINCIPAL DE 4 BOTONES */
+    /* MENÚ PRINCIPAL */
     .menu-cuatro-botones {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-      margin-bottom: 20px;
+      display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px;
     }
 
     .btn-modulo {
@@ -44,7 +41,6 @@
     .btn-eje { background: linear-gradient(135deg, #2e7d32, #4caf50); }
     .btn-adm { background: linear-gradient(135deg, #d84315, #ff5722); }
 
-    /* SECCIONES OCULTABLES */
     .seccion { display: none; }
     .seccion.activa { display: block; }
 
@@ -57,6 +53,7 @@
     button.action-btn { background: #1976d2; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 12px; }
     button.success { background: #388e3c; }
     button.warning { background: #f57c00; }
+    button.danger { background: #c62828; color: white; border: none; }
     button.purple { background: #7b1fa2; }
     
     .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -86,6 +83,7 @@
     .checkbox-container { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 0.85rem; font-weight: bold; color: #2e7d32; }
     .checkbox-container input { width: auto; margin: 0; }
 
+    /* TARJETAS LIMPIAS STOCK */
     .stock-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
     .stock-item {
       display: flex; justify-content: space-between; align-items: center;
@@ -96,6 +94,14 @@
       background: #ffffff; border: 1px solid #d0d7de; border-radius: 6px;
       padding: 3px 8px; font-size: 0.8rem; font-weight: bold; color: #1976d2;
     }
+
+    /* EDICIÓN RÁPIDA PRODUCTOS */
+    .edit-grid {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 6px; align-items: center;
+      background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px; margin-top: 6px;
+    }
+    .edit-grid input { margin: 0; padding: 6px; font-size: 0.8rem; }
+    .edit-grid button { margin: 0; padding: 6px; font-size: 0.75rem; width: auto; }
 
     table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.8rem; }
     th, td { border: 1px solid #e0e0e0; padding: 6px; text-align: left; }
@@ -113,7 +119,7 @@
 
   <div class="container">
 
-    <!-- PANTALLA PRINCIPAL CON 4 BOTONES UNICAMENTE -->
+    <!-- PANTALLA PRINCIPAL CON 4 BOTONES -->
     <div class="menu-cuatro-botones">
       <button class="btn-modulo btn-cal" onclick="abrirModulo('sec-calendario')">
         📅 1. Calendario de Eventos
@@ -122,10 +128,10 @@
         📝 2. Agregar Nuevo Evento
       </button>
       <button class="btn-modulo btn-eje" onclick="abrirModulo('sec-ejecutar')">
-        🎉 3. Ejecutar Cumpleaños
+        🎉 3. Ejecutar Cumpleaños (Personal)
       </button>
-      <button class="btn-modulo btn-adm" onclick="abrirModulo('sec-admin')">
-        📊 4. Panel de Control y Balances
+      <button class="btn-modulo btn-adm" onclick="solicitarAccesoAdmin()">
+        🔒 4. Panel de Control (Dueño / Auditor)
       </button>
     </div>
 
@@ -232,7 +238,6 @@
 
     <!-- MÓDULO 3: EJECUTAR CUMPLEAÑOS (PERSONAL EN VIVO) -->
     <div id="sec-ejecutar" class="seccion">
-      <!-- RECEPCIÓN DE INVITADOS -->
       <div class="card">
         <h2>Control de Ingreso (Recepción)</h2>
         <label>Seleccionar Evento del Día:</label>
@@ -262,7 +267,6 @@
         </table>
       </div>
 
-      <!-- SALIDA DE PRODUCTOS (GANTINA/COCINA) -->
       <div class="card">
         <h2>Venta y Consumo de Cantina / Menú</h2>
         <label>Seleccionar Menú / Producto:</label>
@@ -278,35 +282,33 @@
       </div>
     </div>
 
-    <!-- MÓDULO 4: PANEL DE CONTROL Y ADMINISTRACIÓN -->
+    <!-- MÓDULO 4: PANEL DE CONTROL Y ADMINISTRACIÓN (BLOQUEADO POR PIN) -->
     <div id="sec-admin" class="seccion">
-      <!-- COTEJO Y AUDITORÍA DE STOCK -->
-      <div class="card">
-        <h2>Auditoría de Compras y Recepción</h2>
-        <label>Insumo o Producto:</label>
-        <select id="audit-select-prod"></select>
 
-        <label>Cantidad Recibida:</label>
-        <input type="number" id="audit-cant-ingreso" placeholder="Ej: 50">
+      <!-- GESTIÓN TOTAL DE INVENTARIO (CREAR, EDITAR, ELIMINAR Y STOCK REAL) -->
+      <div class="card">
+        <h2>Gestión de Stock, Productos e Insumos (Auditor/Dueño)</h2>
+        
+        <h3>1. Crear Nuevo Producto / Insumo</h3>
+        <label>Nombre del Producto o Insumo:</label>
+        <input type="text" id="nuevo-prod-nombre" placeholder="Ej: Sprite 600ml">
+
+        <label>Precio Venta Cliente (Gs. - Colocar 0 si es solo Insumo de Cocina):</label>
+        <input type="number" id="nuevo-prod-precio" value="0">
 
         <label>Costo de Compra Unitario (Gs.):</label>
-        <input type="number" id="audit-costo-unitario" placeholder="Ej: 3500">
+        <input type="number" id="nuevo-prod-costo" value="0">
 
-        <button class="action-btn purple" onclick="recepcionarPedido()">Cargar Entrada a Stock</button>
+        <label>Stock Inicial Real:</label>
+        <input type="number" id="nuevo-prod-stock" value="10">
 
-        <hr>
-        <h3>Cotejo de Entradas y Salidas</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Hora</th>
-              <th>Tipo</th>
-              <th>Ítem</th>
-              <th>Cant.</th>
-            </tr>
-          </thead>
-          <tbody id="tabla-historial-movimientos"></tbody>
-        </table>
+        <button class="action-btn purple" onclick="crearNuevoProducto()">Guardar Producto en Sistema</button>
+
+        <hr style="margin-top:20px;">
+        <h3>2. Modificar / Editar Productos Existentes</h3>
+        <span class="badge">Ajustá Stock, Precio, Costo o Elimina directamente</span>
+        
+        <div id="lista-edicion-productos" style="margin-top: 10px;"></div>
       </div>
 
       <!-- FINANZAS Y BALANCES (DUEÑO) -->
@@ -341,6 +343,7 @@
 
   <script>
     let mesActualOffset = 0;
+    const PIN_ADMIN = "1234"; // PIN de acceso para el Dueño/Auditor
 
     function formatearGs(monto) {
       return 'Gs. ' + Number(monto || 0).toLocaleString('es-PY');
@@ -372,6 +375,7 @@
       ]
     };
 
+    // DATOS DE STOCK REAL INICIAL
     const datosIniciales = {
       reservas: [
         { 
@@ -383,36 +387,30 @@
         }
       ],
       productos: [
-        { id: 1, nombre: 'Lomito Completo', precio: 35000, costo: 0, stock: 999 },
-        { id: 2, nombre: 'Lomito Simple', precio: 30000, costo: 0, stock: 999 },
-        { id: 3, nombre: 'Lomito al Plato', precio: 35000, costo: 0, stock: 999 },
-        { id: 4, nombre: 'Hamburguesa', precio: 28000, costo: 0, stock: 999 },
-        { id: 5, nombre: 'Milanesa al Plato', precio: 35000, costo: 0, stock: 999 },
-        { id: 6, nombre: 'Papas Fritas', precio: 10000, costo: 0, stock: 999 },
-        { id: 7, nombre: 'Pizzetas', precio: 25000, costo: 0, stock: 999 },
-        { id: 8, nombre: 'Gaseosas 600ml', precio: 9000, costo: 4500, stock: 60 },
-        { id: 9, nombre: 'Cerveza Heineken', precio: 22000, costo: 12000, stock: 40 },
-        { id: 10, nombre: 'Agua mineral', precio: 8000, costo: 3000, stock: 50 },
+        { id: 1, nombre: 'Lomito Completo', precio: 35000, costo: 0, stock: 50 },
+        { id: 2, nombre: 'Lomito Simple', precio: 30000, costo: 0, stock: 50 },
+        { id: 3, nombre: 'Hamburguesa', precio: 28000, costo: 0, stock: 50 },
+        { id: 4, nombre: 'Papas Fritas', precio: 10000, costo: 0, stock: 50 },
+        { id: 5, nombre: 'Pizzetas', precio: 25000, costo: 0, stock: 40 },
+        { id: 6, nombre: 'Gaseosas 600ml', precio: 9000, costo: 4500, stock: 60 },
+        { id: 7, nombre: 'Cerveza Heineken', precio: 22000, costo: 12000, stock: 40 },
+        { id: 8, nombre: 'Agua mineral', precio: 8000, costo: 3000, stock: 50 },
 
         { id: 101, nombre: 'Pan de Lomito', precio: 0, costo: 2500, stock: 60 },
         { id: 102, nombre: 'Pan de Hamburguesa', precio: 0, costo: 2000, stock: 60 },
         { id: 103, nombre: 'Carne / Lomito', precio: 0, costo: 10000, stock: 50 },
         { id: 104, nombre: 'Carne Hamburguesa', precio: 0, costo: 6000, stock: 50 },
-        { id: 105, nombre: 'Huevo', precio: 0, costo: 1000, stock: 100 },
-        { id: 106, nombre: 'Milanesa (Unidad)', precio: 0, costo: 9000, stock: 30 },
-        { id: 107, nombre: 'Papas Crudas (Porción)', precio: 0, costo: 3000, stock: 50 },
-        { id: 108, nombre: 'Masa Pizzeta', precio: 0, costo: 4000, stock: 30 },
-        { id: 109, nombre: 'Queso Mozzarella (Porción)', precio: 0, costo: 3500, stock: 50 }
+        { id: 105, nombre: 'Huevo', precio: 0, costo: 1000, stock: 100 }
       ],
       movimientos: [],
       ventasTotal: 0,
       costoVentasTotal: 0
     };
 
-    let db = JSON.parse(localStorage.getItem('rubikids_pos_v14_db')) || datosIniciales;
+    let db = JSON.parse(localStorage.getItem('rubikids_pos_v15_db')) || datosIniciales;
 
     function guardarDB() {
-      localStorage.setItem('rubikids_pos_v14_db', JSON.stringify(db));
+      localStorage.setItem('rubikids_pos_v15_db', JSON.stringify(db));
       render();
     }
 
@@ -422,6 +420,54 @@
       if (sec) {
         sec.classList.add('activa');
         sec.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function solicitarAccesoAdmin() {
+      const pinIngresado = prompt("Ingrese PIN de seguridad (Dueño / Auditor):");
+      if (pinIngresado === PIN_ADMIN) {
+        abrirModulo('sec-admin');
+      } else if (pinIngresado !== null) {
+        alert("PIN incorrecto. Acceso denegado.");
+      }
+    }
+
+    function crearNuevoProducto() {
+      const nombre = document.getElementById('nuevo-prod-nombre').value;
+      const precio = parseFloat(document.getElementById('nuevo-prod-precio').value) || 0;
+      const costo = parseFloat(document.getElementById('nuevo-prod-costo').value) || 0;
+      const stock = parseInt(document.getElementById('nuevo-prod-stock').value) || 0;
+
+      if (!nombre) return alert('Ingresá el nombre del producto');
+
+      db.productos.push({
+        id: Date.now(),
+        nombre, precio, costo, stock
+      });
+
+      alert(`Producto registrado: ${nombre}`);
+      document.getElementById('nuevo-prod-nombre').value = '';
+      document.getElementById('nuevo-prod-precio').value = '0';
+      document.getElementById('nuevo-prod-costo').value = '0';
+      document.getElementById('nuevo-prod-stock').value = '10';
+      guardarDB();
+    }
+
+    function actualizarProducto(id) {
+      const p = db.productos.find(item => item.id === id);
+      if (p) {
+        p.stock = parseInt(document.getElementById(`edit-stock-${id}`).value) || 0;
+        p.precio = parseFloat(document.getElementById(`edit-precio-${id}`).value) || 0;
+        p.costo = parseFloat(document.getElementById(`edit-costo-${id}`).value) || 0;
+        alert(`Guardados los cambios para ${p.nombre}`);
+        guardarDB();
+      }
+    }
+
+    function eliminarProducto(id) {
+      if (confirm('¿Eliminar este producto del sistema?')) {
+        db.productos = db.productos.filter(p => p.id !== id);
+        guardarDB();
       }
     }
 
@@ -516,38 +562,37 @@
       renderAsistencia();
 
       const selectProd = document.getElementById('select-producto');
-      const auditSelectProd = document.getElementById('audit-select-prod');
       const listaStockPersonal = document.getElementById('lista-stock-personal');
+      const listaEdicion = document.getElementById('lista-edicion-productos');
 
       selectProd.innerHTML = '';
-      auditSelectProd.innerHTML = '';
       listaStockPersonal.innerHTML = '';
+      listaEdicion.innerHTML = '';
 
       db.productos.forEach(p => {
         if (p.precio > 0) {
           selectProd.innerHTML += `<option value="${p.id}">${p.nombre}</option>`;
         }
         
-        auditSelectProd.innerHTML += `<option value="${p.id}">${p.nombre} (Stock: ${p.stock})</option>`;
-
+        // Vista de Stock Personal
         listaStockPersonal.innerHTML += `
           <div class="stock-item">
             <span class="item-name">${p.nombre}</span>
             <span class="item-badge">${p.stock} un.</span>
           </div>`;
-      });
 
-      // Historial
-      const tablaHistorial = document.getElementById('tabla-historial-movimientos');
-      tablaHistorial.innerHTML = '';
-      db.movimientos.slice(-10).reverse().forEach(m => {
-        tablaHistorial.innerHTML += `
-          <tr>
-            <td>${m.fecha}</td>
-            <td class="${m.tipo === 'ENTRADA' ? 'mov-entrada' : 'mov-salida'}">${m.tipo}</td>
-            <td>${m.producto}</td>
-            <td>${m.cantidad}</td>
-          </tr>`;
+        // Vista de Edición Rápida Auditor/Dueño
+        listaEdicion.innerHTML += `
+          <div class="edit-grid">
+            <strong>${p.nombre}</strong>
+            <input type="number" id="edit-stock-${p.id}" value="${p.stock}" title="Stock">
+            <input type="number" id="edit-precio-${p.id}" value="${p.precio}" title="Precio Venta">
+            <input type="number" id="edit-costo-${p.id}" value="${p.costo}" title="Costo Compra">
+            <div style="display:flex; gap:4px;">
+              <button class="success" onclick="actualizarProducto(${p.id})">💾</button>
+              <button class="danger" onclick="eliminarProducto(${p.id})">🗑️</button>
+            </div>
+          </div>`;
       });
 
       // Saldos Dueño
@@ -643,26 +688,12 @@
           const descuento = item.cantidad * cant;
           insumo.stock -= descuento;
           db.costoVentasTotal = (db.costoVentasTotal || 0) + (insumo.costo * descuento);
-
-          db.movimientos.push({
-            fecha: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            tipo: 'RECETA',
-            producto: `${insumo.nombre} (por ${prod.nombre})`,
-            cantidad: `-${descuento}`
-          });
         });
 
       } else {
         if (prod.stock < cant) return alert('Stock insuficiente');
         prod.stock -= cant;
         db.costoVentasTotal = (db.costoVentasTotal || 0) + (prod.costo * cant);
-
-        db.movimientos.push({
-          fecha: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          tipo: 'SALIDA',
-          producto: prod.nombre,
-          cantidad: `-${cant}`
-        });
       }
 
       db.ventasTotal += (prod.precio * cant);
@@ -708,32 +739,6 @@
       document.getElementById('reserva-motivo').value = '';
       document.getElementById('reserva-telefono').value = '';
       guardarDB();
-    }
-
-    function recepcionarPedido() {
-      const idProd = parseInt(document.getElementById('audit-select-prod').value);
-      const cant = parseInt(document.getElementById('audit-cant-ingreso').value);
-      const nuevoCosto = parseFloat(document.getElementById('audit-costo-unitario').value);
-
-      if (!idProd || isNaN(cant) || cant <= 0 || isNaN(nuevoCosto)) return alert('Completá cantidad y costo unitario');
-
-      const prod = db.productos.find(p => p.id === idProd);
-      if (prod) {
-        prod.stock += cant;
-        prod.costo = nuevoCosto;
-
-        db.movimientos.push({
-          fecha: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          tipo: 'ENTRADA',
-          producto: prod.nombre,
-          cantidad: `+${cant}`
-        });
-
-        alert(`Stock cargado: +${cant} un. a ${prod.nombre}`);
-        document.getElementById('audit-cant-ingreso').value = '';
-        document.getElementById('audit-costo-unitario').value = '';
-        guardarDB();
-      }
     }
 
     document.getElementById('reserva-fecha').valueAsDate = new Date();
