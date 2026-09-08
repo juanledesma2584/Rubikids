@@ -14,7 +14,7 @@
     * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
     body { background: #f4f6f9; margin: 0; padding: 0 0 30px 0; color: #333; }
 
-    /* MEMBRETE */
+    /* MEMBRETE LOGO */
     .header-banner {
       width: 100%;
       height: 85px;
@@ -32,9 +32,27 @@
 
     .container { padding: 0 12px; }
 
-    /* ROL SELECTOR */
+    /* ROL SELECTOR & NAVEGACIÓN RÁPIDA */
     .role-selector { background: #e3f2fd; padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #90caf9; }
     .role-selector select { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #64b5f6; font-weight: bold; background: white; }
+
+    .nav-btn {
+      width: 100%;
+      background: #7b1fa2;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      cursor: pointer;
+      margin-bottom: 12px;
+      box-shadow: 0 3px 6px rgba(123, 31, 162, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
 
     /* TARJETAS */
     .card { background: #fff; padding: 14px; border-radius: 12px; margin-bottom: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
@@ -47,26 +65,49 @@
     button.success { background: #43a047; }
     button.warning { background: #fb8c00; }
     
-    /* CALENDARIO ESTILO GRILLA */
-    .calendar-grid {
+    /* VISTA DE CALENDARIO COMPLETO (4 MESES) */
+    .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .calendar-controls button { width: auto; padding: 6px 12px; margin: 0; font-size: 0.8rem; }
+    .month-title { font-weight: bold; font-size: 1.1rem; color: #4a148c; }
+
+    .month-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 4px;
-      overflow-x: auto;
       margin-top: 8px;
+      text-align: center;
     }
-    .day-column {
+    .month-header { font-weight: bold; font-size: 0.75rem; background: #f3e5f5; color: #4a148c; padding: 5px 0; border-radius: 4px; }
+    
+    .day-cell {
       background: #fafafa;
       border: 1px solid #e0e0e0;
       border-radius: 6px;
-      padding: 4px;
-      min-width: 110px;
+      min-height: 75px;
+      padding: 3px;
+      font-size: 0.7rem;
+      text-align: left;
     }
-    .day-header { text-align: center; font-weight: bold; font-size: 0.75rem; background: #eceff1; padding: 4px 0; border-radius: 4px; margin-bottom: 4px; }
-    .turn-slot { background: #fff; border: 1px dashed #bdbdbd; border-radius: 4px; padding: 4px; margin-bottom: 4px; font-size: 0.7rem; min-height: 48px; }
-    .turn-title { font-weight: bold; color: #00838f; font-size: 0.65rem; text-transform: uppercase; }
-    .event-card { background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 4px; padding: 3px; font-size: 0.7rem; }
-    .event-card strong { color: #2e7d32; display: block; }
+    .day-number { font-weight: bold; color: #666; margin-bottom: 2px; }
+    .day-cell.today { border: 2px solid #7b1fa2; background: #f3e5f5; }
+
+    .slot-tag {
+      font-size: 0.65rem;
+      padding: 2px 4px;
+      border-radius: 3px;
+      margin-top: 2px;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .slot-tag.manana { background: #e0f7fa; color: #006064; border-left: 3px solid #00bcd4; }
+    .slot-tag.tarde { background: #fff3e0; color: #e65100; border-left: 3px solid #ff9800; }
+    .contract-badge { font-size: 0.6rem; color: #2e7d32; font-weight: bold; }
+
+    /* CHECKBOX Y FIRMA DE CONTRATO */
+    .checkbox-container { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 0.85rem; font-weight: bold; color: #2e7d32; }
+    .checkbox-container input { width: auto; margin: 0; }
 
     /* TABLAS */
     table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.8rem; }
@@ -91,19 +132,40 @@
       <label>Vista de Usuario:</label>
       <select id="rol-select" onchange="cambiarRol()">
         <option value="personal">Personal / Recepción (Ingreso y Ventas)</option>
-        <option value="dueno">Dueño / Administrador (Gestión y Calendario)</option>
+        <option value="dueno">Dueño / Administrador (Gestión, Agenda y Contratos)</option>
       </select>
     </div>
 
-    <!-- MÓDULO CALENDARIO (AMBOS ROLES) -->
-    <div class="card">
-      <h2>1. Calendario de Eventos (Lunes a Domingo)</h2>
-      <span class="badge">Turnos: Mañana / Tarde</span>
+    <!-- BOTÓN DE ACCESO DIRECTO AL CALENDARIO -->
+    <button class="nav-btn" onclick="irAlCalendario()">
+      📅 Ver Agenda / Calendario (4 Meses)
+    </button>
+
+    <!-- MÓDULO CALENDARIO EXTENDIDO DE 4 MESES (AMBOS ROLES) -->
+    <div class="card" id="seccion-calendario">
+      <h2>1. Agenda de Eventos (Almanaque Mensual)</h2>
+      <span class="badge">Navegación hasta 4 Meses</span>
       
-      <div class="calendar-grid" id="calendario-semanal"></div>
+      <div class="calendar-controls" style="margin-top: 10px;">
+        <button onclick="cambiarMes(-1)">◀ Mes Anterior</button>
+        <span class="month-title" id="titulo-mes">Septiembre 2026</span>
+        <button onclick="cambiarMes(1)">Mes Siguiente ▶</button>
+      </div>
+
+      <div class="month-grid" id="grid-dias-semana">
+        <div class="month-header">Dom</div>
+        <div class="month-header">Lun</div>
+        <div class="month-header">Mar</div>
+        <div class="month-header">Mié</div>
+        <div class="month-header">Jue</div>
+        <div class="month-header">Vie</div>
+        <div class="month-header">Sáb</div>
+      </div>
+
+      <div class="month-grid" id="grid-calendario"></div>
     </div>
 
-    <!-- MÓDULO RECEPCIÓN -->
+    <!-- MÓDULO RECEPCIÓN E INGRESO -->
     <div class="card">
       <h2>2. Control de Ingreso (Recepción)</h2>
       <span class="badge">Personal / Recepción</span>
@@ -112,7 +174,7 @@
       <select id="select-reserva" onchange="renderAsistencia()"></select>
 
       <label>Adulto Responsable / Invitado:</label>
-      <input type="text" id="nombre-invitado" placeholder="Ej: Maria Giménez">
+      <input type="text" id="nombre-invitado" placeholder="Ej: María Giménez">
 
       <label>Cantidad de Niños:</label>
       <input type="number" id="cant-ninos" value="1" min="0">
@@ -135,7 +197,7 @@
       </table>
     </div>
 
-    <!-- MÓDULO POS -->
+    <!-- MÓDULO POS VENTAS -->
     <div class="card">
       <h2>3. Venta de Productos</h2>
       <span class="badge">Personal / Recepción</span>
@@ -161,21 +223,13 @@
       </table>
     </div>
 
-    <!-- MÓDULO DUEÑO -->
+    <!-- MÓDULO DUEÑO: AGENDAR Y FIRMA DE CONTRATOS -->
     <div class="card admin-only" id="modulo-dueno">
-      <h2>4. Agendar Nueva Reserva (Privado)</h2>
+      <h2>4. Agendar Evento y Registro de Contrato (Privado)</h2>
       <span class="badge" style="background: #ffe0b2; color: #e65100;">Exclusivo Propietario</span>
 
-      <label>Día de la Semana:</label>
-      <select id="reserva-dia">
-        <option value="Lunes">Lunes</option>
-        <option value="Martes">Martes</option>
-        <option value="Miércoles">Miércoles</option>
-        <option value="Jueves">Jueves</option>
-        <option value="Viernes">Viernes</option>
-        <option value="Sábado">Sábado</option>
-        <option value="Domingo">Domingo</option>
-      </select>
+      <label>Fecha del Evento:</label>
+      <input type="date" id="reserva-fecha">
 
       <label>Turno:</label>
       <select id="reserva-turno">
@@ -183,13 +237,18 @@
         <option value="Tarde">Tarde</option>
       </select>
 
-      <label>Titular Responsable:</label>
+      <label>Titular Responsable (Cliente):</label>
       <input type="text" id="reserva-titular" placeholder="Ej: Juan Lezcano">
 
       <label>Motivo del Evento:</label>
-      <input type="text" id="reserva-motivo" placeholder="Ej: Cumpleaños de Santi (5 años)">
+      <input type="text" id="reserva-motivo" placeholder="Ej: Cumpleaños Santi (5 años)">
 
-      <button onclick="crearReserva()">Guardar en Calendario</button>
+      <div class="checkbox-container">
+        <input type="checkbox" id="reserva-contrato" checked>
+        <label for="reserva-contrato" style="margin: 0;">¿Contrato de compromiso firmado?</label>
+      </div>
+
+      <button onclick="crearReserva()">Agendar Evento</button>
 
       <hr>
       <h3>Resumen Financiero y Aforo</h3>
@@ -216,11 +275,11 @@
   </div>
 
   <script>
-    const diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    let mesActualOffset = 0; // 0 = Mes actual, 1, 2, 3 meses en adelante
 
     const datosIniciales = {
       reservas: [
-        { id: 1, dia: 'Sábado', turno: 'Tarde', titular: 'Juan Lezcano', motivo: 'Cumpleaños Santi', asistencia: [] }
+        { id: 1, fecha: '2026-09-12', turno: 'Tarde', titular: 'Juan Lezcano', motivo: 'Cumpleaños Santi', contratoFirmado: true, asistencia: [] }
       ],
       productos: [
         { id: 101, nombre: 'Gaseosa 500ml', precio: 12, costo: 6, stock: 48 },
@@ -229,10 +288,10 @@
       ventasTotal: 0
     };
 
-    let db = JSON.parse(localStorage.getItem('rubikids_pos_calendar_db')) || datosIniciales;
+    let db = JSON.parse(localStorage.getItem('rubikids_pos_v4_db')) || datosIniciales;
 
     function guardarDB() {
-      localStorage.setItem('rubikids_pos_calendar_db', JSON.stringify(db));
+      localStorage.setItem('rubikids_pos_v4_db', JSON.stringify(db));
       render();
     }
 
@@ -241,40 +300,79 @@
       document.getElementById('modulo-dueno').style.display = (rol === 'dueno') ? 'block' : 'none';
     }
 
+    function irAlCalendario() {
+      document.getElementById('seccion-calendario').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function cambiarMes(delta) {
+      const nuevoOffset = mesActualOffset + delta;
+      if (nuevoOffset >= 0 && nuevoOffset <= 3) {
+        mesActualOffset = nuevoOffset;
+        renderCalendario();
+      } else {
+        alert('El calendario permite visualizar desde el mes actual hasta 4 meses a futuro.');
+      }
+    }
+
+    function renderCalendario() {
+      const hoy = new Date();
+      const fechaVista = new Date(hoy.getFullYear(), hoy.getMonth() + mesActualOffset, 1);
+      
+      const mesNombre = fechaVista.toLocaleString('es', { month: 'long' });
+      const ano = fechaVista.getFullYear();
+      document.getElementById('titulo-mes').innerText = `${mesNombre.charAt(0).toUpperCase() + mesNombre.slice(1)} ${ano}`;
+
+      const primerDiaSemana = new Date(ano, fechaVista.getMonth(), 1).getDay();
+      const ultimoDiaMes = new Date(ano, fechaVista.getMonth() + 1, 0).getDate();
+
+      const grid = document.getElementById('grid-calendario');
+      grid.innerHTML = '';
+
+      // Celdas vacías previas
+      for (let i = 0; i < primerDiaSemana; i++) {
+        grid.innerHTML += `<div class="day-cell" style="background:#f5f5f5;"></div>`;
+      }
+
+      // Días del mes
+      for (let dia = 1; dia <= ultimoDiaMes; dia++) {
+        const fechaStr = `${ano}-${String(fechaVista.getMonth() + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+        const esHoy = (dia === hoy.getDate() && fechaVista.getMonth() === hoy.getMonth() && ano === hoy.getFullYear());
+
+        const reservasDia = db.reservas.filter(r => r.fecha === fechaStr);
+        
+        let htmlSlot = '';
+        reservasDia.forEach(r => {
+          const claseTurno = r.turno === 'Manana' ? 'manana' : 'tarde';
+          const textoTurno = r.turno === 'Manana' ? 'M' : 'T';
+          htmlSlot += `
+            <div class="slot-tag ${claseTurno}">
+              <strong>[${textoTurno}] ${r.titular}</strong>
+              <div>${r.motivo}</div>
+              ${r.contratoFirmado ? '<span class="contract-badge">✓ Contrato</span>' : ''}
+            </div>`;
+        });
+
+        grid.innerHTML += `
+          <div class="day-cell ${esHoy ? 'today' : ''}">
+            <div class="day-number">${dia}</div>
+            ${htmlSlot}
+          </div>`;
+      }
+    }
+
     function render() {
-      // 1. Render Calendario
-      const calGrid = document.getElementById('calendario-semanal');
-      calGrid.innerHTML = '';
+      renderCalendario();
 
-      diasSemana.forEach(dia => {
-        const resManana = db.reservas.find(r => r.dia === dia && r.turno === 'Manana');
-        const resTarde = db.reservas.find(r => r.dia === dia && r.turno === 'Tarde');
-
-        calGrid.innerHTML += `
-          <div class="day-column">
-            <div class="day-header">${dia}</div>
-            <div class="turn-slot">
-              <div class="turn-title">Mañana</div>
-              ${resManana ? `<div class="event-card"><strong>${resManana.titular}</strong>${resManana.motivo}</div>` : '<span style="color:#aaa;">Libre</span>'}
-            </div>
-            <div class="turn-slot">
-              <div class="turn-title">Tarde</div>
-              ${resTarde ? `<div class="event-card"><strong>${resTarde.titular}</strong>${resTarde.motivo}</div>` : '<span style="color:#aaa;">Libre</span>'}
-            </div>
-          </div>
-        `;
-      });
-
-      // 2. Select Reservas para Recepción
+      // Select Reservas
       const selectRes = document.getElementById('select-reserva');
       selectRes.innerHTML = '';
       db.reservas.forEach(r => {
-        selectRes.innerHTML += `<option value="${r.id}">${r.dia} (${r.turno === 'Manana' ? 'Mañana' : 'Tarde'}) - ${r.titular} [${r.motivo}]</option>`;
+        selectRes.innerHTML += `<option value="${r.id}">${r.fecha} (${r.turno === 'Manana' ? 'Mañana' : 'Tarde'}) - ${r.titular} [${r.motivo}]</option>`;
       });
 
       renderAsistencia();
 
-      // 3. Productos y Stock
+      // Productos
       const selectProd = document.getElementById('select-producto');
       const tablaStock = document.getElementById('tabla-stock');
       selectProd.innerHTML = '';
@@ -290,7 +388,7 @@
           </tr>`;
       });
 
-      // 4. Balances
+      // Balances
       document.getElementById('balance-ventas').innerText = db.ventasTotal;
       let totalNinos = 0;
       db.reservas.forEach(r => {
@@ -351,19 +449,20 @@
     }
 
     function crearReserva() {
-      const dia = document.getElementById('reserva-dia').value;
+      const fecha = document.getElementById('reserva-fecha').value;
       const turno = document.getElementById('reserva-turno').value;
       const titular = document.getElementById('reserva-titular').value;
       const motivo = document.getElementById('reserva-motivo').value;
+      const contratoFirmado = document.getElementById('reserva-contrato').checked;
 
-      if (!titular || !motivo) return alert('Completá titular y motivo');
+      if (!fecha || !titular || !motivo) return alert('Completá la fecha, titular y motivo');
 
-      // Verificar si el turno está ocupado
-      const ocupado = db.reservas.some(r => r.dia === dia && r.turno === turno);
-      if (ocupado) return alert(`El turno de la ${turno} del día ${dia} ya está reservado.`);
+      const ocupado = db.reservas.some(r => r.fecha === fecha && r.turno === turno);
+      if (ocupado) return alert(`La fecha ${fecha} en el turno de la ${turno} ya está reservada.`);
 
-      db.reservas.push({ id: Date.now(), dia, turno, titular, motivo, asistencia: [] });
-      alert('Reserva guardada en el calendario');
+      db.reservas.push({ id: Date.now(), fecha, turno, titular, motivo, contratoFirmado, asistencia: [] });
+      alert('Evento reservado y cargado en el calendario');
+      
       document.getElementById('reserva-titular').value = '';
       document.getElementById('reserva-motivo').value = '';
       guardarDB();
@@ -385,6 +484,9 @@
       document.getElementById('prod-stock').value = '';
       guardarDB();
     }
+
+    // Inicialización de la fecha de hoy por defecto en la carga del dueño
+    document.getElementById('reserva-fecha').valueAsDate = new Date();
 
     cambiarRol();
     render();
