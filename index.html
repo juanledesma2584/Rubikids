@@ -4,11 +4,39 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistema POS - Prototipo</title>
+
+  <!-- RECURSOS PARA INSTALAR COMO APP EN EL CELULAR -->
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="apple-touch-icon" href="logo.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#007bff">
+  
   <style>
     * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
-    body { background: #f0f2f5; margin: 0; padding: 15px; color: #333; }
-    h1 { font-size: 1.4rem; text-align: center; margin-bottom: 20px; }
-    
+    body { background: #f0f2f5; margin: 0; padding: 0 0 20px 0; color: #333; }
+
+    /* MEMBRETE SUPERIOR CON IMAGEN DE FONDO */
+    .header-banner {
+      width: 100%;
+      height: 130px;
+      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('logo.png');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      margin-bottom: 15px;
+      border-bottom-left-radius: 15px;
+      border-bottom-right-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    .header-banner h1 { font-size: 1.5rem; margin: 0; text-align: center; }
+
+    .container { padding: 0 15px; }
+
     /* Selector de Rol */
     .role-selector { background: #fff; padding: 12px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
     .role-selector select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-weight: bold; }
@@ -18,16 +46,16 @@
     .card h2 { font-size: 1.1rem; margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 8px; color: #007bff; }
     
     label { display: block; font-size: 0.85rem; margin-top: 10px; font-weight: 600; }
-    input, button { width: 100%; padding: 10px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; font-size: 0.95rem; }
+    input, select, button { width: 100%; padding: 10px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; font-size: 0.95rem; }
     button { background: #007bff; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 12px; }
     button.success { background: #28a745; }
     
-    /* Tablas / Listas */
+    /* Tablas */
     table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
     th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
     th { background: #f8f9fa; }
 
-    /* Ocultar secciones por rol */
+    /* Control de acceso por rol */
     .admin-only { display: none; background: #fff1f0; border: 1px solid #ffa39e; }
     .admin-only h2 { color: #cf1322; }
     
@@ -36,82 +64,88 @@
 </head>
 <body>
 
-  <h1>Punto de Venta (POS)</h1>
-
-  <!-- VISTA / SIMULACIÓN DE ROL -->
-  <div class="role-selector">
-    <label>Simular Rol Actual:</label>
-    <select id="rol-select" onchange="cambiarRol()">
-      <option value="personal">Personal / Cajero (Acceso Restringido)</option>
-      <option value="dueno">Dueño / Administrador (Acceso Total)</option>
-    </select>
+  <!-- ENCABEZADO Y MEMBRETE -->
+  <div class="header-banner">
+    <h1>Punto de Venta</h1>
   </div>
 
-  <!-- MÓDULO 1: COBRO Y STOCK (PERSONAL Y DUEÑO) -->
-  <div class="card">
-    <h2>1. Módulo de Venta y Stock</h2>
-    <span class="badge">Disponible para Personal</span>
-    
-    <label>Seleccionar Producto:</label>
-    <select id="select-producto"></select>
+  <div class="container">
 
-    <label>Cantidad a cobrar:</label>
-    <input type="number" id="cant-venta" value="1" min="1">
+    <!-- SIMULADOR DE ROLES -->
+    <div class="role-selector">
+      <label>Simular Rol Actual:</label>
+      <select id="rol-select" onchange="cambiarRol()">
+        <option value="personal">Personal / Cajero (Acceso Restringido)</option>
+        <option value="dueno">Dueño / Administrador (Acceso Total)</option>
+      </select>
+    </div>
 
-    <button onclick="registrarVenta()">Registrar Venta / Cobro</button>
+    <!-- MÓDULO DE VENTAS (PERSONAL Y DUEÑO) -->
+    <div class="card">
+      <h2>1. Módulo de Venta y Stock</h2>
+      <span class="badge">Disponible para Personal</span>
+      
+      <label>Seleccionar Producto:</label>
+      <select id="select-producto"></select>
 
-    <h3>Inventario Disponible</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Producto</th>
-          <th>Precio</th>
-          <th>Stock</th>
-        </tr>
-      </thead>
-      <tbody id="tabla-stock"></tbody>
-    </table>
-  </div>
+      <label>Cantidad a cobrar:</label>
+      <input type="number" id="cant-venta" value="1" min="1">
 
-  <!-- MÓDULO 2: CONTROL DE AFORO (PERSONAL Y DUEÑO) -->
-  <div class="card">
-    <h2>2. Control de Ingreso (Aforo)</h2>
-    <span class="badge">Disponible para Personal</span>
+      <button onclick="registrarVenta()">Registrar Venta / Cobro</button>
 
-    <label>Personas ingresando:</label>
-    <input type="number" id="cant-aforo" value="1" min="1">
-    <button class="success" onclick="registrarAforo()">Registrar Entrada</button>
+      <h3>Inventario Disponible</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Stock</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-stock"></tbody>
+      </table>
+    </div>
 
-    <p style="margin-top: 10px; font-weight: bold;">Total personas hoy: <span id="total-aforo">0</span></p>
-  </div>
+    <!-- MÓDULO DE AFORO (PERSONAL Y DUEÑO) -->
+    <div class="card">
+      <h2>2. Control de Ingreso (Aforo)</h2>
+      <span class="badge">Disponible para Personal</span>
 
-  <!-- MÓDULO 3: BALANCE Y COSTOS (EXCLUSIVO DUEÑO) -->
-  <div class="card admin-only" id="modulo-dueno">
-    <h2>3. Balance y Finanzas (Privado)</h2>
-    <span class="badge" style="background: #fff1f0; color: #cf1322;">Exclusivo Propietario</span>
+      <label>Personas ingresando:</label>
+      <input type="number" id="cant-aforo" value="1" min="1">
+      <button class="success" onclick="registrarAforo()">Registrar Entrada</button>
 
-    <p><strong>Total Recaudado (Ventas):</strong> $<span id="balance-ventas">0</span></p>
-    <p><strong>Valor del Stock a Precio Costo:</strong> $<span id="balance-costo">0</span></p>
+      <p style="margin-top: 10px; font-weight: bold;">Total personas hoy: <span id="total-aforo">0</span></p>
+    </div>
 
-    <hr>
-    <h3>Agregar / Ajustar Inventario</h3>
-    <label>Nombre del Producto:</label>
-    <input type="text" id="nuevo-nombre" placeholder="Ej: Cerveza Artisanal">
+    <!-- MÓDULO FINANCIERO (EXCLUSIVO DUEÑO) -->
+    <div class="card admin-only" id="modulo-dueno">
+      <h2>3. Balance y Finanzas (Privado)</h2>
+      <span class="badge" style="background: #fff1f0; color: #cf1322;">Exclusivo Propietario</span>
 
-    <label>Precio Venta ($):</label>
-    <input type="number" id="nuevo-precio" placeholder="100">
+      <p><strong>Total Recaudado (Ventas):</strong> $<span id="balance-ventas">0</span></p>
+      <p><strong>Valor del Stock a Precio Costo:</strong> $<span id="balance-costo">0</span></p>
 
-    <label>Costo de Compra ($):</label>
-    <input type="number" id="nuevo-costo" placeholder="40">
+      <hr>
+      <h3>Agregar / Ajustar Inventario</h3>
+      <label>Nombre del Producto:</label>
+      <input type="text" id="nuevo-nombre" placeholder="Ej: Cerveza Artesanal">
 
-    <label>Stock Inicial:</label>
-    <input type="number" id="nuevo-stock" placeholder="50">
+      <label>Precio Venta ($):</label>
+      <input type="number" id="nuevo-precio" placeholder="100">
 
-    <button onclick="agregarProducto()">Guardar Producto</button>
+      <label>Costo de Compra ($):</label>
+      <input type="number" id="nuevo-costo" placeholder="40">
+
+      <label>Stock Inicial:</label>
+      <input type="number" id="nuevo-stock" placeholder="50">
+
+      <button onclick="agregarProducto()">Guardar Producto</button>
+    </div>
+
   </div>
 
   <script>
-    // Datos de prueba iniciales
     const datosIniciales = {
       productos: [
         { id: 1, nombre: 'Entrada General', precio: 50, costo: 15, stock: 80 },
@@ -121,7 +155,6 @@
       totalAforo: 0
     };
 
-    // Cargar de localStorage o usar datos iniciales
     let db = JSON.parse(localStorage.getItem('pos_demo_db')) || datosIniciales;
 
     function guardarDB() {
@@ -132,22 +165,16 @@
     function cambiarRol() {
       const rol = document.getElementById('rol-select').value;
       const moduloDueno = document.getElementById('modulo-dueno');
-      if (rol === 'dueno') {
-        moduloDueno.style.display = 'block';
-      } else {
-        moduloDueno.style.display = 'none';
-      }
+      moduloDueno.style.display = (rol === 'dueno') ? 'block' : 'none';
     }
 
     function render() {
-      // Cargar Selector de productos
       const selectProd = document.getElementById('select-producto');
       selectProd.innerHTML = '';
       db.productos.forEach(p => {
         selectProd.innerHTML += `<option value="${p.id}">${p.nombre} - $${p.precio}</option>`;
       });
 
-      // Cargar Tabla de stock (Sin mostrar costo de compra)
       const tablaStock = document.getElementById('tabla-stock');
       tablaStock.innerHTML = '';
       db.productos.forEach(p => {
@@ -159,10 +186,7 @@
           </tr>`;
       });
 
-      // Aforo
       document.getElementById('total-aforo').innerText = db.totalAforo;
-
-      // Balance Dueño
       document.getElementById('balance-ventas').innerText = db.ventasTotal;
       
       let costoInventario = db.productos.reduce((acc, p) => acc + (p.costo * p.stock), 0);
@@ -204,7 +228,6 @@
       db.productos.push({ id: Date.now(), nombre, precio, costo, stock });
       alert('Producto guardado');
       
-      // Limpiar campos
       document.getElementById('nuevo-nombre').value = '';
       document.getElementById('nuevo-precio').value = '';
       document.getElementById('nuevo-costo').value = '';
@@ -213,7 +236,6 @@
       guardarDB();
     }
 
-    // Inicializar
     cambiarRol();
     render();
   </script>
