@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema POS - Prototipo</title>
+  <title>RU-Bi KiDS - Sistema POS</title>
 
   <!-- RECURSOS PARA INSTALAR COMO APP EN EL CELULAR -->
   <link rel="icon" type="image/jpeg" href="logo.jpg">
@@ -16,24 +16,25 @@
     * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
     body { background: #f0f2f5; margin: 0; padding: 0 0 20px 0; color: #333; }
 
-    /* MEMBRETE SUPERIOR CON IMAGEN DE FONDO (LOGO.JPG) */
+    /* MEMBRETE OPTIMIZADO PARA EL LOGO DE RU-BI KIDS */
     .header-banner {
       width: 100%;
-      height: 130px;
-      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('logo.jpg');
-      background-size: cover;
-      background-position: center;
+      height: 120px;
+      background-color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
       margin-bottom: 15px;
       border-bottom-left-radius: 15px;
       border-bottom-right-radius: 15px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 10px;
     }
-    .header-banner h1 { font-size: 1.5rem; margin: 0; text-align: center; }
+    .header-banner img {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+    }
 
     .container { padding: 0 15px; }
 
@@ -64,9 +65,9 @@
 </head>
 <body>
 
-  <!-- ENCABEZADO Y MEMBRETE -->
+  <!-- ENCABEZADO Y MEMBRETE CON IMAGEN DE RU-BI KIDS -->
   <div class="header-banner">
-    <h1>Punto de Venta</h1>
+    <img src="logo.jpg" alt="RU-Bi KiDS">
   </div>
 
   <div class="container">
@@ -129,7 +130,7 @@
       <hr>
       <h3>Agregar / Ajustar Inventario</h3>
       <label>Nombre del Producto:</label>
-      <input type="text" id="nuevo-nombre" placeholder="Ej: Cerveza Artesanal">
+      <input type="text" id="nuevo-nombre" placeholder="Ej: Entradas Niños">
 
       <label>Precio Venta ($):</label>
       <input type="number" id="nuevo-precio" placeholder="100">
