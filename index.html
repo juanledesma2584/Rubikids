@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RU-Bi KiDS - Agenda, Inventario y POS</title>
+  <title>RU-Bi KiDS - Sistema Integrado</title>
 
   <link rel="icon" type="image/jpeg" href="logo.jpg">
   <link rel="apple-touch-icon" href="logo.jpg">
@@ -14,55 +14,79 @@
     * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
     body { background: #f4f6f9; margin: 0; padding: 0 0 30px 0; color: #333; }
 
-    /* MEMBRETE LOGO */
+    /* MEMBRETE PRINCIPAL CLEAN */
     .header-banner {
       width: 100%;
-      height: 85px;
+      height: 110px;
       background-color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 12px;
-      border-bottom-left-radius: 15px;
-      border-bottom-right-radius: 15px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      padding: 10px;
-    }
-    .header-banner img { max-height: 100%; max-width: 80%; object-fit: contain; }
-
-    .container { padding: 0 12px; }
-
-    /* ROL SELECTOR */
-    .role-selector { background: #e3f2fd; padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #90caf9; }
-    .role-selector select { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #64b5f6; font-weight: bold; background: white; }
-
-    .nav-btn {
-      width: 100%;
-      background: #7b1fa2;
-      color: white;
+      margin-bottom: 15px;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
       padding: 12px;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 0.95rem;
-      cursor: pointer;
-      margin-bottom: 12px;
-      box-shadow: 0 3px 6px rgba(123, 31, 162, 0.2);
     }
+    .header-banner img { max-height: 100%; max-width: 85%; object-fit: contain; }
+
+    .container { padding: 0 15px; }
+
+    /* BOTONES DE NAVEGACIÓN PRINCIPAL */
+    .menu-principal {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .btn-main {
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.1s;
+    }
+    .btn-main:active { transform: scale(0.98); }
+    .btn-calendar { background: linear-gradient(135deg, #7b1fa2, #9c27b0); }
+    .btn-operaciones { background: linear-gradient(135deg, #1976d2, #2196f3); }
+
+    /* ROL SELECTOR MODAL / PANEL */
+    .role-selector { 
+      background: #ffffff; 
+      padding: 12px; 
+      border-radius: 10px; 
+      margin-bottom: 15px; 
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+    .role-selector select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #1976d2; font-weight: bold; background: #f4f8fb; }
+
+    /* SECCIONES OCULTABLES */
+    .seccion { display: none; }
+    .seccion.activa { display: block; }
 
     /* TARJETAS */
-    .card { background: #fff; padding: 14px; border-radius: 12px; margin-bottom: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
-    .card h2 { font-size: 1.05rem; margin-top: 0; border-bottom: 2px solid #f0f0f0; padding-bottom: 6px; color: #1e88e5; }
+    .card { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+    .card h2 { font-size: 1.05rem; margin-top: 0; border-bottom: 2px solid #f0f0f0; padding-bottom: 6px; color: #1976d2; }
     
-    label { display: block; font-size: 0.85rem; margin-top: 8px; font-weight: 600; color: #555; }
-    input, select, button { width: 100%; padding: 9px; margin-top: 4px; border-radius: 6px; border: 1px solid #ccc; font-size: 0.9rem; }
+    label { display: block; font-size: 0.85rem; margin-top: 10px; font-weight: 600; color: #555; }
+    input, select, button { width: 100%; padding: 10px; margin-top: 4px; border-radius: 6px; border: 1px solid #ccc; font-size: 0.9rem; }
     
-    button { background: #1e88e5; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
-    button.success { background: #43a047; }
-    button.warning { background: #fb8c00; }
-    button.purple { background: #8e24aa; }
+    button.action-btn { background: #1976d2; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 12px; }
+    button.success { background: #388e3c; }
+    button.warning { background: #f57c00; }
+    button.purple { background: #7b1fa2; }
     
-    /* VISTA DE CALENDARIO */
+    /* CALENDARIO */
     .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .calendar-controls button { width: auto; padding: 6px 12px; margin: 0; font-size: 0.8rem; }
     .month-title { font-weight: bold; font-size: 1.1rem; color: #4a148c; }
@@ -80,7 +104,7 @@
       background: #fafafa;
       border: 1px solid #e0e0e0;
       border-radius: 6px;
-      min-height: 75px;
+      min-height: 70px;
       padding: 3px;
       font-size: 0.7rem;
       text-align: left;
@@ -100,7 +124,6 @@
     }
     .slot-tag.manana { background: #e0f7fa; color: #006064; border-left: 3px solid #00bcd4; }
     .slot-tag.tarde { background: #fff3e0; color: #e65100; border-left: 3px solid #ff9800; }
-    .contract-badge { font-size: 0.6rem; color: #2e7d32; font-weight: bold; }
 
     .checkbox-container { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 0.85rem; font-weight: bold; color: #2e7d32; }
     .checkbox-container input { width: auto; margin: 0; }
@@ -110,195 +133,186 @@
     th, td { border: 1px solid #e0e0e0; padding: 6px; text-align: left; }
     th { background: #f5f5f5; color: #333; }
 
-    /* VISIBILIDAD POR ROLES */
-    .dueno-sec { display: none; background: #fff8e1; border: 1px solid #ffe082; }
-    .dueno-sec h2 { color: #d84315; }
-    
-    .auditor-sec { display: none; background: #f3e5f5; border: 1px solid #ce93d8; }
-    .auditor-sec h2 { color: #6a1b9a; }
+    .dueno-only { display: none; background: #fff8e1; border: 1px solid #ffe082; }
+    .dueno-only h2 { color: #d84315; }
+
+    .auditor-only { display: none; background: #f3e5f5; border: 1px solid #ce93d8; }
+    .auditor-only h2 { color: #6a1b9a; }
 
     .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; background: #e1f5fe; color: #0288d1; font-weight: bold; }
   </style>
 </head>
 <body>
 
+  <!-- LOGO PRINCIPAL -->
   <div class="header-banner">
     <img src="logo.jpg" alt="RU-Bi KiDS">
   </div>
 
   <div class="container">
 
-    <!-- SELECTOR DE ROL -->
-    <div class="role-selector">
-      <label>Rol de Usuario Activo:</label>
-      <select id="rol-select" onchange="cambiarRol()">
-        <option value="personal">Personal / Recepción (Agenda, Ingreso y Ventas)</option>
-        <option value="auditor">Auditor / Control de Inventario (Recepcionar Pedidos)</option>
-        <option value="dueno">Dueño / Administrador (Acceso Total y Balance)</option>
-      </select>
+    <!-- BOTONES PRINCIPALES DE ACCESO -->
+    <div class="menu-principal">
+      <button class="btn-main btn-calendar" onclick="mostrarSeccion('seccion-calendario')">
+        📅 Ver Calendario / Agenda
+      </button>
+      <button class="btn-main btn-operaciones" onclick="mostrarSeccion('seccion-operaciones')">
+        👥 Acceso Operativo / Recepción
+      </button>
     </div>
 
-    <button class="nav-btn" onclick="irAlCalendario()">
-      📅 Ver Agenda / Calendario (4 Meses)
-    </button>
+    <!-- SECCIÓN 1: CALENDARIO DE EVENTOS -->
+    <div id="seccion-calendario" class="seccion">
+      <div class="card">
+        <h2>Agenda de Eventos (Almanaque)</h2>
+        <span class="badge">Consultar Reservas</span>
+        
+        <div class="calendar-controls" style="margin-top: 10px;">
+          <button onclick="cambiarMes(-1)">◀ Anterior</button>
+          <span class="month-title" id="titulo-mes">Septiembre 2026</span>
+          <button onclick="cambiarMes(1)">Siguiente ▶</button>
+        </div>
 
-    <!-- CALENDARIO DE EVENTOS (TODOS LOS ROLES) -->
-    <div class="card" id="seccion-calendario">
-      <h2>1. Agenda de Eventos (Almanaque Mensual)</h2>
-      <span class="badge">Navegación de Eventos</span>
-      
-      <div class="calendar-controls" style="margin-top: 10px;">
-        <button onclick="cambiarMes(-1)">◀ Mes Anterior</button>
-        <span class="month-title" id="titulo-mes">Septiembre 2026</span>
-        <button onclick="cambiarMes(1)">Mes Siguiente ▶</button>
+        <div class="month-grid">
+          <div class="month-header">Dom</div>
+          <div class="month-header">Lun</div>
+          <div class="month-header">Mar</div>
+          <div class="month-header">Mié</div>
+          <div class="month-header">Jue</div>
+          <div class="month-header">Vie</div>
+          <div class="month-header">Sáb</div>
+        </div>
+
+        <div class="month-grid" id="grid-calendario"></div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 2: OPERACIONES (RECEPCIÓN, INGRESO Y VENTAS) -->
+    <div id="seccion-operaciones" class="seccion">
+
+      <!-- PERFIL DE USUARIO DENTRO DE OPERACIONES -->
+      <div class="role-selector">
+        <label>Perfil de Usuario:</label>
+        <select id="rol-select" onchange="cambiarRol()">
+          <option value="personal">Personal / Recepción (Sin permiso de editar stock/balance)</option>
+          <option value="auditor">Auditor / Control de Inventario (Cargar Pedidos)</option>
+          <option value="dueno">Dueño / Administrador (Acceso Total)</option>
+        </select>
       </div>
 
-      <div class="month-grid">
-        <div class="month-header">Dom</div>
-        <div class="month-header">Lun</div>
-        <div class="month-header">Mar</div>
-        <div class="month-header">Mié</div>
-        <div class="month-header">Jue</div>
-        <div class="month-header">Vie</div>
-        <div class="month-header">Sáb</div>
+      <!-- AGENDAR EVENTO (PERSONAL Y DUEÑO) -->
+      <div class="card op-block">
+        <h2>Agendar Evento / Reserva</h2>
+        <label>Fecha del Evento:</label>
+        <input type="date" id="reserva-fecha">
+
+        <label>Turno:</label>
+        <select id="reserva-turno">
+          <option value="Manana">Mañana</option>
+          <option value="Tarde">Tarde</option>
+        </select>
+
+        <label>Titular Responsable:</label>
+        <input type="text" id="reserva-titular" placeholder="Ej: Juan Lezcano">
+
+        <label>Motivo del Evento:</label>
+        <input type="text" id="reserva-motivo" placeholder="Ej: Cumpleaños Santi (5 años)">
+
+        <div class="checkbox-container">
+          <input type="checkbox" id="reserva-contrato" checked>
+          <label for="reserva-contrato" style="margin: 0;">¿Contrato firmado?</label>
+        </div>
+
+        <button class="action-btn" onclick="crearReserva()">Agendar Evento</button>
       </div>
 
-      <div class="month-grid" id="grid-calendario"></div>
-    </div>
+      <!-- INGRESO DE INVITADOS (PERSONAL Y DUEÑO) -->
+      <div class="card op-block">
+        <h2>Control de Ingreso de Invitados</h2>
+        <label>Evento Activo:</label>
+        <select id="select-reserva" onchange="renderAsistencia()"></select>
 
-    <!-- AGENDAR EVENTOS (DISPONIBLE PARA PERSONAL Y DUEÑO) -->
-    <div class="card operacion-sec">
-      <h2>2. Agendar Nuevo Evento / Reserva</h2>
-      <span class="badge">Habilitado para Personal y Dueño</span>
+        <label>Adulto Responsable / Invitado:</label>
+        <input type="text" id="nombre-invitado" placeholder="Ej: María Giménez">
 
-      <label>Fecha del Evento:</label>
-      <input type="date" id="reserva-fecha">
+        <label>Cantidad de Niños:</label>
+        <input type="number" id="cant-ninos" value="1" min="0">
 
-      <label>Turno:</label>
-      <select id="reserva-turno">
-        <option value="Manana">Mañana</option>
-        <option value="Tarde">Tarde</option>
-      </select>
+        <label>Nombres / Detalle de los Niños:</label>
+        <input type="text" id="detalle-ninos" placeholder="Ej: Lucas y Sofía">
 
-      <label>Titular Responsable (Cliente):</label>
-      <input type="text" id="reserva-titular" placeholder="Ej: Juan Lezcano">
+        <button class="action-btn success" onclick="registrarIngreso()">Registrar Ingreso</button>
 
-      <label>Motivo del Evento:</label>
-      <input type="text" id="reserva-motivo" placeholder="Ej: Cumpleaños Santi (5 años)">
-
-      <div class="checkbox-container">
-        <input type="checkbox" id="reserva-contrato" checked>
-        <label for="reserva-contrato" style="margin: 0;">¿Contrato de compromiso firmado?</label>
+        <h3>Invitados Registrados</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Adulto</th>
+              <th>Niños</th>
+              <th>Detalle</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-asistencia"></tbody>
+        </table>
       </div>
 
-      <button onclick="crearReserva()">Agendar Evento</button>
-    </div>
+      <!-- PUNTO DE VENTA Y SALIDA DE STOCK (PERSONAL Y DUEÑO) -->
+      <div class="card op-block">
+        <h2>Salida de Stock / Venta de Productos</h2>
+        <label>Seleccionar Producto (Gaseosa, Cerveza, Snack):</label>
+        <select id="select-producto"></select>
 
-    <!-- RECEPCIÓN DE INVITADOS (PERSONAL Y DUEÑO) -->
-    <div class="card operacion-sec">
-      <h2>3. Control de Ingreso (Recepción)</h2>
-      <span class="badge">Personal / Recepción</span>
+        <label>Cantidad a entregar:</label>
+        <input type="number" id="cant-producto" value="1" min="1">
 
-      <label>Seleccionar Evento Activo:</label>
-      <select id="select-reserva" onchange="renderAsistencia()"></select>
+        <button class="action-btn warning" onclick="registrarVenta()">Dar Salida / Cobrar</button>
 
-      <label>Adulto Responsable / Invitado:</label>
-      <input type="text" id="nombre-invitado" placeholder="Ej: María Giménez">
+        <h3>Consulta de Inventario Disponible</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Precio Venta</th>
+              <th>Stock Disponible</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-stock"></tbody>
+        </table>
+      </div>
 
-      <label>Cantidad de Niños:</label>
-      <input type="number" id="cant-ninos" value="1" min="0">
+      <!-- SECCIÓN EXCLUSIVA AUDITOR (RECEPCIONAR PEDIDOS) -->
+      <div class="card auditor-only" id="seccion-auditor">
+        <h2>Auditoría: Cargar Recepción de Pedidos</h2>
+        <label>Producto Existente:</label>
+        <select id="audit-select-prod"></select>
 
-      <label>Detalle / Nombres de los Niños:</label>
-      <input type="text" id="detalle-ninos" placeholder="Ej: Lucas y Sofía">
+        <label>Cantidad Recepcionada (Unidades recibidas):</label>
+        <input type="number" id="audit-cant-ingreso" placeholder="Ej: 24">
 
-      <button class="success" onclick="registrarIngreso()">Registrar Ingreso</button>
+        <button class="action-btn purple" onclick="recepcionarPedido()">Sumar al Stock</button>
 
-      <h3>Invitados Registrados en el Evento</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Adulto</th>
-            <th>Niños</th>
-            <th>Detalle</th>
-          </tr>
-        </thead>
-        <tbody id="tabla-asistencia"></tbody>
-      </table>
-    </div>
+        <hr>
+        <h3>Agregar Nuevo Producto al Catálogo</h3>
+        <label>Nombre del Producto:</label>
+        <input type="text" id="prod-nombre" placeholder="Ej: Cerveza 330ml">
+        
+        <label>Precio Venta (Gs.):</label>
+        <input type="number" id="prod-precio" placeholder="Gs. 12000">
 
-    <!-- PUNTO DE VENTA (PERSONAL Y DUEÑO) -->
-    <div class="card operacion-sec">
-      <h2>4. Venta de Productos (Cafetería / Bar)</h2>
-      <span class="badge">Personal / Recepción</span>
+        <label>Stock Inicial:</label>
+        <input type="number" id="prod-stock" placeholder="24">
 
-      <label>Producto:</label>
-      <select id="select-producto"></select>
+        <button class="action-btn purple" onclick="agregarProducto()">Guardar Producto Nuevo</button>
+      </div>
 
-      <label>Cantidad:</label>
-      <input type="number" id="cant-producto" value="1" min="1">
+      <!-- SECCIÓN EXCLUSIVA DUEÑO (FINANZAS Y BALANCES) -->
+      <div class="card dueno-only" id="modulo-dueno">
+        <h2>Balance General y Finanzas</h2>
+        <p><strong>Recaudación por Ventas:</strong> <span id="balance-ventas">Gs. 0</span></p>
+        <p><strong>Total Niños Ingresados:</strong> <span id="balance-ninos">0</span></p>
+        <p><strong>Total Adultos Ingresados:</strong> <span id="balance-adultos">0</span></p>
+      </div>
 
-      <button class="warning" onclick="registrarVenta()">Registrar Venta / Cobro</button>
-
-      <h3>Stock Disponible</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Producto</th>
-            <th>Precio Venta</th>
-            <th>Stock</th>
-          </tr>
-        </thead>
-        <tbody id="tabla-stock"></tbody>
-      </table>
-    </div>
-
-    <!-- MÓDULO EXCLUSIVO AUDITOR DE INVENTARIO -->
-    <div class="card auditor-sec" id="seccion-auditor">
-      <h2>5. Recepción y Auditoría de Inventario</h2>
-      <span class="badge" style="background: #e1bee7; color: #4a148c;">Exclusivo Auditor</span>
-
-      <h3>Registrar Ingreso de Mercadería (Pedido Recibido)</h3>
-      <label>Seleccionar Producto Existente:</label>
-      <select id="audit-select-prod"></select>
-
-      <label>Cantidad Recepcionada (Unidades que entran):</label>
-      <input type="number" id="audit-cant-ingreso" placeholder="Ej: 24">
-
-      <button class="purple" onclick="recepcionarPedido()">Registrar Carga de Stock</button>
-
-      <hr>
-      <h3>Alta de Nuevo Producto en Catálogo</h3>
-      <label>Nombre del Producto:</label>
-      <input type="text" id="prod-nombre" placeholder="Ej: Jugo en cajita 200ml">
-      
-      <label>Precio de Venta (Gs.):</label>
-      <input type="number" id="prod-precio" placeholder="Gs. 5000">
-
-      <label>Stock Inicial:</label>
-      <input type="number" id="prod-stock" placeholder="24">
-
-      <button class="purple" onclick="agregarProducto()">Guardar Producto Nuevo</button>
-
-      <h3>Inventario Físico Actual</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Producto</th>
-            <th>Stock Actual</th>
-          </tr>
-        </thead>
-        <tbody id="tabla-stock-auditor"></tbody>
-      </table>
-    </div>
-
-    <!-- MÓDULO EXCLUSIVO DUEÑO (FINANZAS Y BALANCES) -->
-    <div class="card dueno-sec" id="modulo-dueno">
-      <h2>6. Balance General y Finanzas (Privado)</h2>
-      <span class="badge" style="background: #ffe0b2; color: #e65100;">Exclusivo Propietario</span>
-
-      <p><strong>Recaudación Total en Ventas:</strong> <span id="balance-ventas">Gs. 0</span></p>
-      <p><strong>Total Niños Ingresados:</strong> <span id="balance-ninos">0</span></p>
-      <p><strong>Total Adultos Ingresados:</strong> <span id="balance-adultos">0</span></p>
     </div>
 
   </div>
@@ -306,7 +320,6 @@
   <script>
     let mesActualOffset = 0;
 
-    // Formateador de moneda en Guaraníes
     function formatearGs(monto) {
       return 'Gs. ' + Number(monto).toLocaleString('es-PY');
     }
@@ -317,43 +330,48 @@
       ],
       productos: [
         { id: 101, nombre: 'Gaseosa 500ml', precio: 10000, stock: 48 },
-        { id: 102, nombre: 'Papas Fritas', precio: 8000, stock: 30 }
+        { id: 102, nombre: 'Cerveza 330ml', precio: 15000, stock: 24 },
+        { id: 103, nombre: 'Papas Fritas', precio: 8000, stock: 30 }
       ],
       ventasTotal: 0
     };
 
-    let db = JSON.parse(localStorage.getItem('rubikids_pos_v5_db')) || datosIniciales;
+    let db = JSON.parse(localStorage.getItem('rubikids_pos_v6_db')) || datosIniciales;
 
     function guardarDB() {
-      localStorage.setItem('rubikids_pos_v5_db', JSON.stringify(db));
+      localStorage.setItem('rubikids_pos_v6_db', JSON.stringify(db));
       render();
+    }
+
+    function mostrarSeccion(idSeccion) {
+      document.querySelectorAll('.seccion').forEach(sec => sec.classList.remove('activa'));
+      const secSeleccionada = document.getElementById(idSeccion);
+      if (secSeleccionada) {
+        secSeleccionada.classList.add('activa');
+        secSeleccionada.scrollIntoView({ behavior: 'smooth' });
+      }
     }
 
     function cambiarRol() {
       const rol = document.getElementById('rol-select').value;
-      
-      const operacionSecs = document.querySelectorAll('.operacion-sec');
+      const opBlocks = document.querySelectorAll('.op-block');
       const duenoSec = document.getElementById('modulo-dueno');
       const auditorSec = document.getElementById('seccion-auditor');
 
       if (rol === 'auditor') {
-        operacionSecs.forEach(s => s.style.display = 'none');
+        opBlocks.forEach(b => b.style.display = 'none');
         duenoSec.style.display = 'none';
         auditorSec.style.display = 'block';
       } else if (rol === 'dueno') {
-        operacionSecs.forEach(s => s.style.display = 'block');
+        opBlocks.forEach(b => b.style.display = 'block');
         duenoSec.style.display = 'block';
-        auditorSec.style.display = 'block'; // El dueño también puede auditar
+        auditorSec.style.display = 'block';
       } else {
         // Personal
-        operacionSecs.forEach(s => s.style.display = 'block');
+        opBlocks.forEach(b => b.style.display = 'block');
         duenoSec.style.display = 'none';
         auditorSec.style.display = 'none';
       }
-    }
-
-    function irAlCalendario() {
-      document.getElementById('seccion-calendario').scrollIntoView({ behavior: 'smooth' });
     }
 
     function cambiarMes(delta) {
@@ -398,7 +416,6 @@
             <div class="slot-tag ${claseTurno}">
               <strong>[${textoTurno}] ${r.titular}</strong>
               <div>${r.motivo}</div>
-              ${r.contratoFirmado ? '<span class="contract-badge">✓ Contrato</span>' : ''}
             </div>`;
         });
 
@@ -417,21 +434,19 @@
       const selectRes = document.getElementById('select-reserva');
       selectRes.innerHTML = '';
       db.reservas.forEach(r => {
-        selectRes.innerHTML += `<option value="${r.id}">${r.fecha} (${r.turno === 'Manana' ? 'Mañana' : 'Tarde'}) - ${r.titular} [${r.motivo}]</option>`;
+        selectRes.innerHTML += `<option value="${r.id}">${r.fecha} (${r.turno === 'Manana' ? 'Mañana' : 'Tarde'}) - ${r.titular}</option>`;
       });
 
       renderAsistencia();
 
-      // Productos e Inventario
+      // Productos
       const selectProd = document.getElementById('select-producto');
       const auditSelectProd = document.getElementById('audit-select-prod');
       const tablaStock = document.getElementById('tabla-stock');
-      const tablaStockAuditor = document.getElementById('tabla-stock-auditor');
 
       selectProd.innerHTML = '';
       auditSelectProd.innerHTML = '';
       tablaStock.innerHTML = '';
-      tablaStockAuditor.innerHTML = '';
 
       db.productos.forEach(p => {
         selectProd.innerHTML += `<option value="${p.id}">${p.nombre} - ${formatearGs(p.precio)}</option>`;
@@ -441,13 +456,7 @@
           <tr>
             <td>${p.nombre}</td>
             <td>${formatearGs(p.precio)}</td>
-            <td>${p.stock}</td>
-          </tr>`;
-
-        tablaStockAuditor.innerHTML += `
-          <tr>
-            <td>${p.nombre}</td>
-            <td><strong>${p.stock}</strong> un.</td>
+            <td><strong>${p.stock}</strong></td>
           </tr>`;
       });
 
@@ -512,7 +521,7 @@
 
       prod.stock -= cant;
       db.ventasTotal += (prod.precio * cant);
-      alert('Venta realizada');
+      alert('Salida de stock registrada');
       guardarDB();
     }
 
@@ -523,13 +532,13 @@
       const motivo = document.getElementById('reserva-motivo').value;
       const contratoFirmado = document.getElementById('reserva-contrato').checked;
 
-      if (!fecha || !titular || !motivo) return alert('Completá la fecha, titular y motivo');
+      if (!fecha || !titular || !motivo) return alert('Completá fecha, titular y motivo');
 
       const ocupado = db.reservas.some(r => r.fecha === fecha && r.turno === turno);
-      if (ocupado) return alert(`La fecha ${fecha} en el turno de la ${turno} ya está reservada.`);
+      if (ocupado) return alert(`La fecha ${fecha} (${turno}) ya se encuentra reservada.`);
 
       db.reservas.push({ id: Date.now(), fecha, turno, titular, motivo, contratoFirmado, asistencia: [] });
-      alert('Evento agendado con éxito');
+      alert('Evento agendado exitosamente');
       
       document.getElementById('reserva-titular').value = '';
       document.getElementById('reserva-motivo').value = '';
@@ -540,12 +549,12 @@
       const idProd = parseInt(document.getElementById('audit-select-prod').value);
       const cant = parseInt(document.getElementById('audit-cant-ingreso').value);
 
-      if (!idProd || isNaN(cant) || cant <= 0) return alert('Ingresá una cantidad válida mayor a cero');
+      if (!idProd || isNaN(cant) || cant <= 0) return alert('Ingresá una cantidad válida');
 
       const prod = db.productos.find(p => p.id === idProd);
       if (prod) {
         prod.stock += cant;
-        alert(`Stock actualizado: Se sumaron ${cant} unidades a ${prod.nombre}`);
+        alert(`Stock actualizado: +${cant} unidades a ${prod.nombre}`);
         document.getElementById('audit-cant-ingreso').value = '';
         guardarDB();
       }
@@ -559,7 +568,7 @@
       if (!nombre || isNaN(precio) || isNaN(stock)) return alert('Completá los datos del producto');
 
       db.productos.push({ id: Date.now(), nombre, precio, stock });
-      alert('Nuevo producto agregado al catálogo');
+      alert('Producto agregado al catálogo');
       document.getElementById('prod-nombre').value = '';
       document.getElementById('prod-precio').value = '';
       document.getElementById('prod-stock').value = '';
